@@ -73,7 +73,7 @@ function Profile() {
 
     const [userData, setUserData] = useState({
         name: 'Adarsh Joshi',
-        email: 'adarshjoshi200513@email.com',
+        email: 'adarshjoshi200513@gmail.com',
         phone: '+91 9667479529',
         location: 'Delhi, India',
         dateOfBirth: '2005-01-13',
@@ -371,6 +371,17 @@ function Profile() {
                                             <div className="flex items-center space-x-3">
                                                 <Codesandbox className="w-5 h-5" />
                                                 <span className="font-medium">Coupons & Offers</span>
+                                            </div>
+                                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                        </button>
+
+
+                                        <button
+                                            onClick={() => navigate('/complaint-register')}
+                                            className={`group w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-gray-400 hover:bg-white/5 hover:text-black`}>
+                                            <div className="flex items-center space-x-3">
+                                                <Codesandbox className="w-5 h-5" />
+                                                <span className="font-medium">Complaint Register</span>
                                             </div>
                                             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                         </button>
