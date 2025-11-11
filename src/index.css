@@ -1,0 +1,131 @@
+/* src/index.css */
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  font-family: "Poppins", sans-serif;
+}
+
+button {
+  cursor: pointer;
+}
+
+.filter-section input[type="radio"]:checked {
+  accent-color: white;
+  border: 1px solid black;
+}
+
+.fare-filter-section input[type="radio"]:checked {
+  accent-color: black;
+}
+
+.filters input[type="checkbox"] {
+  background-color: transparent;
+}
+
+.filters input[type="checkbox"]:checked {
+  accent-color: #78080B;
+}
+
+@font-face {
+  font-family: "ltwave";
+  src: url("./assets/fonts/lt_wave/LTWave-Medium.otf") format("truetype");
+}
+
+.primary-font {
+  font-family: "ltwave";
+}
+
+.secondary-font {
+  font-family: "Poppins", sans-serif;
+}
+
+@keyframes planeLandin {
+  0% {
+    transform: translateX(500px) scale(0.2);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(0) translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.plane {
+  position: absolute;
+  right: -300px;
+  bottom: 10px;
+  animation: planeLandin 2s ease-out forwards;
+}
+
+/* Ribbon CSS */
+.ribbon {
+  clip-path: polygon(0 0, 98% 0, 95% 50%, 98% 100%, 0 100%);
+  background-image: linear-gradient(to right, rgba(160, 14, 18, 0.6) 0%, rgb(143 3 6) 100%);
+  background-size: 200% 100%;
+  background-position: left;
+}
+
+@keyframes ribbonExpand {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+.animate-ribbon {
+  animation: ribbonExpand 1.5s linear forwards;
+}
+
+#FlightComparisonsSection {
+  width: 380px;
+  max-height: 500px;
+  transition: width 1s ease-out, max-height 1s ease-out, opacity 1s ease-out;
+  overflow: hidden;
+  opacity: 1;
+}
+
+#FlightComparisonsSection.collapsed {
+  width: 0px;
+  max-height: 0px;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* @media (max-width: 767px) {
+  .plane {
+    position: relative !important;
+    right: 0 !important;
+    top: 0 !important;
+  }
+} */
+
+@media (max-width: 1280px) {
+  .plane {
+    position: relative !important;
+    right: 0 !important;
+    top: 0 !important;
+  }
+}

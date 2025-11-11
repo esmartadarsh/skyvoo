@@ -1,0 +1,189 @@
+.wrapper {
+    position: relative;
+    width: min(60vw, 350px);
+    height: min(60vw, 350px);
+}
+
+.help {
+    margin-top: 8px;
+    font-family: sans-serif;
+    text-transform: uppercase;
+    color: #555;
+    font-size: 12px;
+    letter-spacing: 0.075em;
+    text-align: center;
+}
+
+.sticker-underneath {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    /* behind the sticker */
+}
+
+.sticker {
+    z-index: 1;
+    /* front sticker on top */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.sticker__face {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: filter 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+.sticker__face--front {
+    filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.5));
+}
+
+.sticker__face--front .sticker__content {
+    background-size: cover;
+}
+
+.sticker__face--front .sticker__shadow {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+}
+
+.sticker__face--back {
+    filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0));
+}
+
+.sticker.is-peeled .sticker__face--back {
+    filter: drop-shadow(25px 25px 10px rgba(0, 0, 0, 0.1));
+}
+
+@keyframes shineMove {
+    0% {
+        background-position: 0% 0;
+    }
+
+    100% {
+        background-position: 100% 0;
+    }
+}
+
+.sticker__face--back .sticker__content {
+    background: linear-gradient(135deg,
+            #a4a4a4 7%,
+            #bcbcbc 29%,
+            #f0f0f0 50%,
+            #bcbcbc 78%,
+            #a4a4a4 100%);
+    background-size: 200% 100%;
+    transform: scaleX(-1);
+    /* no animation by default */
+}
+
+/* ✅ Start shine only when the sticker is peeled */
+.sticker.is-peeled .sticker__face--back .sticker__content {
+    animation: shineMove 1.2s linear;
+}
+
+
+.sticker__holder {
+    position: absolute;
+    top: -72px;
+    left: -72px;
+    width: 494px;
+    height: 494px;
+    overflow: hidden;
+    transform: rotate(45deg);
+    transition: transform 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+.sticker__content {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    top: 72px;
+    left: 72px;
+    transform: rotate(-45deg);
+    overflow: hidden;
+    transition: transform 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+.sticker__shadow {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 125px;
+    height: 500px;
+    transform-origin: bottom left;
+    transition: transform 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+/* 1️⃣ Base state: no transform transition (so returning is instant) */
+.sticker__holder,
+.sticker__content,
+.sticker__shadow {
+    transition: none;
+}
+
+/* 2️⃣ When peeling: enable ease-in transition */
+.sticker.is-peeled .sticker__holder,
+.sticker.is-peeled .sticker__content,
+.sticker.is-peeled .sticker__shadow {
+    transition: transform 1.25s ease-in;
+}
+
+/* Default transforms */
+.sticker .sticker__face--front .sticker__holder {
+    transform: rotate(45deg) translate3d(-88px, 0, 0);
+}
+
+.sticker .sticker__face--front .sticker__content {
+    transform: translate3d(88px, 0, 0) rotate(-45deg);
+}
+
+.sticker .sticker__face--front .sticker__shadow {
+    transform: rotate(45deg) translate3d(370px, 0, 0) scaleX(1.32);
+}
+
+.sticker .sticker__face--back .sticker__holder {
+    transform: rotate(45deg) translate3d(-88px, 0, 0);
+}
+
+.sticker .sticker__face--back .sticker__content {
+    transform: translate3d(455px, 0, 0) rotate(45deg) scaleX(-1);
+}
+
+.sticker .sticker__face--back .sticker__shadow {
+    transform: rotate(-135deg) translate3d(-163px, 500px, 0) scaleX(0.495);
+}
+
+/* Peeled transforms */
+.sticker.is-peeled .sticker__face--front .sticker__holder {
+    transform: rotate(45deg) translate3d(-500px, 0, 0);
+}
+
+.sticker.is-peeled .sticker__face--front .sticker__content {
+    transform: translate3d(500px, 0, 0) rotate(-45deg);
+}
+
+.sticker.is-peeled .sticker__face--front .sticker__shadow {
+    transform: rotate(45deg) translate3d(-120px, 0, 0) scaleX(3);
+}
+
+.sticker.is-peeled .sticker__face--back .sticker__holder {
+    transform: rotate(45deg) translate3d(-500px, 0, 0);
+}
+
+.sticker.is-peeled .sticker__face--back .sticker__content {
+    transform: translate3d(60px, 0, 0) rotate(45deg) scaleX(-1);
+}
+
+.sticker.is-peeled .sticker__face--back .sticker__shadow {
+    transform: rotate(-135deg) translate3d(250px, 500px, 0) scaleX(3);
+}
