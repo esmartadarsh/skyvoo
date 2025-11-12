@@ -86,11 +86,18 @@ function Filters() {
         const rect = sliderRef.current.getBoundingClientRect();
         const clickX = clientX - rect.left;
         const percentage = Math.max(0, Math.min(1, clickX / rect.width));
-        const newValue = Math.round(minValue + (maxValue - minValue) * percentage);
+        let newValue = minValue + (maxValue - minValue) * percentage;
+
+        // ✅ Snap to nearest ₹100 increment
+        newValue = Math.round(newValue / 100) * 100;
+
+        // ✅ Clamp within bounds
+        newValue = Math.max(minValue, Math.min(newValue, maxValue));
 
         setPrevValue(value);
         setValue(newValue);
     };
+
 
     const handleMouseDown = (e) => {
         setIsDragging(true);
@@ -101,7 +108,10 @@ function Filters() {
         if (isDragging) updateValue(e.clientX);
     };
 
-    const handleMouseUp = () => setIsDragging(false);
+    const handleMouseUp = () => {
+        setIsDragging(false);
+        setValue((prev) => Math.round(prev / 100) * 100);
+    };
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });

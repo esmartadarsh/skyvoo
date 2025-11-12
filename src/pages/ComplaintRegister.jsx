@@ -56,7 +56,19 @@ function ComplaintRegister() {
         },
         {
             id: 'CMP005',
-            passengerName: 'David Lee',
+            passengerName: 'Sarah Five',
+            flightNumber: 'AI789',
+            date: '2024-11-10',
+            category: 'Refund',
+            subject: 'Pending Refund for Cancelled Flight',
+            description: 'Flight was cancelled but refund has not been processed after 15 days.',
+            status: 'In Progress',
+            priority: 'High',
+            assignedTo: 'Sarah Johnson'
+        },
+        {
+            id: 'CMP006',
+            passengerName: 'David Six',
             flightNumber: 'AI321',
             date: '2024-11-11',
             category: 'In-Flight',
@@ -65,13 +77,50 @@ function ComplaintRegister() {
             status: 'Closed',
             priority: 'Low',
             assignedTo: 'Mike Chen'
-        }
+        },
+        {
+            id: 'CMP007',
+            passengerName: 'Donson Seven',
+            flightNumber: 'AI321',
+            date: '2024-11-11',
+            category: 'In-Flight',
+            subject: 'Broken Entertainment System',
+            description: 'In-flight entertainment system was not working throughout the 5-hour flight.',
+            status: 'Closed',
+            priority: 'Low',
+            assignedTo: 'Mike Chen'
+        },
+        {
+            id: 'CMP008',
+            passengerName: 'Lewid Eight',
+            flightNumber: 'AI321',
+            date: '2024-11-11',
+            category: 'In-Flight',
+            subject: 'Broken Entertainment System',
+            description: 'In-flight entertainment system was not working throughout the 5-hour flight.',
+            status: 'Closed',
+            priority: 'Low',
+            assignedTo: 'Mike Chen'
+        },
+        {
+            id: 'CMP005',
+            passengerName: 'AirIndia Lee',
+            flightNumber: 'AI321',
+            date: '2024-11-11',
+            category: 'In-Flight',
+            subject: 'Broken Entertainment System',
+            description: 'In-flight entertainment system was not working throughout the 5-hour flight.',
+            status: 'Closed',
+            priority: 'Low',
+            assignedTo: 'Mike Chen'
+        },
     ])
 
     const [selectedComplaint, setSelectedComplaint] = useState(null)
     const [filterStatus, setFilterStatus] = useState('All')
     const [searchTerm, setSearchTerm] = useState('')
     const [showRegisterForm, setShowRegisterForm] = useState(false)
+    
     const [newComplaint, setNewComplaint] = useState({
         passengerName: '',
         flightNumber: '',

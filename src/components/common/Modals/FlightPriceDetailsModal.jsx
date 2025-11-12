@@ -2,7 +2,7 @@ import React from "react";
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 import Tick from '@/assets/vectors/Tick.svg'
 import Dash from '@/assets/vectors/Dash.svg'
-import Insuarance from '@/assets/vectors/Insuarance.svg'
+import Insurance from '@/assets/vectors/Insurance.svg'
 import { useNavigate } from 'react-router-dom';
 
 import { Splide, SplideSlide } from '@splidejs/react-splide';
@@ -66,6 +66,32 @@ export default function FlightPriceDetailsModal({ onClose }) {
             seatsMeals: ["Free Seats", "Chargeable Meals"],
             buttons: ["LOCK PRICE", "BOOK NOW"],
         },
+        {
+            title: "EXTRA 6E",
+            price: "₹ 5,360",
+            oldPrice: "₹ 5,560",
+            type: "Per adult",
+            baggage: ["7 kgs Cabin Baggage", "15 kgs Check-in Baggage"],
+            flexibility: [
+                "Lower Cancellation fee start at ₹ 2,330 (up to 24 hours before departure)",
+                "Free Date Change fee start at ₹ 1,330 up to 3hrs before departure",
+            ],
+            seatsMeals: ["Free Seats", "Chargeable Meals"],
+            buttons: ["LOCK PRICE", "BOOK NOW"],
+        },
+        {
+            title: "EXTRA 7E",
+            price: "₹ 5,370",
+            oldPrice: "₹ 5,570",
+            type: "Per adult",
+            baggage: ["7 kgs Cabin Baggage", "15 kgs Check-in Baggage"],
+            flexibility: [
+                "Lower Cancellation fee start at ₹ 2,330 (up to 24 hours before departure)",
+                "Free Date Change fee start at ₹ 1,330 up to 3hrs before departure",
+            ],
+            seatsMeals: ["Free Seats", "Chargeable Meals"],
+            buttons: ["LOCK PRICE", "BOOK NOW"],
+        },
     ];
 
     return (
@@ -109,7 +135,8 @@ export default function FlightPriceDetailsModal({ onClose }) {
                 <div className="my-8">
                     <Splide
                         options={{
-                            type: "loop",
+                            type: "slide",
+                            rewind: false,
                             perPage: 3,
                             perMove: 1,
                             gap: "1rem",
@@ -197,7 +224,7 @@ export default function FlightPriceDetailsModal({ onClose }) {
                                                         boxShadow: "2px 4px 4px rgba(0, 0, 0, 0.10)",
                                                     }}
                                                 >
-                                                    <img src={Insuarance} alt="insurance" />
+                                                    <img src={Insurance} alt="insurance" />
                                                     <p className="text-sm">{card.insurance}</p>
                                                 </div>
                                             )}

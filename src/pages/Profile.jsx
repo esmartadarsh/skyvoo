@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { User, Mail, Phone, MapPin, Calendar, CreditCard, Plane, Award, Globe, Bell, Shield, Settings, Codesandbox, BookCheck, LogOut, Edit2, Save, X, ChevronRight, ReceiptIndianRupee } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, CreditCard, Plane, Award, Globe, ClipboardList, Bell, Shield, Settings, Codesandbox, UserCheck, BookCheck, LogOut, Edit2, Save, X, ChevronRight, ReceiptIndianRupee } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '@/utils/getCroppedImg.jsx';
@@ -380,8 +380,18 @@ function Profile() {
                                             onClick={() => navigate('/complaint-register')}
                                             className={`group w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-gray-400 hover:bg-white/5 hover:text-black`}>
                                             <div className="flex items-center space-x-3">
-                                                <Codesandbox className="w-5 h-5" />
+                                                <UserCheck className="w-5 h-5" />
                                                 <span className="font-medium">Complaint Register</span>
+                                            </div>
+                                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                        </button>
+
+                                        <button
+                                            onClick={() => navigate('/statement')}
+                                            className={`group w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-gray-400 hover:bg-white/5 hover:text-black`}>
+                                            <div className="flex items-center space-x-3">
+                                                <ClipboardList className="w-5 h-5" />
+                                                <span className="font-medium">Statement</span>
                                             </div>
                                             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                         </button>
