@@ -11,6 +11,7 @@ import MarkUp from './pages/MarkUp.jsx';
 import CouponsAndOffers from './pages/CouponsAndOffers.jsx';
 import ComplaintRegister from './pages/ComplaintRegister.jsx';
 import Payment from './pages/Payment.jsx';
+import Statement from './pages/Statement.jsx';
 import { FlightFilterProvider } from './contexts/FlightFilterContext.jsx'
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
         <Route path="/mark-up" element={<MarkUp />} />
         <Route path="/coupons-and-offers" element={<CouponsAndOffers />} />
         <Route path="/complaint-register" element={<ComplaintRegister />} />
+        <Route path="/statement" element={<Statement />} />
       </Routes>
 
     </Router>

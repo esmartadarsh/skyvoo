@@ -83,7 +83,7 @@ const Header = ({ onOpen }) => {
                                 </button>
                                 <button
                                     className="w-full text-left px-3 py-2 rounded hover:bg-gray-100"
-                                    onClick={() => navigate('/booking-lists')}
+                                    onClick={() => navigate('/my-profile')}
                                 >
                                     Settings
                                 </button>
