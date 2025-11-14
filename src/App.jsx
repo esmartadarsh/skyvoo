@@ -12,6 +12,8 @@ import CouponsAndOffers from './pages/CouponsAndOffers.jsx';
 import ComplaintRegister from './pages/ComplaintRegister.jsx';
 import Payment from './pages/Payment.jsx';
 import Statement from './pages/Statement.jsx';
+import FlightReschedule from './pages/FlightReschedule.jsx';
+import FlightCancellation from './pages/FlightCancellation.jsx';
 import { FlightFilterProvider } from './contexts/FlightFilterContext.jsx'
 
 function App() {
@@ -37,6 +39,8 @@ function App() {
         <Route path="/coupons-and-offers" element={<CouponsAndOffers />} />
         <Route path="/complaint-register" element={<ComplaintRegister />} />
         <Route path="/statement" element={<Statement />} />
+        <Route path="/flight-reschedule" element={<FlightReschedule />} />
+        <Route path="/flight-cancellation" element={<FlightCancellation />} />
       </Routes>
 
     </Router>
