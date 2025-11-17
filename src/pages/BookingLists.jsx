@@ -520,12 +520,14 @@ function BookingLists() {
                                     Download Ticket
                                 </button>
 
-                                <button className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium">
+                                <button
+                                    onClick={() => (navigate('/flight-cancellation'))}
+                                    className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium">
                                     Cancel Flight
                                 </button>
 
                                 <button
-                                    onClick={() => (navigate('/reschedule-flight'))}
+                                    onClick={() => (navigate('/flight-reschedule'))}
                                     className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-colors font-medium">
                                     Reschedule
                                 </button>
