@@ -86,8 +86,6 @@ export default function CompareFlights() {
                     alt="gray faded bg"
                 />
                 <Header onOpen={() => setIsModalOpen(true)} />
-
-
             </div>
 
             {/* Main Content */}

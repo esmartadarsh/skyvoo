@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Plane, Calendar, Clock, MapPin, User, Search, Filter, ChevronDown, ArrowRight, Check, X, Luggage, Wifi, Coffee, ChevronUp  } from 'lucide-react';
+import { Plane, Calendar, Clock, MapPin, User, Search, Filter, ChevronDown, ArrowRight, Check, X, Luggage, Wifi, Coffee, ChevronUp } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
+import { useNavigate } from 'react-router-dom';
 
 const bookings = [
     {
@@ -16,7 +17,7 @@ const bookings = [
         arrival: 'Nov 15, 2025',
         arrivalTime: '11:45 AM',
         duration: '6h 15m',
-        status: 'confirmed',
+        status: 'upcoming',
         class: 'Business',
         price: '₹85,000',
         gate: 'B12',
@@ -35,7 +36,7 @@ const bookings = [
         arrival: 'Nov 21, 2025',
         arrivalTime: '05:30 PM',
         duration: '11h 15m',
-        status: 'pending',
+        status: 'completed',
         class: 'Economy',
         price: '₹66,500',
         gate: 'A7',
@@ -54,7 +55,7 @@ const bookings = [
         arrival: 'Nov 19, 2025',
         arrivalTime: '08:20 AM',
         duration: '7h 35m',
-        status: 'confirmed',
+        status: 'upcoming',
         class: 'First Class',
         price: '₹22,450',
         gate: 'C3',
@@ -92,7 +93,7 @@ const bookings = [
         arrival: 'Nov 25, 2025',
         arrivalTime: '08:55 AM',
         duration: '14h 45m',
-        status: 'confirmed',
+        status: 'upcoming',
         class: 'First Class',
         price: '₹55,200',
         gate: 'D2',
@@ -111,7 +112,7 @@ const bookings = [
         arrival: 'Nov 29, 2025',
         arrivalTime: '05:15 PM',
         duration: '12h 45m',
-        status: 'pending',
+        status: 'completed',
         class: 'Business',
         price: '₹33,150',
         gate: 'A18',
@@ -121,6 +122,7 @@ const bookings = [
 ];
 
 function BookingLists() {
+    const navigate = useNavigate()
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
     const [selectedBooking, setSelectedBooking] = useState(null);
@@ -144,14 +146,23 @@ function BookingLists() {
             booking.from.toLowerCase().includes(searchTerm.toLowerCase()) ||
             booking.to.toLowerCase().includes(searchTerm.toLowerCase()) ||
             booking.airline.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesFilter = filterStatus === 'all' || booking.status === filterStatus;
+
+        const normalizedStatus = booking.status === 'confirmed'
+            ? 'upcoming'
+            : booking.status === 'pending'
+                ? 'completed'
+                : booking.status;
+
+        const matchesFilter = filterStatus === 'all' || normalizedStatus === filterStatus;
+
         return matchesSearch && matchesFilter;
     });
 
+
     const getStatusColor = (status) => {
         switch (status) {
-            case 'confirmed': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-            case 'pending': return 'bg-amber-100 text-amber-700 border-amber-200';
+            case 'upcoming': return 'bg-blue-100 text-blue-700 border-blue-200';
+            case 'completed': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
             case 'cancelled': return 'bg-rose-100 text-rose-700 border-rose-200';
             default: return 'bg-gray-100 text-gray-700 border-gray-200';
         }
@@ -159,8 +170,8 @@ function BookingLists() {
 
     const getStatusIcon = (status) => {
         switch (status) {
-            case 'confirmed': return <Check className="w-4 h-4" />;
-            case 'pending': return <Clock className="w-4 h-4" />;
+            case 'upcoming': return <Clock className="w-4 h-4" />;
+            case 'completed': return <Check className="w-4 h-4" />;
             case 'cancelled': return <X className="w-4 h-4" />;
             default: return null;
         }
@@ -217,8 +228,8 @@ function BookingLists() {
                                     className="pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white cursor-pointer transition-all"
                                 >
                                     <option value="all">All Flights</option>
-                                    <option value="confirmed">Confirmed</option>
-                                    <option value="pending">Pending</option>
+                                    <option value="upcoming">Upcoming</option>
+                                    <option value="completed">Completed</option>
                                     <option value="cancelled">Cancelled</option>
                                 </select>
                                 <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
@@ -249,7 +260,7 @@ function BookingLists() {
                             <div>
                                 <p className="text-gray-500 text-sm font-medium">Confirmed</p>
                                 <p className="text-3xl font-bold text-emerald-600 mt-1">
-                                    {bookings.filter(b => b.status === 'confirmed').length}
+                                    {bookings.filter(b => b.status === 'upcoming').length}
                                 </p>
                             </div>
                             <div className="bg-emerald-100 p-3 rounded-xl">
@@ -263,7 +274,7 @@ function BookingLists() {
                             <div>
                                 <p className="text-gray-500 text-sm font-medium">Pending</p>
                                 <p className="text-3xl font-bold text-amber-600 mt-1">
-                                    {bookings.filter(b => b.status === 'pending').length}
+                                    {bookings.filter(b => b.status === 'completed').length}
                                 </p>
                             </div>
                             <div className="bg-amber-100 p-3 rounded-xl">
@@ -508,27 +519,38 @@ function BookingLists() {
                                 <button className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium">
                                     Download Ticket
                                 </button>
-                                <button className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium">
+
+                                <button
+                                    onClick={() => (navigate('/flight-cancellation'))}
+                                    className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium">
                                     Cancel Flight
                                 </button>
-                                <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-colors font-medium">
-                                    Modify Booking
+
+                                <button
+                                    onClick={() => (navigate('/flight-reschedule'))}
+                                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-colors font-medium">
+                                    Reschedule
                                 </button>
+
                             </div>
+
                         </div>
                     </div>
                 </div>
-            )}
+            )
+            }
 
-            {showScrollTop && (
-                <button
-                    onClick={scrollToTop}
-                    className="cursor-pointer fixed bottom-6 right-6 bg-[#78080B] text-white px-4 py-2 rounded-full shadow-lg hover:bg-red-700 transition-colors"
-                >
-                    <p className='flex font-medium'> <ChevronUp className='mr-1' /> TOP</p>
-                </button>
-            )}
-        </div>
+            {
+                showScrollTop && (
+                    <button
+                        onClick={scrollToTop}
+                        className="cursor-pointer fixed bottom-6 right-6 bg-[#78080B] text-white px-4 py-2 rounded-full shadow-lg hover:bg-red-700 transition-colors"
+                    >
+                        <p className='flex font-medium'> <ChevronUp className='mr-1' /> TOP</p>
+                    </button>
+                )
+            }
+        </div >
     );
 }
 

@@ -14,7 +14,8 @@ export const FlightFilterProvider = ({ children }) => {
     const [selectedPriceRange, setSelectedPriceRange] = useState([DEFAULT_SELECTED_PRICE, maxValue]);
 
     return (
-        <FlightFilterContext.Provider value={{
+        <FlightFilterContext.Provider 
+        value={{
             selectedStops,
             setSelectedStops,
             selectedAirlines,

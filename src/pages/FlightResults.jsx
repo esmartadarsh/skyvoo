@@ -347,7 +347,7 @@ export default function FlightResults() {
         <>
             {selectedFlights.length > 0 && (
                 <>
-                    <div className='fixed cursor-pointer bottom-20 right-5 text-white z-1 bg-[#78080B] h-12 w-12 rounded-full flex justify-center items-center' onClick={() => setCollapsed(prev => !prev)}><Search className="h-8 w-8" /></div>
+                    <div className='fixed cursor-pointer bottom-20 right-5 text-white z-9998 bg-[#78080B] hover:bg-red-700 h-12 w-12 rounded-full flex justify-center items-center' onClick={() => setCollapsed(prev => !prev)}><Search className="h-8 w-8" /></div>
 
                     <div className={`fixed bottom-20 right-5 bg-white shadow-lg rounded-lg overflow-hidden z-9999 border border-gray-200 secondary-font`}>
                         <div className='relative'>
@@ -820,9 +820,6 @@ export default function FlightResults() {
                                     ))}
                                 </div>
 
-                                <h2 className="text-xl font-bold mt-4">
-                                    Flights from New Delhi to Mumbai
-                                </h2>
                             </div>
 
                             {/* Flight Results */}

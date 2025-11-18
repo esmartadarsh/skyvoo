@@ -4,11 +4,92 @@ import Select, { components } from 'react-select';
 import Header from '@/components/layout/Header';
 import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp'
 
+const airlineOptions = [
+    { value: 'Aer Lingus', label: 'Aer Lingus' },
+    { value: 'Aeromexico', label: 'Aeromexico' },
+    { value: 'Air Arabia', label: 'Air Arabia' },
+    { value: 'Air Canada', label: 'Air Canada' },
+    { value: 'Air China', label: 'Air China' },
+    { value: 'Air France', label: 'Air France' },
+    { value: 'Air India', label: 'Air India' },
+    { value: 'Air New Zealand', label: 'Air New Zealand' },
+    { value: 'AirAsia', label: 'AirAsia' },
+    { value: 'AirAsia India', label: 'AirAsia India' },
+    { value: 'Alaska Airlines', label: 'Alaska Airlines' },
+    { value: 'Alitalia', label: 'Alitalia' },
+    { value: 'All Nippon Airways', label: 'All Nippon Airways (ANA)' },
+    { value: 'American Airlines', label: 'American Airlines' },
+    { value: 'Asiana Airlines', label: 'Asiana Airlines' },
+    { value: 'Austrian Airlines', label: 'Austrian Airlines' },
+    { value: 'Avianca', label: 'Avianca' },
+    { value: 'Azul Brazilian Airlines', label: 'Azul Brazilian Airlines' },
+    { value: 'Biman Bangladesh Airlines', label: 'Biman Bangladesh Airlines' },
+    { value: 'British Airways', label: 'British Airways' },
+    { value: 'Cathay Pacific', label: 'Cathay Pacific' },
+    { value: 'China Eastern Airlines', label: 'China Eastern Airlines' },
+    { value: 'China Southern Airlines', label: 'China Southern Airlines' },
+    { value: 'Copa Airlines', label: 'Copa Airlines' },
+    { value: 'Delta Airlines', label: 'Delta Airlines' },
+    { value: 'EasyJet', label: 'EasyJet' },
+    { value: 'EgyptAir', label: 'EgyptAir' },
+    { value: 'Emirates', label: 'Emirates' },
+    { value: 'Ethiopian Airlines', label: 'Ethiopian Airlines' },
+    { value: 'Etihad Airways', label: 'Etihad Airways' },
+    { value: 'Fiji Airways', label: 'Fiji Airways' },
+    { value: 'Finnair', label: 'Finnair' },
+    { value: 'flydubai', label: 'flydubai' },
+    { value: 'Frontier Airlines', label: 'Frontier Airlines' },
+    { value: 'Garuda Indonesia', label: 'Garuda Indonesia' },
+    { value: 'Go First', label: 'Go First' },
+    { value: 'Gol Linhas Aereas', label: 'Gol Linhas Aereas' },
+    { value: 'Gulf Air', label: 'Gulf Air' },
+    { value: 'Iberia', label: 'Iberia' },
+    { value: 'IndiGo', label: 'IndiGo' },
+    { value: 'Japan Airlines', label: 'Japan Airlines' },
+    { value: 'JetBlue Airways', label: 'JetBlue Airways' },
+    { value: 'Jetstar Airways', label: 'Jetstar Airways' },
+    { value: 'Kenya Airways', label: 'Kenya Airways' },
+    { value: 'KLM Royal Dutch Airlines', label: 'KLM Royal Dutch Airlines' },
+    { value: 'Korean Air', label: 'Korean Air' },
+    { value: 'LATAM Airlines', label: 'LATAM Airlines' },
+    { value: 'Lufthansa', label: 'Lufthansa' },
+    { value: 'Malaysia Airlines', label: 'Malaysia Airlines' },
+    { value: 'Nepal Airlines', label: 'Nepal Airlines' },
+    { value: 'Oman Air', label: 'Oman Air' },
+    { value: 'Pakistan International Airlines', label: 'Pakistan International Airlines' },
+    { value: 'Philippine Airlines', label: 'Philippine Airlines' },
+    { value: 'Qantas', label: 'Qantas' },
+    { value: 'Qatar Airways', label: 'Qatar Airways' },
+    { value: 'Royal Air Maroc', label: 'Royal Air Maroc' },
+    { value: 'Ryanair', label: 'Ryanair' },
+    { value: 'SAS Scandinavian Airlines', label: 'SAS Scandinavian Airlines' },
+    { value: 'Saudia', label: 'Saudia' },
+    { value: 'Singapore Airlines', label: 'Singapore Airlines' },
+    { value: 'South African Airways', label: 'South African Airways' },
+    { value: 'Southwest Airlines', label: 'Southwest Airlines' },
+    { value: 'SpiceJet', label: 'SpiceJet' },
+    { value: 'Spirit Airlines', label: 'Spirit Airlines' },
+    { value: 'Sri Lankan Airlines', label: 'Sri Lankan Airlines' },
+    { value: 'Swiss International Air Lines', label: 'Swiss International Air Lines' },
+    { value: 'TAP Air Portugal', label: 'TAP Air Portugal' },
+    { value: 'Thai Airways', label: 'Thai Airways' },
+    { value: 'Turkish Airlines', label: 'Turkish Airlines' },
+    { value: 'United Airlines', label: 'United Airlines' },
+    { value: 'Vietnam Airlines', label: 'Vietnam Airlines' },
+    { value: 'Virgin Australia', label: 'Virgin Australia' },
+    { value: 'Vistara', label: 'Vistara' },
+    { value: 'WestJet', label: 'WestJet' },
+    { value: 'Wizz Air', label: 'Wizz Air' }
+];
+
 function MarkUp() {
+
     const [markups, setMarkups] = useState([
         { id: 1, category: 'Domestic', type: 'Percentage', amount: '5%' },
-        { id: 2, category: 'International', type: 'Fixed', amount: '$50' },
-        { id: 3, category: 'Air India', type: 'Percentage', amount: '3%' }
+        { id: 2, category: 'International', type: 'Fixed', amount: '₹50' },
+        { id: 3, category: 'Air India', type: 'Percentage', amount: '3%' },
+        { id: 4, category: 'Indigo', type: 'Percentage', amount: '9%' },
+        { id: 5, category: 'Vistara', type: 'Fixed', amount: '10%' }
     ]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,84 +98,6 @@ function MarkUp() {
     const [selectedAirline, setSelectedAirline] = useState(null);
     const [valueType, setValueType] = useState('percentage');
     const [amount, setAmount] = useState('');
-
-    const airlineOptions = [
-        { value: 'Aer Lingus', label: 'Aer Lingus' },
-        { value: 'Aeromexico', label: 'Aeromexico' },
-        { value: 'Air Arabia', label: 'Air Arabia' },
-        { value: 'Air Canada', label: 'Air Canada' },
-        { value: 'Air China', label: 'Air China' },
-        { value: 'Air France', label: 'Air France' },
-        { value: 'Air India', label: 'Air India' },
-        { value: 'Air New Zealand', label: 'Air New Zealand' },
-        { value: 'AirAsia', label: 'AirAsia' },
-        { value: 'AirAsia India', label: 'AirAsia India' },
-        { value: 'Alaska Airlines', label: 'Alaska Airlines' },
-        { value: 'Alitalia', label: 'Alitalia' },
-        { value: 'All Nippon Airways', label: 'All Nippon Airways (ANA)' },
-        { value: 'American Airlines', label: 'American Airlines' },
-        { value: 'Asiana Airlines', label: 'Asiana Airlines' },
-        { value: 'Austrian Airlines', label: 'Austrian Airlines' },
-        { value: 'Avianca', label: 'Avianca' },
-        { value: 'Azul Brazilian Airlines', label: 'Azul Brazilian Airlines' },
-        { value: 'Biman Bangladesh Airlines', label: 'Biman Bangladesh Airlines' },
-        { value: 'British Airways', label: 'British Airways' },
-        { value: 'Cathay Pacific', label: 'Cathay Pacific' },
-        { value: 'China Eastern Airlines', label: 'China Eastern Airlines' },
-        { value: 'China Southern Airlines', label: 'China Southern Airlines' },
-        { value: 'Copa Airlines', label: 'Copa Airlines' },
-        { value: 'Delta Airlines', label: 'Delta Airlines' },
-        { value: 'EasyJet', label: 'EasyJet' },
-        { value: 'EgyptAir', label: 'EgyptAir' },
-        { value: 'Emirates', label: 'Emirates' },
-        { value: 'Ethiopian Airlines', label: 'Ethiopian Airlines' },
-        { value: 'Etihad Airways', label: 'Etihad Airways' },
-        { value: 'Fiji Airways', label: 'Fiji Airways' },
-        { value: 'Finnair', label: 'Finnair' },
-        { value: 'flydubai', label: 'flydubai' },
-        { value: 'Frontier Airlines', label: 'Frontier Airlines' },
-        { value: 'Garuda Indonesia', label: 'Garuda Indonesia' },
-        { value: 'Go First', label: 'Go First' },
-        { value: 'Gol Linhas Aereas', label: 'Gol Linhas Aereas' },
-        { value: 'Gulf Air', label: 'Gulf Air' },
-        { value: 'Iberia', label: 'Iberia' },
-        { value: 'IndiGo', label: 'IndiGo' },
-        { value: 'Japan Airlines', label: 'Japan Airlines' },
-        { value: 'JetBlue Airways', label: 'JetBlue Airways' },
-        { value: 'Jetstar Airways', label: 'Jetstar Airways' },
-        { value: 'Kenya Airways', label: 'Kenya Airways' },
-        { value: 'KLM Royal Dutch Airlines', label: 'KLM Royal Dutch Airlines' },
-        { value: 'Korean Air', label: 'Korean Air' },
-        { value: 'LATAM Airlines', label: 'LATAM Airlines' },
-        { value: 'Lufthansa', label: 'Lufthansa' },
-        { value: 'Malaysia Airlines', label: 'Malaysia Airlines' },
-        { value: 'Nepal Airlines', label: 'Nepal Airlines' },
-        { value: 'Oman Air', label: 'Oman Air' },
-        { value: 'Pakistan International Airlines', label: 'Pakistan International Airlines' },
-        { value: 'Philippine Airlines', label: 'Philippine Airlines' },
-        { value: 'Qantas', label: 'Qantas' },
-        { value: 'Qatar Airways', label: 'Qatar Airways' },
-        { value: 'Royal Air Maroc', label: 'Royal Air Maroc' },
-        { value: 'Ryanair', label: 'Ryanair' },
-        { value: 'SAS Scandinavian Airlines', label: 'SAS Scandinavian Airlines' },
-        { value: 'Saudia', label: 'Saudia' },
-        { value: 'Singapore Airlines', label: 'Singapore Airlines' },
-        { value: 'South African Airways', label: 'South African Airways' },
-        { value: 'Southwest Airlines', label: 'Southwest Airlines' },
-        { value: 'SpiceJet', label: 'SpiceJet' },
-        { value: 'Spirit Airlines', label: 'Spirit Airlines' },
-        { value: 'Sri Lankan Airlines', label: 'Sri Lankan Airlines' },
-        { value: 'Swiss International Air Lines', label: 'Swiss International Air Lines' },
-        { value: 'TAP Air Portugal', label: 'TAP Air Portugal' },
-        { value: 'Thai Airways', label: 'Thai Airways' },
-        { value: 'Turkish Airlines', label: 'Turkish Airlines' },
-        { value: 'United Airlines', label: 'United Airlines' },
-        { value: 'Vietnam Airlines', label: 'Vietnam Airlines' },
-        { value: 'Virgin Australia', label: 'Virgin Australia' },
-        { value: 'Vistara', label: 'Vistara' },
-        { value: 'WestJet', label: 'WestJet' },
-        { value: 'Wizz Air', label: 'Wizz Air' }
-    ];
 
     const handleAddMarkup = () => {
         if (!amount) return;
@@ -171,7 +174,7 @@ function MarkUp() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <div className="min-h-screen">
 
             <div className="relative bg-cover bg-center">
                 <img
@@ -276,6 +279,7 @@ function MarkUp() {
                         </table>
                     </div>
                 </div>
+                
             </div>
 
             {/* Modal */}
