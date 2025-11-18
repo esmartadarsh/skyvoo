@@ -416,6 +416,7 @@ export default function FlightResults() {
             {isFlightDetailsModalOpen && <FlightPriceDetailsModal onClose={() => setIsFlightDetailsModalOpen(false)} />}
             {isSignInModal && <SignInModal onClose={() => setIsSignInModal(false)} />}
 
+
             <div className="relative min-h-screen bg-gray-100">
 
                 <img
