@@ -43,6 +43,7 @@ export default function Reschedule() {
 
 
     const handleProceed = () => {
+
         const updatedFlights = [
             {
                 airline: "Emirates",
@@ -82,9 +83,6 @@ export default function Reschedule() {
                 date: tripData.returnDate,
                 price: "-690",
             },
-
-            // --- More flight options ---
-
             {
                 airline: "Qatar Airways",
                 flightNo: "QR579",
@@ -147,7 +145,6 @@ export default function Reschedule() {
         setFlightDetails(updatedFlights);
         setIsShowResults(true);
     };
-
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6 animate-fadeIn">

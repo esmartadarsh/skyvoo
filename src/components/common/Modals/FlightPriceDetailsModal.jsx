@@ -96,16 +96,21 @@ export default function FlightPriceDetailsModal({ onClose }) {
 
     return (
         <div
-            className="fixed inset-0 flex items-center justify-center z-9999 bg-black/30 backdrop-blur-sm secondary-font"
+            className="fixed inset-0 flex items-center justify-center z-9999 secondary-font"
             onClick={onClose}
-            style={{
-                animation: "fadeIn 0.3s ease-out forwards"
-            }}
         >
+
+
             <div
-                className=" rounded-2xl bg-white shadow-xl w-[90%] max-w-6xl relative p-6"
+                className=" rounded-4xl w-[90%] max-w-6xl relative p-6 "
                 onClick={(e) => e.stopPropagation()}
-                style={{ animation: "scaleIn 0.3s ease-out forwards" }}>
+                style={{
+                    animation: "scaleIn 0.3s ease-out forwards",
+                    backdropFilter: "blur(11px)",
+                    border: "2px solid rgb(120, 8, 11)",
+                    boxShadow: "0px 0px 33.8px 10px #00000082",
+                }}
+            >
                 {/* Close button */}
                 <button
                     className="cursor-pointer absolute top-4 right-4 text-2xl font-black text-[#4A4141] hover:text-black"
@@ -134,6 +139,7 @@ export default function FlightPriceDetailsModal({ onClose }) {
 
                 <div className="my-8">
                     <Splide
+                        className="py-4"
                         options={{
                             type: "slide",
                             rewind: false,
@@ -151,8 +157,8 @@ export default function FlightPriceDetailsModal({ onClose }) {
                         {fareCards.map((card, index) => (
                             <SplideSlide key={index}>
                                 <div
-                                    className="border rounded-xl shadow-sm p-6 relative flex flex-col justify-between"
-                                    style={{ height: "-webkit-fill-available" }}
+                                    className="rounded-xl p-6 relative flex flex-col justify-between bg-white"
+                                    style={{ height: "-webkit-fill-available", boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)' }}
                                 >
                                     <div>
                                         <div className="flex items-baseline gap-2">
@@ -267,6 +273,6 @@ export default function FlightPriceDetailsModal({ onClose }) {
           }
         `}
             </style>
-        </div>
+        </div >
     );
 }

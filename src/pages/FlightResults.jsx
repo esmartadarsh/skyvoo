@@ -820,9 +820,6 @@ export default function FlightResults() {
                                     ))}
                                 </div>
 
-                                <h2 className="text-xl font-bold mt-4">
-                                    Flights from New Delhi to Mumbai
-                                </h2>
                             </div>
 
                             {/* Flight Results */}

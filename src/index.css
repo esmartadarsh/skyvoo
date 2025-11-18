@@ -114,6 +114,10 @@ button {
   animation: fadeIn 0.2s ease-out;
 }
 
+.splide__track {
+  padding: 0px 0px 10px 0px !important;
+}
+
 /* @media (max-width: 767px) {
   .plane {
     position: relative !important;

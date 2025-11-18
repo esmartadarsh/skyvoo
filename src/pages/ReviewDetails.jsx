@@ -250,8 +250,8 @@ export default function ReviewDetails() {
         {/* Booking Section */}
         <div className="min-h-screen">
           {/* Header */}
-          <div className="z-999 bg-slate-900 text-white py-6 px-4 sticky top-0">
-            {/* <div className="z-999 bg-[#78080B] text-white py-6 px-4 sticky top-0" style={{ boxShadow: ' 0px 4px 4px 0px rgba(0, 0, 0, 0.25)' }}> */}
+          {/* <div className="z-999 bg-slate-900 text-white py-6 px-4 sticky top-0"> */}
+            <div className="z-999 bg-[#78080B] text-white py-6 px-4 sticky top-0" style={{ boxShadow: ' 0px 4px 4px 0px rgba(0, 0, 0, 0.25)' }}>
 
             <div className="max-w-7xl mx-auto flex items-center justify-between">
               <h1 className="text-2xl font-bold">Complete your booking</h1>
