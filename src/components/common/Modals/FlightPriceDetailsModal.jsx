@@ -102,7 +102,7 @@ export default function FlightPriceDetailsModal({ onClose }) {
 
 
             <div
-                className=" rounded-4xl w-[90%] max-w-6xl relative p-6 "
+                className=" rounded-4xl w-[90%] max-w-6xl relative p-6 bg-white/30"
                 onClick={(e) => e.stopPropagation()}
                 style={{
                     animation: "scaleIn 0.3s ease-out forwards",

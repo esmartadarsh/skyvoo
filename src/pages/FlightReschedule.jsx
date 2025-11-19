@@ -314,7 +314,8 @@ export default function Reschedule() {
                                         </div>
                                     </div>
 
-                                    <div className="mt-4 text-right">
+                                    <div className="mt-4 text-right flex justify-content-end">
+                                        <button className="btn">Select Flight</button>
                                         <p className="text-lg font-semibold text-indigo-600">₹{flight.price.toLocaleString()}</p>
                                     </div>
                                 </div>

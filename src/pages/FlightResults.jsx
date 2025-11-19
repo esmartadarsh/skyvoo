@@ -790,7 +790,7 @@ export default function FlightResults() {
 
                                             {/* Underline animation */}
                                             <div
-                                                className={`absolute bottom-0 left-0 h-[3px] bg-blue-500 rounded-full transition-all duration-1000 ease-out ${selectedSorting === option.key ||
+                                                className={`absolute bottom-0 left-0 h-[3px] bg-[#78080B] rounded-full transition-all duration-1000 ease-out ${selectedSorting === option.key ||
                                                     (option.key === "OTHER" && otherOptions.some((opt) => opt.value === selectedSorting))
                                                     ? "w-full"
                                                     : "w-0"

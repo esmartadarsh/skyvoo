@@ -473,25 +473,25 @@ export default function ReviewDetails() {
                               <div className='border-t border-slate-300 w-[95%]'></div>
                             </div>
 
-                            <div className="space-y-2 text-xs">
+                            <div className="space-y-2 text-xs text-slate-600">
 
-                              <div className="flex items-start gap-2 text-orange-600">
-                                <img src={Dash} alt="dash" className="fill-current text-green-600" />
+                              <div className="flex items-start gap-2">
+                                <img src={Dash} alt="dash" className="fill-current " />
                                 <span><strong>Flight Delay Protection</strong> benefit not included</span>
                               </div>
 
-                              <div className="flex items-start gap-2 text-orange-600">
-                                <img src={Dash} alt="dash" className="fill-current text-green-600" />
+                              <div className="flex items-start gap-2">
+                                <img src={Dash} alt="dash" className="fill-current" />
                                 <span>Date Change fee starts at <strong>₹ 3,000</strong> up to <strong>2 hrs</strong> before departure</span>
                               </div>
 
-                              <div className="flex items-start gap-2 text-orange-600">
-                                <img src={Dash} alt="dash" className="fill-current text-green-600" />
+                              <div className="flex items-start gap-2">
+                                <img src={Dash} alt="dash" className="fill-current " />
                                 <span>Seats Chargeable</span>
                               </div>
 
-                              <div className="flex items-start gap-2 text-orange-600">
-                                <img src={Dash} alt="dash" className="fill-current text-green-600" />
+                              <div className="flex items-start gap-2">
+                                <img src={Dash} alt="dash" className="fill-current" />
                                 <span>Cabin bag <strong>7 Kgs</strong> + Check-in <strong>15 Kgs</strong></span>
                               </div>
 
@@ -524,10 +524,10 @@ export default function ReviewDetails() {
                               <div className='border-t border-slate-300 w-[95%]'></div>
                             </div>
 
-                            <div className="space-y-2 text-xs">
+                            <div className="space-y-2 text-xs text-slate-600">
 
-                              <div className="flex items-center gap-2 text-orange-600">
-                                <img src={Dash} alt="dash" className="fill-current text-green-600" />
+                              <div className="flex items-center gap-2">
+                                <img src={Dash} alt="dash" className="fill-current " />
 
                                 <span>
                                   <strong>Flight Delay Protection</strong> included
@@ -541,13 +541,13 @@ export default function ReviewDetails() {
                                 </div>
                               </div>
 
-                              <div className="flex items-start gap-2 text-orange-600">
-                                <img src={Dash} alt="dash" className="fill-current text-green-600" />
+                              <div className="flex items-start gap-2 ">
+                                <img src={Dash} alt="dash" className="fill-current " />
                                 <span>Date Change fee starts at <strong>₹ 3,000</strong> up to <strong>2 hrs</strong> before departure</span>
                               </div>
 
-                              <div className="flex items-center gap-2 text-orange-600">
-                                <img src={Dash} alt="dash" className="fill-current text-green-600" />
+                              <div className="flex items-center gap-2 ">
+                                <img src={Dash} alt="dash" className="fill-current " />
 
                                 <span>
                                   Seats worth <strong>₹ 375</strong> included
@@ -561,8 +561,8 @@ export default function ReviewDetails() {
                                 </div>
                               </div>
 
-                              <div className="flex items-start gap-2 text-orange-600">
-                                <img src={Dash} alt="dash" className="fill-current text-green-600" />
+                              <div className="flex items-start gap-2 ">
+                                <img src={Dash} alt="dash" className="fill-current " />
                                 <span>Cabin bag <strong>7 Kgs</strong> + Check-in <strong>15 Kgs</strong></span>
                               </div>
 
@@ -596,10 +596,10 @@ export default function ReviewDetails() {
                               <div className='border-t border-slate-300 w-[95%]'></div>
                             </div>
 
-                            <div className="space-y-2 text-xs">
+                            <div className="space-y-2 text-xs text-slate-600">
 
-                              <div className="flex items-center gap-2 text-orange-600">
-                                <img src={Dash} alt="dash" className="fill-current text-green-600" />
+                              <div className="flex items-center gap-2 ">
+                                <img src={Dash} alt="dash" className="fill-current" />
 
                                 <span>
                                   <strong>Flight Delay Protection</strong> included
@@ -613,15 +613,15 @@ export default function ReviewDetails() {
                                 </div>
                               </div>
 
-                              <div className="flex items-center gap-2 text-orange-600">
-                                <img src={Dash} alt="dash" className="fill-current text-green-600" />
+                              <div className="flex items-center gap-2">
+                                <img src={Dash} alt="dash" className="fill-current" />
                                 <span>
                                   Free date change upto <strong>2 hours</strong> before departure
                                 </span>
                               </div>
 
-                              <div className="flex items-center gap-2 text-orange-600">
-                                <img src={Dash} alt="dash" className="fill-current text-green-600" />
+                              <div className="flex items-center gap-2">
+                                <img src={Dash} alt="dash" className="fill-current" />
 
                                 <span>
                                   Seats worth <strong>₹ 375</strong> included
@@ -635,8 +635,8 @@ export default function ReviewDetails() {
                                 </div>
                               </div>
 
-                              <div className="flex items-start gap-2 text-orange-600">
-                                <img src={Dash} alt="dash" className="fill-current text-green-600" />
+                              <div className="flex items-start gap-2 ">
+                                <img src={Dash} alt="dash" className="fill-current" />
                                 <span>Cabin bag <strong>7 Kgs</strong> + Check-in <strong>15 Kgs</strong></span>
                               </div>
 
@@ -859,7 +859,7 @@ export default function ReviewDetails() {
                                 {travellers[key].length > 0 && (
                                   <button
                                     onClick={() => removeTraveller(key, i)}
-                                    className="cursor-pointer text-red-500 hover:text-red-700 flex items-center gap-1 text-sm"
+                                    className="cursor-pointer text-[#78080B] hover:text-red-800 font-semibold flex items-center gap-1 text-sm"
                                   >
                                     <Trash2 className="w-4 h-4" /> Remove
                                   </button>
@@ -889,8 +889,8 @@ export default function ReviewDetails() {
                                       key={g}
                                       onClick={() => updateTraveller(key, i, 'gender', g)}
                                       className={`flex-1 py-2 px-4 rounded border text-sm font-medium transition-colors ${t.gender === g
-                                        ? 'bg-blue-600 text-white border-blue-600'
-                                        : 'bg-white text-slate-700 border-slate-300 hover:border-blue-600'
+                                        ? 'bg-[#78080B] text-white border-[#78080B]'
+                                        : 'bg-white text-slate-700 border-slate-300 hover:border-[#78080B]'
                                         }`}
                                     >
                                       {g}
@@ -1105,7 +1105,7 @@ export default function ReviewDetails() {
 
                       <button
                         onClick={handleManualApply}
-                        className="bg-blue-600 text-white text-sm font-semibold px-3 py-2 rounded-lg hover:bg-blue-700 flex-shrink-0"
+                        className="bg-[#78080B] text-white text-sm font-semibold px-3 py-2 rounded-lg hover:bg-blue-700 flex-shrink-0"
                         style={{ height: "100%" }}
                       >
                         Apply
