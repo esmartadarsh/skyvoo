@@ -385,11 +385,6 @@ function BookingForm() {
         setTimeout(() => {
             const dataformat = buildFlightDataFormat();
 
-            // optional: log only small parts
-            console.log({
-                TravelDate: dataformat.TripInfo[0].TravelDate,
-                Adults: dataformat.Adult_Count,
-            });
 
             navigate('/flight-results');
         }, 0);

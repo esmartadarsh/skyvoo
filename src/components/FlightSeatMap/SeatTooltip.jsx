@@ -2,7 +2,6 @@ import React from 'react'
 import { SSRTypes } from '../../Data/ExtraData';
 
 const SeatTooltip = ({ seat, position }) => {
-    // console.log(seat, 'see the tool tip data')
     const seatSSRTypes = Array.isArray(seat.SSRType)
         ? seat.SSRType.map(t => SSRTypes[t] || 'Unknown')
         : [SSRTypes[seat.SSRType] || 'Unknown'];

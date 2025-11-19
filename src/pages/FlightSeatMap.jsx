@@ -34,7 +34,6 @@ const FlightSeatMap = () => {
     ], []);
 
     const [tooltipData, setTooltipData] = useState(null);
-    // console.log(tooltipData, 'see the seat data')
     const [selectedServices, setSelectedServices] = useState([]);
 
     const seatData = useMemo(
