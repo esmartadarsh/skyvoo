@@ -23,7 +23,7 @@ const Header = ({ onOpen }) => {
     const isLoggedIn = true;
 
     return (
-        <header className="relative z-999">
+        <header className="relative z-9998">
             <div className="max-w-7xl mx-auto flex items-center justify-between sm:px-6 py-10">
                 {/* Logo */}
                 <div className="flex items-center">

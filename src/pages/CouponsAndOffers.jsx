@@ -175,7 +175,6 @@ function CouponsAndOffers() {
 
     return (
         <div className="min-h-screen bg-[#f1f0f29e]">
-            {/* Header Section */}
             <Header />
             {/* Search Section */}
             <div className="bg-white shadow-sm sticky top-0 z-20">

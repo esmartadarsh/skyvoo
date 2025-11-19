@@ -361,7 +361,7 @@ export default function FlightResults() {
                                 </div>
 
                                 {/* Selected Comparison Flight list */}
-                                <ul className="divide-y divide-gray-200 max-h-48 overflow-y-auto">
+                                <ul className="divide-y divide-gray-200 max-h-48">
                                     {selectedFlights.map(selectedFlight => (
                                         <li
                                             key={selectedFlight.Flight_Id}
@@ -759,7 +759,7 @@ export default function FlightResults() {
                         <div className="flex-1">
 
                             {/* Sorting Options */}
-                            <div className="filterglasseffect rounded-lg shadow-sm px-8 py-3 mb-4 secondary-font" style={{ overflow: 'visible', zIndex: 1 }}>
+                            <div className="filterglasseffect rounded-lg shadow-sm px-8 py-3 mb-4 secondary-font" style={{ overflow: 'visible', zIndex: 2 }}>
                                 <div className="grid grid-cols-4 gap-4">
                                     {sortOptions.map((option) => (
                                         <div key={option.key} className="relative">
