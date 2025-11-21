@@ -158,7 +158,7 @@ export default function FlightPriceDetailsModal({ onClose }) {
                             <SplideSlide key={index}>
                                 <div
                                     className="rounded-xl p-6 relative flex flex-col justify-between bg-white"
-                                    style={{ height: "-webkit-fill-available", boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)' }}
+                                    style={{ height: "-webkit-fill-available", boxShadow: '1px 5px 4px 2px rgba(0, 0, 0, 0.25)' }}
                                 >
                                     <div>
                                         <div className="flex items-baseline gap-2">

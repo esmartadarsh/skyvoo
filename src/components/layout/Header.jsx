@@ -117,50 +117,59 @@ const Header = ({ onOpen }) => {
 
             {/* Mobile Dropdown */}
             {mobileOpen && (
-                <div className="md:hidden bg-white shadow-lg">
-                    <div className="px-4 pt-2 pb-4 space-y-2">
+                <div className="md:hidden bg-white shadow-lg w-full">
+                    <div className="px-4 pt-3 pb-5 space-y-3">
+
+                        {/* Navigation Items */}
                         {navItems.map((item) => {
                             const isComingSoon = ['Hotels', 'Bus', 'Cab'].includes(item.label);
+
                             return (
                                 <button
                                     key={item.label}
                                     disabled={isComingSoon}
                                     onClick={() => !isComingSoon && navigate(item.url)}
-                                    className={`relative bg-[#D9D9D9] px-4 py-2 rounded-full transition ${isComingSoon
-                                        ? 'text-gray-500 cursor-not-allowed'
-                                        : 'hover:bg-black hover:text-white'
+                                    className={`relative w-full text-center bg-[#D9D9D9] px-4 py-3 rounded-full text-base transition
+                            ${isComingSoon
+                                            ? 'text-gray-500 cursor-not-allowed'
+                                            : 'hover:bg-black hover:text-white active:scale-[0.98]'
                                         }`}
                                 >
                                     {item.label}
+
                                     {isComingSoon && (
-                                        <span className="absolute bottom-0 right-1 text-[10px] text-red-500 font-semibold">
-                                            Coming Soon
-                                        </span>
+                                        <img
+                                            src={comingSoon}
+                                            alt="coming soon"
+                                            className="absolute bottom-0 -right-0 w-12 h-5"
+                                        />
                                     )}
                                 </button>
                             );
                         })}
 
-                        {/* Mobile Profile */}
+                        {/* Mobile Profile Section */}
                         {isLoggedIn && (
-                            <div className="pt-3 border-t">
+                            <div className="pt-4 border-t">
                                 <button
                                     onClick={() => setProfileOpen(!profileOpen)}
-                                    className="flex items-center space-x-2 px-4 py-2 rounded-md bg-black text-white w-full hover:bg-gray-800"
+                                    className="flex items-center justify-between px-4 py-3 rounded-md bg-black text-white w-full hover:bg-gray-800"
                                 >
-                                    <User size={20} />
-                                    <span>Profile</span>
+                                    <span className="flex items-center space-x-2">
+                                        <User size={20} />
+                                        <span>Profile</span>
+                                    </span>
                                 </button>
 
                                 {profileOpen && (
-                                    <div className="mt-2 bg-white shadow rounded-md p-2 space-y-2">
-                                        <button className="w-full text-left px-3 py-2 rounded hover:bg-gray-100">
+                                    <div className="mt-3 bg-white shadow rounded-md p-2 space-y-1">
+                                        <button className="w-full text-left px-3 py-3 rounded hover:bg-gray-100">
                                             Profile
                                         </button>
-                                        <button className="w-full text-left px-3 py-2 rounded hover:bg-gray-100">
+                                        <button className="w-full text-left px-3 py-3 rounded hover:bg-gray-100">
                                             Settings
                                         </button>
-                                        <button className="w-full text-left px-3 py-2 rounded text-red-600 hover:bg-gray-100">
+                                        <button className="w-full text-left px-3 py-3 rounded text-red-600 hover:bg-gray-100">
                                             Log Out
                                         </button>
                                     </div>
@@ -170,6 +179,7 @@ const Header = ({ onOpen }) => {
                     </div>
                 </div>
             )}
+
         </header>
     );
 };

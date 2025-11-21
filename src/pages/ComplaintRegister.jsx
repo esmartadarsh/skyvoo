@@ -389,7 +389,7 @@ function ComplaintRegister() {
 
             {/* Register Complaint Modal */}
             {showRegisterForm && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-999">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-9999">
                     <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[92vh] overflow-y-auto">
                         <div className="p-6 border-b border-gray-200">
                             <div className="flex justify-between items-start">
@@ -582,7 +582,7 @@ function ComplaintRegister() {
 
             {/* Complaint Detail Modal */}
             {selectedComplaint && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-999">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-9999">
                     <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6 border-b border-gray-200">
                             <div className="flex justify-between items-start">

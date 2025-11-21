@@ -215,7 +215,7 @@ function BookingLists() {
                                     placeholder="Search flights..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-10 pr-4 py-2.5 border placeholder-white border-gray-200 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64 transition-all"
+                                    className="pl-10 pr-4 py-2.5 border placeholder-white border-gray-200 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent w-full sm:w-64 transition-all"
                                 />
                             </div>
 
@@ -225,7 +225,7 @@ function BookingLists() {
                                 <select
                                     value={filterStatus}
                                     onChange={(e) => setFilterStatus(e.target.value)}
-                                    className="pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white cursor-pointer transition-all"
+                                    className="pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent appearance-none bg-white cursor-pointer transition-all"
                                 >
                                     <option value="all">All Flights</option>
                                     <option value="upcoming">Upcoming</option>

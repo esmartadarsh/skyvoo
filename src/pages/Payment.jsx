@@ -18,7 +18,7 @@ const flight = {
     duration: "28h 20m",
     stops: "1 stop",
     email: "adarshjoshi200513@gmail.com",
-    phone: "+91-1122334455",
+    phone: "+91-9667479529",
     flightNumber: "AF-2847",
     class: "Economy",
     baggage: "15 Kg (1 piece only)"
@@ -492,12 +492,9 @@ export default function FlightPaymentPage() {
 
             {/* QR Code Modal */}
             {showQR && (
-                <div className="fixed inset-0 bg-black flex items-center justify-center z-999 p-4">
+                <div className="fixed inset-0 bg-black flex items-center justify-center z-9999 p-4">
                     <div className="bg-white rounded-2xl p-8 max-w-md w-full relative animate-in zoom-in">
-                        <button
-                            onClick={() => setShowQR(false)}
-                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-                        >
+                        <button onClick={() => setShowQR(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
                             <X className="w-6 h-6" />
                         </button>
 

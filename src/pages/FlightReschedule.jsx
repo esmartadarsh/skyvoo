@@ -5,7 +5,6 @@ import Header from '@/components/layout/Header';
 import "react-day-picker/dist/style.css";
 import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp';
 
-
 export default function Reschedule() {
     const [isShowResults, setIsShowResults] = useState(false);
     const [isDepartPickerOpen, setIsDepartPickerOpen] = useState(false);
