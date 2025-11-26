@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FlightResultsHeader from '@/components/flight/FlightResultsHeader';
+import FlightResultsSearchHeader from '@/components/flight/FlightResultsSearchHeader';
 import Filters from '@/components/flight/Filters';
 import FlightPriceDetailsModal from '@/components/common/Modals/FlightPriceDetailsModal';
 import SignInModal from '@/components/common/Modals/SignInModal';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import { X, Search } from 'lucide-react';
 import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp'
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
@@ -22,6 +21,7 @@ import FlightsData from '../Data/FlightsData.js';
 import { formatTime } from '../utils/formatDateTime.js';
 import { useFlightFilters } from '../contexts/FlightFilterContext.jsx';
 import LoadingBar from "../components/layout/LoadingBar.jsx";
+
 
 const sortOptions = [
     {
@@ -170,14 +170,7 @@ export default function FlightResults() {
 
     const navigate = useNavigate();
 
-    const [isSwapping, setIsSwapping] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
-    const [tripType, setTripType] = useState('roundTrip');
-    const [rotation, setRotation] = useState(0);
-
-    const [showTravellerBox, setShowTravellerBox] = useState(false);
-
-    const travellerBoxRef = useRef(null);
 
     const [visibleCount, setVisibleCount] = useState(10);
     const [selectedFlightId, setSelectedFlightId] = useState(null);
@@ -186,13 +179,7 @@ export default function FlightResults() {
     const [isSignInModal, setIsSignInModal] = useState(false);
     const [isFlightDetailsModalOpen, setIsFlightDetailsModalOpen] = useState(false);
 
-    const [isEditable, setIsEditable] = useState(false);
-    const fareTypeRef = useRef(null);
-    const contentRef = useRef(null);
-    const [fareTypeHeight, setFareTypeHeight] = useState(0);
-
     const [showOtherMenu, setShowOtherMenu] = useState(false);
-    const handleModifySearch = () => setIsEditable(true);
 
     const toggleCompare = (flight) => {
         setSelectedFlights((prev) => {
@@ -212,65 +199,6 @@ export default function FlightResults() {
         setSelectedFlightId((prev) => (prev === flightId ? null : flightId));
     };
 
-    const [flightSearchInfo, setFlightSearchInfo] = useState({
-        from: '',
-        to: '',
-        depart: null,
-        return: null,
-        traveller: 1,
-    });
-
-    const [travellers, setTravellers] = useState({
-        adults: 1,
-        children: 0,
-        infants: 0,
-        classType: 'Economy/Premium Economy',
-    });
-
-    const handleFlightInputChange = (field, value) => {
-        setFlightSearchInfo(prev => ({ ...prev, [field]: value }));
-    };
-
-    const handleSwap = () => {
-        setRotation(prevRotation => prevRotation + 180);
-        setIsSwapping(prev => !prev);
-
-        setFlightSearchInfo(prev => ({
-            ...prev,
-            from: prev.to,
-            to: prev.from,
-        }));
-    };
-
-    const validateTravellers = () => {
-        // Interpret '>9' as 10, '>6' as 7 for validation and totals
-        setShowTravellerBox(!showTravellerBox)
-        const adultsVal = travellers.adults === '>9' ? 10 : travellers.adults;
-        const childrenVal = travellers.children === '>6' ? 7 : travellers.children;
-        const infantsVal = travellers.infants === '>6' ? 7 : travellers.infants;
-
-        // 1️⃣ At least one adult
-        if (adultsVal < 1) {
-            alert('Please select at least one adult.');
-            return false;
-        }
-
-        // 2️⃣ Infants cannot exceed adults
-        if (infantsVal > adultsVal) {
-            alert('Infants cannot exceed the number of adults.');
-            return false;
-        }
-
-        // 3️⃣ Optional overall cap (adjust if needed)
-        const total = adultsVal + childrenVal + infantsVal;
-        if (total > 20) {
-            alert('Total passengers cannot exceed 20.');
-            return false;
-        }
-
-        return true;
-    };
-
     const handleClick = (key) => {
         if (key === "OTHER") {
             setShowOtherMenu((prev) => !prev);
@@ -286,23 +214,6 @@ export default function FlightResults() {
     };
 
     useEffect(() => {
-        function handleDocClick(e) {
-            if (travellerBoxRef.current && !travellerBoxRef.current.contains(e.target)) {
-                setShowTravellerBox(false);
-            }
-        }
-        function handleEsc(e) {
-            if (e.key === 'Escape') setShowTravellerBox(false);
-        }
-        document.addEventListener('mousedown', handleDocClick);
-        document.addEventListener('keydown', handleEsc);
-        return () => {
-            document.removeEventListener('mousedown', handleDocClick);
-            document.removeEventListener('keydown', handleEsc);
-        };
-    }, []);
-
-    useEffect(() => {
         const handleScroll = () => {
             if (
                 window.innerHeight + window.scrollY >=
@@ -315,14 +226,6 @@ export default function FlightResults() {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
-
-    useEffect(() => {
-        if (isEditable && contentRef.current) {
-            setFareTypeHeight(contentRef.current.scrollHeight);
-        } else {
-            setFareTypeHeight(0);
-        }
-    }, [isEditable]);
 
     // Loader
     useEffect(() => {
@@ -343,11 +246,14 @@ export default function FlightResults() {
         return () => clearInterval(timer);
     }, []);
 
+
     return (
         <>
             {selectedFlights.length > 0 && (
                 <>
-                    <div className='fixed cursor-pointer bottom-20 right-5 text-white z-9998 bg-[#78080B] hover:bg-red-700 h-12 w-12 rounded-full flex justify-center items-center' onClick={() => setCollapsed(prev => !prev)}><Search className="h-8 w-8" /></div>
+                    <div className='fixed cursor-pointer bottom-20 right-5 text-white z-9998 bg-[#78080B] hover:bg-red-700 h-12 w-12 rounded-full flex justify-center items-center' onClick={() => setCollapsed(prev => !prev)}>
+
+                    <Search className="h-8 w-8" /></div>
 
                     <div className={`fixed bottom-20 right-5 bg-white shadow-lg rounded-lg overflow-hidden z-9999 border border-gray-200 secondary-font`}>
                         <div className='relative'>
@@ -427,324 +333,8 @@ export default function FlightResults() {
                 <FlightResultsHeader onOpen={() => setIsSignInModal(true)} />
 
                 {/* Search Header */}
-                <div className="relative bg-[#78080B] text-white px-2 sm:px-4 py-3 sm:py-5 z-999 mb-4" style={{ boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.25)' }}>
-                    <div className="max-w-7xl mx-auto flex items-center justify-between">
-                        {/* Main Search Grid */}
-                        <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-15 gap-3 sm:gap-4 lg:gap-6 items-end secondary-font font-semibold">
+                <FlightResultsSearchHeader />
 
-                            {/* Trip Type */}
-                            <div className="col-span-1 sm:col-span-2 lg:col-span-2">
-                                <label className="block text-sm sm:text-base text-white">Trip Type</label>
-                                <select
-                                    value={tripType}
-                                    onChange={(e) => setTripType(e.target.value)}
-                                    className="w-full bg-transparent font-medium text-base sm:text-lg border-b border-white text-white placeholder-white focus:outline-none"
-                                    disabled={!isEditable}
-                                >
-                                    <option value="oneWay" className='text-black font-medium'>One Way</option>
-                                    <option value="roundTrip" className='text-black font-medium'>Round Trip</option>
-                                    <option value="multiCity" className='text-black font-medium'>Multi City</option>
-                                </select>
-                            </div>
-
-                            {tripType === 'multiCity' ? (
-                                <div className="col-span-1 sm:col-span-2 lg:col-span-11 flex flex-col items-start">
-                                    <label className="block text-sm sm:text-base text-white">From (Multi City)</label>
-                                    <input
-                                        type="text"
-                                        placeholder="Enter multiple destinations"
-                                        value={flightSearchInfo.from}
-                                        onChange={(e) => handleFlightInputChange('from', e.target.value)}
-                                        className="w-full bg-transparent font-medium text-base sm:text-lg border-b border-white text-white placeholder-white focus:outline-none"
-                                    />
-                                </div>
-                            ) : (
-                                <>
-                                    {/* From */}
-                                    <div className="col-span-1 sm:col-span-1 lg:col-span-2">
-                                        <label className="block text-sm sm:text-base text-white">From</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Origin"
-                                            value={flightSearchInfo.from}
-                                            onChange={(e) => handleFlightInputChange('from', e.target.value)}
-                                            className="w-full bg-transparent font-medium text-base sm:text-lg border-b border-white text-white placeholder-white focus:outline-none"
-                                            disabled={!isEditable}
-                                        />
-                                    </div>
-
-                                    {/* Swap - Hidden on mobile */}
-                                    <div className="hidden lg:flex lg:col-span-1 justify-center my-2 sm:my-0">
-                                        <button
-                                            type="button"
-                                            onClick={handleSwap}
-                                            aria-label="Swap origin and destination"
-                                            className="cursor-pointer p-2 rounded-full transition-transform duration-300"
-                                        >
-                                            <div
-                                                className="relative w-6 h-6 transition-transform duration-500"
-                                                style={{ transform: `rotate(${rotation}deg)` }}
-                                            >
-                                                <svg className="absolute top-0 left-0 w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor" style={{ transform: 'translate(4px,-4px) rotate(90deg)' }}>
-                                                    <path d="M22 16.21v-1.895L14 8V4a2 2 0 0 0-4 0v4.105L2 14.42v1.789l8-2.526V18l-2 3h6l-2-3v-4.316L22 16.21z" />
-                                                </svg>
-                                                <svg className="absolute top-0 left-0 w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor" style={{ transform: 'translate(4px,10px) rotate(-90deg)' }}>
-                                                    <path d="M22 16.21v-1.895L14 8V4a2 2 0 0 0-4 0v4.105L2 14.42v1.789l8-2.526V18l-2 3h6l-2-3v-4.316L22 16.21z" />
-                                                </svg>
-                                            </div>
-                                        </button>
-                                    </div>
-
-                                    {/* To */}
-                                    <div className="col-span-1 sm:col-span-1 lg:col-span-2">
-                                        <label className="block text-sm sm:text-base text-white">To</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Destination"
-                                            value={flightSearchInfo.to}
-                                            onChange={(e) => handleFlightInputChange('to', e.target.value)}
-                                            className="w-full bg-transparent text-base sm:text-lg font-medium border-b border-white text-white focus:outline-none placeholder-white"
-                                            disabled={!isEditable}
-                                        />
-                                    </div>
-
-                                    {/* Depart */}
-                                    <div className="col-span-1 sm:col-span-1 lg:col-span-2">
-                                        <label className="block text-sm sm:text-base text-white">Depart</label>
-                                        <DatePicker
-                                            selected={flightSearchInfo.depart}
-                                            onChange={(date) => handleFlightInputChange('depart', date)}
-                                            minDate={new Date()}
-                                            monthsShown={2}
-                                            placeholderText="Select Depart"
-                                            className="w-full bg-transparent font-medium text-base sm:text-lg text-white border-b border-white focus:outline-none placeholder-white react-datepicker-popper"
-                                            disabled={!isEditable}
-                                        />
-                                    </div>
-
-                                    {/* Return (conditionally rendered) */}
-                                    {tripType === 'roundTrip' && (
-                                        <div className="col-span-1 sm:col-span-1 lg:col-span-2">
-                                            <label className="block text-sm sm:text-base text-white">Return</label>
-                                            <div className="flex items-center justify-between">
-                                                <DatePicker
-                                                    selected={flightSearchInfo.return}
-                                                    onChange={(date) => handleFlightInputChange('return', date)}
-                                                    minDate={flightSearchInfo.depart ?? new Date()}
-                                                    monthsShown={2}
-                                                    placeholderText="Select Return"
-                                                    className="w-full bg-transparent font-medium text-base sm:text-lg text-white border-b border-white focus:outline-none placeholder-white react-datepicker-popper"
-                                                    disabled={!isEditable}
-                                                />
-                                                {flightSearchInfo.return && (
-                                                    <div
-                                                        className="bg-[#0a223d] rounded-full w-4 h-4 flex justify-center items-center cursor-pointer hover:bg-[#12345a]"
-                                                        onClick={() => handleFlightInputChange('return', null)}
-                                                    >
-                                                        <X className="h-3 w-3 text-white" />
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Traveler */}
-                                    <div className="col-span-1 sm:col-span-2 lg:col-span-2 relative">
-                                        <label className="block text-sm sm:text-base">Travelers & Class</label>
-                                        <div onClick={() => setShowTravellerBox(!showTravellerBox)} className="cursor-pointer border-b border-white text-white font-medium text-base sm:text-lg flex justify-between items-center">
-                                            <span className="truncate whitespace-nowrap overflow-hidden text-ellipsis">
-                                                {(() => {
-                                                    const toNumber = v => {
-                                                        if (typeof v === 'string' && v.startsWith('>')) {
-                                                            const parsed = parseInt(v.slice(1), 10);
-                                                            return Number.isNaN(parsed) ? 0 : parsed;
-                                                        }
-                                                        const n = Number(v);
-                                                        return Number.isNaN(n) ? 0 : n;
-                                                    };
-                                                    const totalTravellers = [travellers.adults, travellers.children, travellers.infants].reduce((acc, v) => acc + toNumber(v), 0);
-                                                    return `${totalTravellers} Traveller${totalTravellers > 1 ? 's' : ''} • ${travellers.classType}`;
-                                                })()}
-                                            </span>
-                                        </div>
-
-                                        {isEditable && showTravellerBox && (
-                                            <div
-                                                className="absolute left-0 right-0 lg:right-0 lg:left-auto z-999 mt-2 w-full lg:w-[45rem] bg-white rounded-md shadow-lg px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-6 text-black overflow-hidden transition-all duration-500"
-                                                style={{ height: isEditable && showTravellerBox ? `${travellerBoxRef.current?.scrollHeight}px` : '0px' }}
-                                                ref={travellerBoxRef}
-                                            >
-                                                {/* Adults Section */}
-                                                <div className="flex flex-col">
-                                                    <p className="font-semibold text-gray-800 text-sm sm:text-base">
-                                                        ADULTS (12y+) <br /> <span className='text-xs sm:text-sm font-medium'> on the day of travel </span>
-                                                    </p>
-                                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-2 gap-2">
-                                                        <div className="flex border rounded-md overflow-hidden flex-wrap">
-                                                            {Array.from({ length: 9 }).map((_, i) => (
-                                                                <div
-                                                                    key={i}
-                                                                    onClick={() => setTravellers(t => ({ ...t, adults: i + 1 }))}
-                                                                    className={`px-2 sm:px-3 py-2 text-xs sm:text-sm cursor-pointer border-r last:border-r-0
-                                                        ${travellers.adults === i + 1 ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}`}
-                                                                >
-                                                                    {i + 1}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                        <div
-                                                            onClick={() => setTravellers(t => ({ ...t, adults: '>9' }))}
-                                                            className={`px-3 sm:px-4 py-2 text-xs sm:text-sm cursor-pointer border rounded-md
-                                                ${travellers.adults === '>9' ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}`}
-                                                        >
-                                                            &gt;9
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Children & Infants */}
-                                                <div className="flex flex-col">
-                                                    <div className="flex flex-col lg:flex-row justify-between items-start gap-4 lg:gap-6">
-                                                        {/* Children */}
-                                                        <div className='flex flex-col w-full lg:w-auto'>
-                                                            <p className="font-semibold text-gray-800 text-sm sm:text-base">
-                                                                CHILDREN (2y - 12y) <br /> <span className='text-xs sm:text-sm font-medium'>on the day of travel</span>
-                                                            </p>
-                                                            <div className='flex justify-between items-start mt-2 gap-2'>
-                                                                <div className="flex border rounded-md overflow-hidden flex-wrap">
-                                                                    {Array.from({ length: 6 }).map((_, i) => (
-                                                                        <div
-                                                                            key={i}
-                                                                            onClick={() => setTravellers(t => ({ ...t, children: i }))}
-                                                                            className={`px-2 sm:px-3 py-2 text-xs sm:text-sm cursor-pointer border-r last:border-r-0
-                                                                ${travellers.children === i ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}`}
-                                                                        >
-                                                                            {i}
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                                <div
-                                                                    onClick={() => setTravellers(t => ({ ...t, children: '>6' }))}
-                                                                    className={`px-3 sm:px-4 py-2 text-xs sm:text-sm cursor-pointer border rounded-md 
-                                                        ${travellers.children === '>6' ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}`}
-                                                                >
-                                                                    &gt;6
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Infants */}
-                                                        <div className='flex flex-col items-start w-full lg:w-auto'>
-                                                            <p className="font-semibold text-gray-800 text-sm sm:text-base">
-                                                                INFANTS (below 2y) <br />  <span className='text-xs sm:text-sm font-medium'> on the day of travel </span>
-                                                            </p>
-                                                            <div className='flex justify-between items-start mt-2 gap-2'>
-                                                                <div className="flex border rounded-md overflow-hidden flex-wrap">
-                                                                    {Array.from({ length: 6 }).map((_, i) => (
-                                                                        <div
-                                                                            key={i}
-                                                                            onClick={() => setTravellers(t => ({ ...t, infants: i }))}
-                                                                            className={`px-2 sm:px-3 py-2 text-xs sm:text-sm cursor-pointer border-r last:border-r-0
-                                                                ${travellers.infants === i ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}`}
-                                                                        >
-                                                                            {i}
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                                <div
-                                                                    onClick={() => setTravellers(t => ({ ...t, infants: '>6' }))}
-                                                                    className={`px-3 sm:px-4 py-2 text-xs sm:text-sm cursor-pointer border rounded-md
-                                                        ${travellers.infants === '>6' ? 'bg-[#78080B] text-white' : 'hover:bg-gray-100'}`}
-                                                                >
-                                                                    &gt;6
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <hr className="border-gray-200" />
-
-                                                {/* Class Selector */}
-                                                <div>
-                                                    <p className="font-semibold text-gray-800 mb-3 uppercase tracking-wide text-sm sm:text-base">
-                                                        Choose Travel Class
-                                                    </p>
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {['Economy/Premium Economy', 'Premium Economy', 'Business', 'First Class'].map(cls => (
-                                                            <button
-                                                                key={cls}
-                                                                onClick={() => setTravellers(t => ({ ...t, classType: cls }))}
-                                                                className={`px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium border transition-colors 
-                                                    ${travellers.classType === cls ? 'bg-[#78080B] text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
-                                                            >
-                                                                {cls}
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                </div>
-
-                                                {/* Done Button */}
-                                                <div onClick={validateTravellers} className="cursor-pointer flex justify-center bg-[#78080B] rounded-sm p-1">
-                                                    <button className='btn'>
-                                                        <span className="cursor-pointer button-text text-white secondary-font text-sm sm:text-base">D O N E</span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </>
-                            )}
-
-                            {/* Search Button */}
-                            <div className="col-span-1 sm:col-span-2 lg:col-span-2 flex justify-center relative">
-                                <a href="#" id='ModifySearchButton' onClick={handleModifySearch} className="text-sm sm:text-base">
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
-                                    {isEditable ? "SEARCH" : "MODIFY SEARCH"}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Fare Type */}
-                    <div
-                        className="filter-section max-w-7xl mx-auto mt-4 font-medium overflow-hidden transition-all duration-500"
-                        style={{ height: isEditable ? `${fareTypeHeight}px` : '0px' }}
-                        ref={fareTypeRef}
-                    >
-                        <div ref={contentRef}>
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-start space-y-3 sm:space-y-0 sm:space-x-6">
-                                <span className="text-sm sm:text-base">Fare Type</span>
-                                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6 rounded-xl filterglasseffect px-3 sm:px-4 w-full sm:w-auto">
-                                    {[
-                                        { value: "regular", label: "Regular", checked: true },
-                                        { value: "student", label: "Student" },
-                                        { value: "senior", label: "Senior Citizen" },
-                                        { value: "armed", label: "Armed Forces" },
-                                        { value: "doctor", label: "Doctor and Nurses" },
-                                    ].map(({ value, label, checked }, i) => (
-                                        <div key={value} className={`${i !== 0 ? "sm:border-l border-white" : ""}`}>
-                                            <label className="flex py-2 sm:ml-2 items-center space-x-1 cursor-pointer text-sm sm:text-base">
-                                                <input
-                                                    type="radio"
-                                                    name="fareType"
-                                                    value={value}
-                                                    defaultChecked={checked}
-                                                    className="mr-2 text-red-600 focus:ring-0"
-                                                    disabled={!isEditable}
-                                                />
-                                                <span>{label}</span>
-                                            </label>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 {showLoader && (
                     <LoadingBar progress={progress} />
@@ -931,32 +521,39 @@ export default function FlightResults() {
 
                                                 {/* ---- Mid Bottom Row ---- */}
                                                 <div className="flex items-center justify-between text-sm font-medium">
-                                                    <div className="ml-2 pr-3 flex items-center px-3 py-1 rounded hover:bg-red-200 transition-colors duration-300 ease-in-out">
-                                                        {selectedFlights.some((f) => f.Flight_Id === flight.Flight_Id) ? (
+                                                    {selectedFlights.some((f) => f.Flight_Id === flight.Flight_Id) ? (
+                                                        <div
+                                                            className="ml-2 pr-3 cursor-pointer flex items-center px-3 py-1 rounded hover:bg-red-200 transition-colors duration-300 ease-in-out"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                toggleCompare(flight);
+                                                            }}
+                                                        >
                                                             <span className="flex items-center">
                                                                 <span>Added</span>
                                                                 <span
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        toggleCompare(flight);
-                                                                    }}
-                                                                    className="ml-2 text-[#910E0E] font-bold w-4 h-4 rounded-full flex items-center justify-center cursor-pointer"
+
+                                                                    className="ml-2 text-[#910E0E] font-bold w-4 h-4 rounded-full flex items-center justify-center"
                                                                 >
                                                                     <X size={12} strokeWidth={3} />
                                                                 </span>
                                                             </span>
-                                                        ) : (
-                                                            <span
-                                                                className="text-[#811919] font-semibold cursor-pointer"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    toggleCompare(flight);
-                                                                }}
-                                                            >
+                                                        </div>
+
+                                                    ) : (
+                                                        <div
+                                                            className="ml-2 cursor-pointer pr-3 flex items-center px-3 py-1 rounded hover:bg-red-200 transition-colors duration-300 ease-in-out"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                toggleCompare(flight);
+                                                            }}
+                                                        >
+                                                            <span className="text-[#811919] font-semibold " >
                                                                 Add Compare More +
                                                             </span>
-                                                        )}
-                                                    </div>
+                                                        </div>
+
+                                                    )}
 
                                                     <div className="pr-25 relative rounded-full">
                                                         <div

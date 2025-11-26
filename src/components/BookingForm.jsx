@@ -154,7 +154,6 @@ const AirportOptions = [
     }
 ];
 
-
 const CoachOptions = [
     { value: 0, label: "Economy" },
     { value: 3, label: "Premium Economy" },
