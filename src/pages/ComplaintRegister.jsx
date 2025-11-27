@@ -8,7 +8,7 @@ function ComplaintRegister() {
     const [complaints, setComplaints] = useState([
         {
             id: 'CMP001',
-            passengerName: 'John Smith',
+            passengerName: 'Adarsh Joshi',
             flightNumber: 'AI202',
             date: '2024-11-08',
             category: 'Baggage',
@@ -20,7 +20,7 @@ function ComplaintRegister() {
         },
         {
             id: 'CMP002',
-            passengerName: 'Emily Davis',
+            passengerName: 'Joshi Adarsh',
             flightNumber: 'AI145',
             date: '2024-11-09',
             category: 'Flight Delay',
@@ -32,7 +32,7 @@ function ComplaintRegister() {
         },
         {
             id: 'CMP003',
-            passengerName: 'Michael Brown',
+            passengerName: 'Testing Adarsh',
             flightNumber: 'AI567',
             date: '2024-11-10',
             category: 'Service',
@@ -44,7 +44,7 @@ function ComplaintRegister() {
         },
         {
             id: 'CMP004',
-            passengerName: 'Sarah Williams',
+            passengerName: 'Testing Joshi',
             flightNumber: 'AI789',
             date: '2024-11-10',
             category: 'Refund',
@@ -56,7 +56,7 @@ function ComplaintRegister() {
         },
         {
             id: 'CMP005',
-            passengerName: 'Sarah Five',
+            passengerName: 'Adarsh Testing Joshi',
             flightNumber: 'AI789',
             date: '2024-11-10',
             category: 'Refund',
@@ -68,7 +68,7 @@ function ComplaintRegister() {
         },
         {
             id: 'CMP006',
-            passengerName: 'David Six',
+            passengerName: 'Testing Adarsh Joshi',
             flightNumber: 'AI321',
             date: '2024-11-11',
             category: 'In-Flight',
@@ -80,7 +80,7 @@ function ComplaintRegister() {
         },
         {
             id: 'CMP007',
-            passengerName: 'Donson Seven',
+            passengerName: 'Joshi Adarsh Testing',
             flightNumber: 'AI321',
             date: '2024-11-11',
             category: 'In-Flight',
@@ -92,7 +92,7 @@ function ComplaintRegister() {
         },
         {
             id: 'CMP008',
-            passengerName: 'Lewid Eight',
+            passengerName: 'Flight Adarsh',
             flightNumber: 'AI321',
             date: '2024-11-11',
             category: 'In-Flight',
@@ -104,7 +104,7 @@ function ComplaintRegister() {
         },
         {
             id: 'CMP005',
-            passengerName: 'AirIndia Lee',
+            passengerName: 'Adarsh Flight',
             flightNumber: 'AI321',
             date: '2024-11-11',
             category: 'In-Flight',

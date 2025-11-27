@@ -146,8 +146,6 @@ const AirportOptions = [
 
 function FlightResultsSearchHeader() {
 
-
-
     const [flightSearchInfo, setFlightSearchInfo] = useState({
         from: '',
         to: '',

@@ -186,19 +186,23 @@ function MarkUp() {
                 <Header />
             </div>
 
-            <div className="relative max-w-6xl mx-auto z-888">
+            <div className="relative max-w-6xl mx-auto z-888 px-4 sm:px-6 lg:px-8">
 
                 {/* Header */}
-                <div className="mb-6 flex justify-between">
+                <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <h1 className="text-4xl font-bold text-gray-800 mb-2">Markup Management</h1>
-                        <p className="text-gray-600">Configure pricing markups for flights and airlines</p>
+                        <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 mb-1 sm:mb-2">
+                            Markup Management
+                        </h1>
+                        <p className="text-gray-600 text-sm sm:text-base">
+                            Configure pricing markups for flights and airlines
+                        </p>
                     </div>
 
-                    <div className="flex items-end">
+                    <div className="flex sm:items-end">
                         <button
                             onClick={() => setIsModalOpen(true)}
-                            className="bg-[#78080B] text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                            className="bg-[#78080B] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 w-full sm:w-auto"
                         >
                             <Plus size={20} />
                             Add Markup
@@ -207,10 +211,11 @@ function MarkUp() {
                 </div>
 
 
+
                 {/* Table */}
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                     <div className="overflow-x-auto">
-                        <table className="w-full">
+                        <table className="min-w-full text-sm sm:text-base">
                             <thead>
                                 <tr className="bg-[#78080B] text-white">
                                     <th className="px-6 py-4 text-left text-sm font-semibold">Category</th>
@@ -279,13 +284,13 @@ function MarkUp() {
                         </table>
                     </div>
                 </div>
-                
+
             </div>
 
             {/* Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center p-4 z-999 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-2 sm:p-4 z-9999 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg sm:max-w-2xl max-h-[90vh] overflow-y-auto">
                         {/* Modal Header */}
                         <div className="bg-[#78080B] text-white px-6 py-4 flex justify-between items-center rounded-t-2xl">
                             <h2 className="text-2xl font-bold">Add New Markup</h2>
