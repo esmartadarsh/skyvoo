@@ -142,17 +142,8 @@ export default function Reschedule() {
     };
 
     return (
-        <div className="min-h-screen">
+        <div>
 
-            <div className="relative bg-white secondary-font">
-                {/* Background Image */}
-                <img
-                    className="absolute right-0 z-10 max-w-full h-auto object-cover"
-                    src={GrayFadedBg}
-                    alt="gray faded bg"
-                />
-                <Header />
-            </div>
             <div className="max-w-5xl mx-auto space-y-8 relative z-900">
                 <div>
                     <h1 className="text-4xl font-bold text-gray-800 mb-2 tracking-tight">

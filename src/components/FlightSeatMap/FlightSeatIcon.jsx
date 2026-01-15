@@ -10,7 +10,6 @@ const FlightSeatIcon = ({ fill = "#000000ff", stroke = "none", ...props }) => (
     }}
   >
     <path
-
       fillRule="evenodd"
       clipRule="evenodd"
       d="M87.7,12.5c-0.8-3.7-4.1-6.6-8.2-6.6H36.9c-4,0-7.4,2.8-8.2,6.5h-17C8,12.5,5,15.4,5,19.1v61.7

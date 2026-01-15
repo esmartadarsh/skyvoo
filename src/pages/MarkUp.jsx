@@ -163,7 +163,7 @@ function MarkUp() {
     const CustomOption = (props) => (
         <components.Option {...props}>
             <div className="flex items-center gap-2">
-                <Plane size={16} className="text-indigo-600" />
+                <Plane size={16} className="text-[#a54040]" />
                 <span>{props.data.label}</span>
             </div>
         </components.Option>
@@ -174,20 +174,8 @@ function MarkUp() {
     };
 
     return (
-        <div className="min-h-screen">
-
-            <div className="relative bg-cover bg-center">
-                <img
-                    className="absolute right-0 z-10 max-w-full h-auto object-cover"
-                    src={GrayFadedBg}
-                    alt="gray faded bg"
-                />
-
-                <Header />
-            </div>
-
+        <>
             <div className="relative max-w-6xl mx-auto z-888 px-4 sm:px-6 lg:px-8">
-
                 {/* Header */}
                 <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
@@ -239,15 +227,15 @@ function MarkUp() {
                                     markups.map((markup, index) => (
                                         <tr
                                             key={markup.id}
-                                            className={`border-b border-gray-100 hover:bg-blue-50 transition-colors ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                                            className={`border-b border-gray-100 hover:bg-red   -50 transition-colors ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
                                                 }`}
                                         >
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-2">
                                                     {markup.category === 'Domestic' || markup.category === 'International' ? (
-                                                        <Globe size={18} className="text-blue-600" />
+                                                        <Globe size={18} className="text-[#a54040]" />
                                                     ) : (
-                                                        <Plane size={18} className="text-indigo-600" />
+                                                        <Plane size={18} className="text-[#a54040]" />
                                                     )}
                                                     <span className="font-medium text-gray-800">{markup.category}</span>
                                                 </div>
@@ -286,8 +274,6 @@ function MarkUp() {
                 </div>
 
             </div>
-
-            {/* Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-2 sm:p-4 z-9999 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg sm:max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -316,8 +302,8 @@ function MarkUp() {
                                             : 'border-gray-200 hover:border-blue-300'
                                             }`}
                                     >
-                                        <Globe size={32} className={markupType === 'location' ? 'text-blue-600' : 'text-gray-400'} />
-                                        <span className={`font-semibold ${markupType === 'location' ? 'text-blue-600' : 'text-gray-600'}`}>
+                                        <Globe size={32} className={markupType === 'location' ? 'text-[#a54040]' : 'text-gray-400'} />
+                                        <span className={`font-semibold ${markupType === 'location' ? 'text-[#a54040]' : 'text-gray-600'}`}>
                                             Location Based
                                         </span>
                                     </button>
@@ -328,8 +314,8 @@ function MarkUp() {
                                             : 'border-gray-200 hover:border-indigo-300'
                                             }`}
                                     >
-                                        <Plane size={32} className={markupType === 'airline' ? 'text-indigo-600' : 'text-gray-400'} />
-                                        <span className={`font-semibold ${markupType === 'airline' ? 'text-indigo-600' : 'text-gray-600'}`}>
+                                        <Plane size={32} className={markupType === 'airline' ? 'text-[#a54040]' : 'text-gray-400'} />
+                                        <span className={`font-semibold ${markupType === 'airline' ? 'text-[#a54040]' : 'text-gray-600'}`}>
                                             Airline Specific
                                         </span>
                                     </button>
@@ -348,9 +334,9 @@ function MarkUp() {
                                                 type="radio"
                                                 name="locationType"
                                                 value="domestic"
+                                                className="w-5 h-5 text-blue-600"
                                                 checked={locationType === 'domestic'}
                                                 onChange={(e) => setLocationType(e.target.value)}
-                                                className="w-5 h-5 text-blue-600"
                                             />
                                             <span className="font-medium text-gray-700">Domestic</span>
                                         </label>
@@ -359,9 +345,9 @@ function MarkUp() {
                                                 type="radio"
                                                 name="locationType"
                                                 value="international"
+                                                className="w-5 h-5 text-blue-600"
                                                 checked={locationType === 'international'}
                                                 onChange={(e) => setLocationType(e.target.value)}
-                                                className="w-5 h-5 text-blue-600"
                                             />
                                             <span className="font-medium text-gray-700">International</span>
                                         </label>
@@ -461,7 +447,7 @@ function MarkUp() {
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 }
 

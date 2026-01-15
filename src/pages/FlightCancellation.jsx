@@ -16,17 +16,7 @@ export default function FlightCancellation() {
     const refundAmount = totalPaid - cancellationFee;
 
     return (
-        <div className="min-h-screen">
-            {/* Header */}
-            <div className="relative bg-white secondary-font">
-                {/* Background Image */}
-                <img
-                    className="absolute right-0 z-10 max-w-full h-auto object-cover"
-                    src={GrayFadedBg}
-                    alt="gray faded bg"
-                />
-                <Header onOpen={() => setIsModalOpen(true)} />
-            </div>
+        <div>
 
             {/* Main Content */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 relative z-900">

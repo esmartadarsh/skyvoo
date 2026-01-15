@@ -20,7 +20,7 @@ const Header = ({ onOpen }) => {
     ];
 
     // Temporary: assume user is logged in
-    const isLoggedIn = true;
+    const isLoggedIn = false;
 
     return (
         <header className="relative z-9998">
