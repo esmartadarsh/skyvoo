@@ -301,7 +301,7 @@ function FlightResultsSearchHeader() {
         <div className="relative bg-[#78080B] text-white px-2 sm:px-4 py-3 sm:py-5 z-999 mb-4" style={{ boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.25)' }}>
             <div className="max-w-7xl mx-auto flex items-center justify-between">
                 {/* Main Search Grid */}
-                <div className="w-full grid grid-cols-15 gap-3 items-end secondary-font font-semibold">
+                <div className="w-full grid grid-cols-15 gap-3 items-end  font-semibold">
 
                     {/* Trip Type */}
                     <div className="col-span-1 col-span-2">
@@ -725,7 +725,7 @@ function FlightResultsSearchHeader() {
                                         {/* Done Button */}
                                         <div onClick={validateTravellers} className="cursor-pointer flex justify-center bg-[#78080B] rounded-sm p-1">
                                             <button className='btn'>
-                                                <span className="cursor-pointer button-text text-white secondary-font text-sm sm:text-base">D O N E</span>
+                                                <span className="cursor-pointer button-text text-white  text-sm sm:text-base">D O N E</span>
                                             </button>
                                         </div>
                                     </div>

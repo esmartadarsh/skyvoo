@@ -1063,7 +1063,10 @@ export default function ReviewDetails() {
                 {/* State Info */}
                 <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-5">
                   {/* Booking Details Section */}
-                  <p className="text-slate-800 mb-3 text-xs"><span className='font-semibold text-lg'>Your State</span>  (Required for GST purpose on your tax invoice. You can edit this anytime later in your profile section.) </p>
+                  <p className="text-slate-800 mb-3 text-xs">
+                    <span className='font-semibold text-lg'>Your State</span>
+                    (Required for GST purpose on your tax invoice. You can edit this anytime later in your profile section.)
+                  </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     {/* Select State */}

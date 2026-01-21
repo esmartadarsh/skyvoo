@@ -62,7 +62,7 @@ const FlightResultsHeader = ({ onOpen }) => {
 
     return (
         <header className="relative z-9997">
-            <div className="max-w-7xl mx-auto flex items-center justify-between sm:px-6 py-5 secondary-font">
+            <div className="max-w-7xl mx-auto flex items-center justify-between sm:px-6 py-5 ">
                 {/* Logo */}
                 <div className="flex items-center">
                     <img

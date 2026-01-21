@@ -403,20 +403,20 @@ function BookingForm() {
             <div className="col-span-12 p-4 sm:p-6 lg:pt-10 lg:pb-5 lg:px-10 ">
                 {/* Tabs */}
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 text-black text-base sm:text-lg font-semibold">
-                    <button className="secondary-font flex items-center space-x-1 bg-[#D9D9D9] rounded-md px-2 xs:px-4 py-1 cursor-pointer text-black border-2 border-black">
+                    <button className=" flex items-center space-x-1 bg-[#D9D9D9] rounded-md px-2 xs:px-4 py-1 cursor-pointer text-black border-2 border-black">
                         <img src={Plane} alt="plane" className="w-5 h-5" />
                         <span>Flights</span>
                     </button>
-                    <button className="secondary-font flex items-center space-x-1 rounded-md px-2 xs:px-4 py-1 cursor-pointer border-2 border-transparent hover:bg-[#D9D9D9] hover:border-black">
+                    <button className=" flex items-center space-x-1 rounded-md px-2 xs:px-4 py-1 cursor-pointer border-2 border-transparent hover:bg-[#D9D9D9] hover:border-black">
                         <img src={Bed} alt="bed" className="w-6 h-6 sm:w-7 sm:h-7" />
                         <span>Hotels</span>
                     </button>
-                    <button className="secondary-font flex items-center space-x-1 rounded-md px-2 xs:px-4 py-1 cursor-pointer border-2 border-transparent hover:bg-[#D9D9D9] hover:border-black">
+                    <button className=" flex items-center space-x-1 rounded-md px-2 xs:px-4 py-1 cursor-pointer border-2 border-transparent hover:bg-[#D9D9D9] hover:border-black">
                         <img src={Car} alt="car" className="w-6 h-6 sm:w-7 sm:h-7" />
                         <span>Cabs</span>
                     </button>
 
-                    <button className="secondary-font flex items-center text-black font-medium cursor-pointer px-3 sm:px-4 py-2 border-2 border-transparent hover:text-gray-500 ml-auto mt-2 sm:mt-0">
+                    <button className=" flex items-center text-black font-medium cursor-pointer px-3 sm:px-4 py-2 border-2 border-transparent hover:text-gray-500 ml-auto mt-2 sm:mt-0">
                         <img src={Mic} alt="mic" className="w-5 h-5 mr-2" />
                         <span>Customer Support</span>
                     </button>
@@ -427,14 +427,14 @@ function BookingForm() {
                 </div>
 
                 {/* Trip Type Selection */}
-                <div className="filter-section flex flex-wrap gap-3 sm:gap-4 mb-4 text-base sm:text-lg secondary-font font-semibold">
+                <div className="filter-section flex flex-wrap gap-3 sm:gap-4 mb-4 text-base sm:text-lg  font-semibold">
                     {[
                         { key: 0, value: 'ONE_WAY', label: 'One Way' },
                         { key: 1, value: 'ROUND_TRIP', label: 'Round Trip' },
                         { key: 3, value: 'MULTI_CITY', label: 'Multi-City' },
                     ].map(({ key, value, label }) => (
                         <label key={key} className="flex items-center cursor-pointer">
-                            <div className={clsx('secondary-font px-4 py-2 flex items-center rounded-md', tripType === value ? 'bg-black text-white' : 'text-black')}>
+                            <div className={clsx(' px-4 py-2 flex items-center rounded-md', tripType === value ? 'bg-black text-white' : 'text-black')}>
                                 <input
                                     type="radio"
                                     name="tripType"
@@ -449,7 +449,7 @@ function BookingForm() {
                     ))}
 
 
-                    <div className="relative secondary-font font-semibold w-full sm:w-auto">
+                    <div className="relative  font-semibold w-full sm:w-auto">
                         <Select
                             options={CoachOptions}
                             value={CoachOptions.find(c => c.value === flightSearchInfo.coach) || null}
@@ -513,7 +513,7 @@ function BookingForm() {
 
                 {/* Flight Search Form */}
                 <div className="w-full max-w-6xl mx-auto">
-                    <div className="grid grid-cols-12 gap-4 sm:gap-6 items-end secondary-font font-semibold">
+                    <div className="grid grid-cols-12 gap-4 sm:gap-6 items-end  font-semibold">
 
                         {/* From */}
                         <div className="col-span-12 sm:col-span-6 md:col-span-2">
@@ -848,7 +848,7 @@ function BookingForm() {
                                         className="cursor-pointer col-span-12 sm:col-span-2 flex justify-center bg-[#78080B] rounded-sm p-1"
                                     >
                                         <button className="btn">
-                                            <span className="cursor-pointer button-text text-white secondary-font">D O N E</span>
+                                            <span className="cursor-pointer button-text text-white ">D O N E</span>
                                         </button>
                                     </div>
                                 </div>

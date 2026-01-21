@@ -202,7 +202,7 @@ function Filters() {
                 style={{ boxShadow: '0px 3px 22.3px 10px rgba(0,0,0,0.2),0px 4px 6.1px 4px rgba(0,0,0,0.25)' }}>
 
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold secondary-font">Applied Filters</h3>
+                    <h3 className="text-lg font-semibold ">Applied Filters</h3>
                     <button className="cursor-pointer text-[#78080B] text-sm font-medium hover:underline" onClick={clearAllFilters}>CLEAR ALL</button>
                 </div>
 

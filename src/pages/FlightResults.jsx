@@ -223,7 +223,7 @@ export default function FlightResults() {
                         <Search className="h-6 w-6 xs:h-8 xs:w-8" />
                     </div>
 
-                    <div className={`fixed bottom-20 right-5 bg-white shadow-lg rounded-lg overflow-hidden z-9999 border border-gray-200 secondary-font`}>
+                    <div className={`fixed bottom-20 right-5 bg-white shadow-lg rounded-lg overflow-hidden z-9999 border border-gray-200 `}>
                         <div className='relative'>
 
                             <div id="FlightComparisonsSection" className={`${collapsed ? 'collapsed' : ''}`}>
@@ -350,7 +350,7 @@ export default function FlightResults() {
                             </div>
                             {/* Flight Details */}
                             <div
-                                className="lg:hidden filterglasseffect rounded-xl shadow-sm px-4 py-3 mb-2 secondary-font cursor-pointer active:scale-[0.98] transition-transform"
+                                className="lg:hidden filterglasseffect rounded-xl shadow-sm px-4 py-3 mb-2  cursor-pointer active:scale-[0.98] transition-transform"
                                 style={{ zIndex: 2 }}
                             >
                                 <div className="grid grid-cols-[1fr_auto] gap-3 items-center">
@@ -374,9 +374,8 @@ export default function FlightResults() {
                                 </div>
                             </div>
 
-
                             {/* Sorting Options */}
-                            <div className="filterglasseffect rounded-lg shadow-sm px-4 py-3 mb-4 secondary-font" style={{ overflow: 'visible', zIndex: 2 }}>
+                            <div className="filterglasseffect rounded-lg shadow-sm px-4 py-3 mb-4 " style={{ overflow: 'visible', zIndex: 2 }}>
                                 <div className="grid grid-cols-4 md:grid-cols-4 gap-3">
                                     {sortOptions.map((option) => (
                                         <div key={option.key} className="relative">
@@ -451,10 +450,17 @@ export default function FlightResults() {
                                     visibleFlights.map((flight) => (
                                         <div key={flight.Flight_Id} className="rounded-2xl">
                                             <div
-                                                className="py-2 sm:py-4 relative bg-cover bg-center rounded-xl shadow-sm hover:shadow-md transition-shadow secondary-font"
+                                                className="py-2 sm:py-4 relative bg-cover bg-center rounded-xl shadow-sm hover:shadow-md transition-shadow"
                                                 style={{
                                                     backgroundImage: `url(${BookingFlightFormBg})`,
                                                     boxShadow: "-3px 4px 20px 0px rgba(0, 0, 0, 0.25)",
+                                                }}
+                                                onClick={(e) => {
+                                                    if (e.target.closest('button')) return;
+
+                                                    if (window.matchMedia('(max-width: 767px)').matches) {
+                                                        setIsFlightDetailsModalOpen(true);
+                                                    }
                                                 }}
                                             >
                                                 <img
@@ -546,13 +552,12 @@ export default function FlightResults() {
 
                                                     </div>
 
-
-
-
-
                                                     <button
                                                         className="w-full hidden md:flex md:w-auto cursor-pointer bg-[#811919] hover:bg-[#741111] text-white px-4 py-2 md:py-1 rounded-full font-medium text-sm"
-                                                        onClick={() => setIsFlightDetailsModalOpen(true)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            setIsFlightDetailsModalOpen(true)
+                                                        }}
                                                     >
                                                         VIEW PRICES
                                                     </button>
@@ -648,9 +653,8 @@ export default function FlightResults() {
                                             </div>
 
                                             {/* ---- Slide-Down Details ---- */}
-                                            <div
-                                                className={`shadow-2xl mt-5 overflow-hidden transition-[max-height] duration-900 ease-in-out ${selectedFlightId === flight.Flight_Id ? "max-h-96" : "max-h-0"
-                                                    }`}
+                                            < div
+                                                className={`shadow-2xl mt-5 overflow-hidden transition-[max-height] duration-900 ease-in-out ${selectedFlightId === flight.Flight_Id ? "max-h-96" : "max-h-0"}`}
                                             >
                                                 {selectedFlightId === flight.Flight_Id && <ViewFlightDetails flight={flight} />}
                                             </div>

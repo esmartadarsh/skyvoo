@@ -96,13 +96,13 @@ export default function FlightPriceDetailsModal({ onClose }) {
 
     return (
         <div
-            className="fixed inset-0 flex items-center justify-center z-9999 secondary-font"
+            className="fixed inset-0 flex items-center justify-center z-9999 "
             onClick={onClose}
         >
 
             <div
                 onClick={(e) => e.stopPropagation()}
-                className="rounded-4xl w-full max-w-6xl max-h-[90vh] overflow-y-auto relative p-4 sm:p-6 bg-white/30"
+                className="rounded-4xl w-full max-w-6xl max-h-[90vh] overflow-y-auto relative mx-4 p-4 sm:p-6 bg-white/30"
                 style={{
                     animation: "scaleIn 0.3s ease-out forwards",
                     backdropFilter: "blur(11px)",

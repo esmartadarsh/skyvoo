@@ -36,7 +36,7 @@ export default function Home() {
                   TRAVEL SMARTER WITH DEALS YOU'LL ADORE
                 </h1>
                 <p
-                  className="secondary-font text-sm sm:text-base md:text-lg font-semibold bg-clip-text text-transparent leading-snug"
+                  className=" text-sm sm:text-base md:text-lg font-semibold bg-clip-text text-transparent leading-snug"
                   style={{
                     backgroundImage:
                       'linear-gradient(to right, #520000 0%, #FF0000 100%)',
@@ -56,7 +56,7 @@ export default function Home() {
         <div className="pb-5 sm:pb-2 bg-cover bg-center" style={{ backgroundImage: `url(${BookingFlightSectionBg})` }} >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="my-8 text-start">
-              <h4 className="secondary-font text-2xl sm:text-3xl lg:text-4xl font-bold">
+              <h4 className=" text-2xl sm:text-3xl lg:text-4xl font-bold">
                 Start Booking Your Flight Now
               </h4>
             </div>

@@ -88,7 +88,7 @@ export default function CompareFlights() {
             {isFlightDetailsModalOpen && <FlightPriceDetailsModal onClose={() => setIsFlightDetailsModalOpen(false)} />}
             {isModalOpen && <SignInModal onClose={() => setIsModalOpen(false)} />}
 
-            <div className="relative bg-white secondary-font">
+            <div className="relative bg-white ">
                 {/* Background Image */}
                 <img
                     className="absolute right-0 z-10 max-w-full h-auto object-cover"

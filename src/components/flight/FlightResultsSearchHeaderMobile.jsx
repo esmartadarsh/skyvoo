@@ -711,7 +711,7 @@ function FlightResultsSearchHeaderMobile({ open, onClose }) {
                                         {/* Done Button */}
                                         <div onClick={validateTravellers} className="cursor-pointer flex justify-center bg-[#78080B] rounded-sm p-1">
                                             <button className='btn'>
-                                                <span className="cursor-pointer button-text text-white secondary-font text-sm sm:text-base">D O N E</span>
+                                                <span className="cursor-pointer button-text text-white  text-sm sm:text-base">D O N E</span>
                                             </button>
                                         </div>
                                     </div>
