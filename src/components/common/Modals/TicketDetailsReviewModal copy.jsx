@@ -6,16 +6,15 @@ export default function TicketDetailsReviewModal({ onClose }) {
 
     return (
         <div className=" fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center px-2 sm:px-4"
-            style={{ animation: "fadeIn 0.3s ease-out forwards" }}
             onClick={onClose}
         >
             <div
-                className="p-8 bg-white shadow-2xl w-full sm:max-w-2xl lg:max-w-[60%] rounded-2xl max-h-[90vh] xs:max-h-[80vh] overflow-y-auto scrollbar relative animate-scaleIn "
+                className="p-5 bg-white shadow-2xl w-full sm:max-w-2xl lg:max-w-4xl rounded-2xl max-h-[90vh] overflow-y-auto scrollbar relative animate-scaleIn "
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Close */}
                 <button
-                    className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl"
+                    className="absolute top-3 right-3 text-gray-500 hover:text-black text-xl"
                     onClick={onClose}
                 >
                     ✕
@@ -98,9 +97,16 @@ export default function TicketDetailsReviewModal({ onClose }) {
                 </Section>
 
                 {/* CTA */}
-                <div className="flex mt-4">
+                <div className="p-4 flex">
                     <button
-                        className=" w-full sm:w-auto bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-medium px-6 py-2.5 rounded-full flex items-center justify-center gap-2"
+                        className="
+              w-full sm:w-auto
+              bg-slate-900 hover:bg-slate-800 active:bg-slate-950
+              text-white font-medium
+              px-6 py-3
+              rounded-full
+              flex items-center justify-center gap-2
+            "
                         onClick={() => navigate("/flight-seat-map")}
                     >
                         CONTINUE
@@ -115,7 +121,7 @@ export default function TicketDetailsReviewModal({ onClose }) {
 /* Helpers */
 function Section({ title, children, gray }) {
     return (
-        <div className={`p-4 mb-6 border border-gray-200 rounded-xl ${gray ? "bg-gray-50" : ""}`}>
+        <div className={`p-4 mb-4 rounded-xl border ${gray ? "bg-gray-50" : ""}`}>
             <h3 className="text-sm sm:text-base font-semibold mb-3">{title}</h3>
             {children}
         </div>
@@ -151,5 +157,3 @@ function Row({ label, value, highlight }) {
         </div>
     );
 }
-
-

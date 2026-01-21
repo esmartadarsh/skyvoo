@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {
-    Calendar,
-    Plane,
-    Clock,
-    MapPin,
-    Check,
-    ChevronDown,
-} from "lucide-react";
+import { Plane, Clock, MapPin, Check } from "lucide-react";
 import { DayPicker } from "react-day-picker";
+import Header from '@/components/layout/Header';
 import "react-day-picker/dist/style.css";
+import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp';
 
 export default function Reschedule() {
     const [isShowResults, setIsShowResults] = useState(false);
@@ -147,8 +142,9 @@ export default function Reschedule() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6 animate-fadeIn">
-            <div className="max-w-5xl mx-auto space-y-8">
+        <div>
+
+            <div className="max-w-5xl mx-auto space-y-8 relative z-900">
                 <div>
                     <h1 className="text-4xl font-bold text-gray-800 mb-2 tracking-tight">
                         Reschedule Your Trip
@@ -314,9 +310,18 @@ export default function Reschedule() {
                                         </div>
                                     </div>
 
-                                    <div className="mt-4 text-right">
-                                        <p className="text-lg font-semibold text-indigo-600">₹{flight.price.toLocaleString()}</p>
+                                    <div className="mt-6 flex items-center justify-between">
+                                        <p className="text-xl font-semibold text-indigo-600">
+                                            ₹{flight.price.toLocaleString()}
+                                        </p>
+
+                                        <button
+                                            className="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg"
+                                        >
+                                            Select Flight
+                                        </button>
                                     </div>
+
                                 </div>
                             </div>
                         ))}

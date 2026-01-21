@@ -1,37 +1,52 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useReducer } from "react";
 
 const FlightFilterContext = createContext();
 
-export const FlightFilterProvider = ({ children }) => {
-    const DEFAULT_SELECTED_PRICE = 18000;
-    const minValue = 1900;
-    const maxValue = 21000;
-    const [selectedStops, setSelectedStops] = useState([]);
-    const [selectedAirlines, setSelectedAirlines] = useState([]);
-    const [selectedAircraftSizes, setSelectedAircraftSizes] = useState([]);
-    const [selectedDepartureTime, setselectedDepartureTime] = useState(null);
-    const [selectedArrivalTime, setSelectedArrivalTime] = useState(null);
-    const [selectedPriceRange, setSelectedPriceRange] = useState([DEFAULT_SELECTED_PRICE, maxValue]);
+const initialState = {
+    selectedStops: [],
+    selectedAirlines: [],
+    selectedAircraftSizes: [],
+    selectedPriceRange: [0, Infinity],
+    selectedDepartureTime: null,
+    selectedArrivalTime: null,
+};
+
+function reducer(state, action) {
+    switch (action.type) {
+        case "SET_STOPS":
+            return { ...state, selectedStops: action.payload };
+
+        case "SET_AIRLINES":
+            return { ...state, selectedAirlines: action.payload };
+
+        case "SET_PRICE_RANGE":
+            return { ...state, selectedPriceRange: action.payload };
+
+        case "SET_DEPARTURE_TIME":
+            return { ...state, selectedDepartureTime: action.payload };
+
+        case "SET_ARRIVAL_TIME":
+            return { ...state, selectedArrivalTime: action.payload };
+
+        case "SET_AIRCRAFT_SIZES":
+            return { ...state, selectedAircraftSizes: action.payload };
+
+        case "RESET_FILTERS":
+            return initialState;
+
+        default:
+            return state;
+    }
+}
+
+export function FlightFilterProvider({ children }) {
+    const [state, dispatch] = useReducer(reducer, initialState);
 
     return (
-        <FlightFilterContext.Provider 
-        value={{
-            selectedStops,
-            setSelectedStops,
-            selectedAirlines,
-            setSelectedAirlines,
-            selectedAircraftSizes,
-            setSelectedAircraftSizes,
-            selectedPriceRange,
-            setSelectedPriceRange,
-            selectedDepartureTime,
-            setselectedDepartureTime,
-            selectedArrivalTime,
-            setSelectedArrivalTime
-        }}>
+        <FlightFilterContext.Provider value={{ state, dispatch }}>
             {children}
         </FlightFilterContext.Provider>
     );
-};
+}
 
 export const useFlightFilters = () => useContext(FlightFilterContext);

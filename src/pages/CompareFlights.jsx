@@ -5,8 +5,12 @@ import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp';
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 import FlightPriceDetailsModal from '@/components/common/Modals/FlightPriceDetailsModal';
 import SignInModal from '@/components/common/Modals/SignInModal';
+import { useCompareFlights } from "../features/flights/contexts/CompareContext";
 
 export default function CompareFlights() {
+    const { state } = useCompareFlights();
+    const { selectedFlights } = state;
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isFlightDetailsModalOpen, setIsFlightDetailsModalOpen] = useState(false);
 
@@ -75,10 +79,16 @@ export default function CompareFlights() {
 
     return (
         <>
+            {/* {selectedFlights.length < 2 ? (
+                <div className="p-10 text-center text-gray-600">
+                    Select at least 2 flights to compare.
+                </div>
+            ) : ''} */}
+
             {isFlightDetailsModalOpen && <FlightPriceDetailsModal onClose={() => setIsFlightDetailsModalOpen(false)} />}
             {isModalOpen && <SignInModal onClose={() => setIsModalOpen(false)} />}
 
-            <div className="relative bg-white secondary-font">
+            <div className="relative bg-white ">
                 {/* Background Image */}
                 <img
                     className="absolute right-0 z-10 max-w-full h-auto object-cover"

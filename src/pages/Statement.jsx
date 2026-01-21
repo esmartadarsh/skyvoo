@@ -144,17 +144,7 @@ function Statement() {
     });
 
     return (
-        <div className="min-h-screen">
-
-            <div className="relative bg-cover bg-center">
-                <img
-                    className="absolute right-0 z-10 max-w-full h-auto object-cover"
-                    src={GrayFadedBg}
-                    alt="gray faded bg"
-                />
-
-                <Header />
-            </div>
+        <div>
 
             <div className="relative max-w-7xl mx-auto z-888">
                 {/* Header */}
@@ -255,7 +245,7 @@ function Statement() {
                                 />
                             </div>
                             <div className="flex items-end">
-                                <button className="w-full bg-gradient-to-r from-teal-500 to-cyan-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:from-teal-600 hover:to-cyan-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                                <button className="w-full bg-[#78080B] text-white px-6 py-2.5 rounded-lg font-semibold hover:from-teal-600 hover:to-cyan-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                                     Fetch
                                 </button>
                             </div>
@@ -265,7 +255,7 @@ function Statement() {
                         <div className="mb-6">
                             <button
                                 onClick={() => setShowFilters(!showFilters)}
-                                className="flex items-center gap-2 text-teal-600 font-medium hover:text-teal-700 transition-colors mb-3"
+                                className="flex items-center gap-2 text-[#78080B] font-medium hover:text-[#a54040] transition-colors mb-3"
                             >
                                 <Filter size={18} />
                                 {showFilters ? 'Hide' : 'Show'} Column Filters
@@ -374,12 +364,12 @@ function Statement() {
                         </div>
 
                         {/* Pagination Info */}
-                        <div className="mt-4 flex justify-between items-center text-sm text-gray-600">
+                        <div className="mt-4 flex justify-between items-center text-sm text-[#78080B]">
                             <span>Showing 1 to {filteredData.length} of {filteredData.length} entries</span>
                             <div className="flex gap-2">
-                                <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Previous</button>
-                                <button className="px-4 py-2 bg-teal-500 text-white rounded-lg font-medium">1</button>
-                                <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Next</button>
+                                <button className="px-4 py-2 border border-[#78080B] rounded-lg hover:bg-gray-50 transition-colors">Previous</button>
+                                <button className="px-4 py-2 bg-[#78080B] text-white rounded-lg font-medium">1</button>
+                                <button className="px-4 py-2 border border-[#78080B] rounded-lg hover:bg-gray-50 transition-colors">Next</button>
                             </div>
                         </div>
                     </div>

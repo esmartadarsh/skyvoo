@@ -2,7 +2,6 @@ import React from 'react'
 import { Plus, LogOut, Check, UtensilsCrossed, Briefcase, Clock, Accessibility, ChevronDown, X } from 'lucide-react';
 
 function SummaryPanel({ selectedSeats, seatMap, SSRTypes, selectedServices, onRemoveService, totalAmount, onContinue }) {
-    // console.log(selectedSeats, 'see the selected seats')
     return (
         <div className="lg:col-span-3 bg-[#f1f0f29e] shadow-sm rounded-xl p-4 border border-gray-200 h-auto mb-5">
             <h3 className="text-lg font-bold text-gray-800 mb-4">Your Selection</h3>
@@ -28,7 +27,14 @@ function SummaryPanel({ selectedSeats, seatMap, SSRTypes, selectedServices, onRe
                         return (
                             <div
                                 key={seatNumber}
-                                className="flex justify-between p-3 rounded-lg border border-gray-100 shadow-sm"
+                                className="flex justify-between p-3 rounded-lg border border-gray-100 shadow-lg"
+                            // className="flex justify-between p-3 rounded-lg bg-white/30"
+                            // style={{
+                            //     animation: "scaleIn 0.3s ease-out forwards",
+                            //     backdropFilter: "blur(11px)",
+                            //     border: "2px solid rgb(120, 8, 11)",
+                            //     boxShadow: "0px 0px 33.8px 10px #00000082",
+                            // }}
                             >
                                 {/* Seat Info */}
                                 <div>

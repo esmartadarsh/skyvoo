@@ -14,7 +14,7 @@ import {
 export default function TripBenefitsModal({ onClose }) {
     return (
         <div
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] secondary-font"
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-9999 "
             onClick={onClose}
             style={{ animation: "fadeIn 0.3s ease-out forwards" }}
         >

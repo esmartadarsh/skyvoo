@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { ChevronRight, Plane, Clock, User, Mail, Phone, Shield, Settings, CreditCard, Smartphone, Building2, Wallet, Gift, QrCode, X, Check, ChevronDown, ChevronUp } from 'lucide-react';
-import Header from '@/components/layout/Header.jsx';
-import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp'
 import Bhim from '@/assets/imgs/upiIcons/bhim.png'
 import Gpay from '@/assets/imgs/upiIcons/gpay.png'
 import Paytm from '@/assets/imgs/upiIcons/paytm.avif'
 import Phonepe from '@/assets/imgs/upiIcons/phonepe.webp'
 import MYQR from '@/assets/imgs/upiIcons/myqr.png'
+import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 
 const flight = {
     from: "Delhi (DEL)",
@@ -18,7 +17,7 @@ const flight = {
     duration: "28h 20m",
     stops: "1 stop",
     email: "adarshjoshi200513@gmail.com",
-    phone: "+91-1122334455",
+    phone: "+91-9667479529",
     flightNumber: "AF-2847",
     class: "Economy",
     baggage: "15 Kg (1 piece only)"
@@ -130,18 +129,7 @@ export default function FlightPaymentPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#f1f0f29e]">
-
-            <div className="relative bg-cover bg-center">
-                <img
-                    className="absolute right-0 z-10 max-w-full h-auto object-cover"
-                    src={GrayFadedBg}
-                    alt="gray faded bg"
-                />
-
-                <Header onOpen={() => setIsModalOpen(true)} />
-
-            </div>
+        <>
 
             <div className="max-w-7xl  mx-auto relative z-100">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -154,6 +142,8 @@ export default function FlightPaymentPage() {
                                     <div className="w-12 h-12 bg-red-600 rounded flex items-center justify-center">
                                         <Plane className="w-6 h-6 text-white" />
                                     </div>
+                                    {/* <img src={AirlineLogo} alt="airline logo" /> */}
+
                                     <div>
                                         <h2 className="text-lg font-bold text-gray-900">
                                             {flight.from} → {flight.to}
@@ -222,50 +212,50 @@ export default function FlightPaymentPage() {
                         {/* <div className={`rounded-lg p-6 border-2 transition-all ${ addProtection 
                                 ? 'bg-green-50 border-green-500' 
                                 : 'bg-blue-50 border-blue-200'
-                            }`}>
+                                }`}>
                                 <div className="flex items-start justify-between">
-                                    <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Shield className={`w-5 h-5 ${addProtection ? 'text-green-600' : 'text-blue-600'}`} />
-                                        <h3 className="font-bold text-gray-900">Flight Delay Protection</h3>
-                                        {addProtection && (
-                                        <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full font-medium">
-                                            ADDED ✓
-                                        </span>
-                                        )}
+                                <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                <Shield className={`w-5 h-5 ${addProtection ? 'text-green-600' : 'text-blue-600'}`} />
+                                <h3 className="font-bold text-gray-900">Flight Delay Protection</h3>
+                                {addProtection && (
+                                    <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full font-medium">
+                                    ADDED ✓
+                                    </span>
+                                    )}
                                     </div>
                                     <p className="text-gray-700 mb-1">
-                                        <span className="font-semibold">Worry Free Travel!</span>
+                                    <span className="font-semibold">Worry Free Travel!</span>
                                     </p>
                                     <p className="text-sm text-gray-600">
-                                        Get hassle-free compensation of <span className="font-semibold">₹5,000</span> if your flight is delayed by{' '}
-                                        <span className="font-semibold">1 hour</span> or more for any reason.
+                                    Get hassle-free compensation of <span className="font-semibold">₹5,000</span> if your flight is delayed by{' '}
+                                    <span className="font-semibold">1 hour</span> or more for any reason.
                                     </p>
                                     <p className="text-xs text-gray-500 mt-2">
-                                        NOTE : Around 30% of flights were delayed last month. <a href="#" className="text-blue-600 underline">View T&Cs</a>
+                                    NOTE : Around 30% of flights were delayed last month. <a href="#" className="text-blue-600 underline">View T&Cs</a>
                                     </p>
                                     </div>
                                     <div className="text-right ml-4">
                                     <p className="text-xs text-gray-600 mb-2">per person</p>
                                     <button
-                                        onClick={() => setAddProtection(!addProtection)}
-                                        className={`px-6 py-2 rounded-lg font-medium transition-all transform hover:scale-105 ${
+                                    onClick={() => setAddProtection(!addProtection)}
+                                    className={`px-6 py-2 rounded-lg font-medium transition-all transform hover:scale-105 ${
                                         addProtection
-                                            ? 'bg-green-600 text-white shadow-lg'
-                                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                                        ? 'bg-green-600 text-white shadow-lg'
+                                        : 'bg-blue-600 text-white hover:bg-blue-700'
                                         }`}
-                                    >
+                                        >
                                         {addProtection ? (
-                                        <span className="flex items-center gap-2">
+                                            <span className="flex items-center gap-2">
                                             <Check className="w-4 h-4" /> Added
-                                        </span>
-                                        ) : (
-                                        `Add @ ₹${pricing.protectionFee}`
-                                        )}
-                                    </button>
-                                    </div>
-                                </div>
-                            </div> */}
+                                            </span>
+                                            ) : (
+                                                `Add @ ₹${pricing.protectionFee}`
+                                                )}
+                                                </button>
+                                                </div>
+                                                </div>
+                                                </div> */}
 
                         {/* Payment Options */}
                         <div className="bg-white rounded-lg shadow-sm p-6">
@@ -488,23 +478,26 @@ export default function FlightPaymentPage() {
                         </div>
                     </div>
                 </div>
+
+
+
+
             </div>
 
             {/* QR Code Modal */}
             {showQR && (
-                <div className="fixed inset-0 bg-black flex items-center justify-center z-999 p-4">
+                <div className="fixed inset-0 bg-black flex items-center justify-center z-9999 p-4">
                     <div className="bg-white rounded-2xl p-8 max-w-md w-full relative animate-in zoom-in">
-                        <button
-                            onClick={() => setShowQR(false)}
-                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-                        >
+                        <button onClick={() => setShowQR(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
                             <X className="w-6 h-6" />
                         </button>
 
                         <h3 className="text-2xl font-bold text-gray-900 mb-2">Scan & Pay</h3>
                         <p className="text-gray-600 mb-6">Use any UPI app to scan and complete payment</p>
 
-                        <div className="flex bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-xl mb-6 justify-center">
+                        <div
+                            className="flex bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-xl mb-6 justify-center"
+                        >
                             <div className="bg-white p-4 rounded-lg inline-block">
                                 <div className="w-48 h-48 bg-gray-900 rounded-lg flex items-center justify-center">
                                     <img src={MYQR} alt="Barcode" />
@@ -541,7 +534,7 @@ export default function FlightPaymentPage() {
 
             {/* Success Modal */}
             {showSuccessModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-999 p-4">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-9999 p-4">
                     <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center animate-in zoom-in">
                         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Check className="w-10 h-10 text-green-600" />
@@ -573,6 +566,7 @@ export default function FlightPaymentPage() {
                     </div>
                 </div>
             )}
-        </div>
+
+        </>
     );
 }

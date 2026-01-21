@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import SeatButton from './SeatButton';
 
-function SeatGrid({ processedRows, seatLetters, selectedSeats, onSeatClick, onSeatHover, onSeatLeave, getSeatColor }) {
+function SeatGrid({ processedRows, seatLetters, selectedSeats, onSeatClick, onSeatHover, onSeatLeave, getSeatVisual }) {
     const handleSeatClick = useCallback(
         (seat) => () => onSeatClick(seat),
         [onSeatClick]
@@ -28,7 +28,7 @@ function SeatGrid({ processedRows, seatLetters, selectedSeats, onSeatClick, onSe
             </div>
 
             {/* Seat Rows */}
-            <div className="space-y-2">
+            <div className="space-y-2 max-h-[520px] overflow-y-auto p-3 custom-seat-scroll">
                 {processedRows.map(row => {
                     const rowSeatsMap = Object.fromEntries(row.seats.map(seat => [seat.letter, seat]));
 
@@ -47,13 +47,13 @@ function SeatGrid({ processedRows, seatLetters, selectedSeats, onSeatClick, onSe
                                 return seat ? (
                                     <div key={seat.number} className="relative flex flex-col items-center">
                                         {selectedSeats.has(seat.number) ? (
-                                            <div className="p-[3px] bg-white border-2 border-indigo-500 rounded-2xl flex items-center justify-center transition-all duration-300 ease-in-out">
+                                            <div className="p-[3px] rounded-2xl flex items-center justify-center transition-all duration-300 ease-in-out">
                                                 <SeatButton
                                                     seat={seat}
                                                     onClick={handleSeatClick(seat)}
                                                     onHover={handleSeatHover(seat)}
                                                     onLeave={onSeatLeave}
-                                                    getSeatColor={() => getSeatColor(seat)}
+                                                    getSeatVisual={() => getSeatVisual(seat)}
                                                 />
                                             </div>
                                         ) : (
@@ -62,7 +62,7 @@ function SeatGrid({ processedRows, seatLetters, selectedSeats, onSeatClick, onSe
                                                 onClick={handleSeatClick(seat)}
                                                 onHover={handleSeatHover(seat)}
                                                 onLeave={onSeatLeave}
-                                                getSeatColor={() => getSeatColor(seat)}
+                                                getSeatVisual={() => getSeatVisual(seat)}
                                             />
                                         )}
 
@@ -85,13 +85,13 @@ function SeatGrid({ processedRows, seatLetters, selectedSeats, onSeatClick, onSe
                                 return seat ? (
                                     <div key={seat.number} className="relative flex flex-col items-center">
                                         {selectedSeats.has(seat.number) ? (
-                                            <div className="p-[3px] bg-white border-2 border-indigo-500 rounded-2xl flex items-center justify-center transition-all duration-300 ease-in-out">
+                                            <div className="p-[3px] rounded-2xl flex items-center justify-center transition-all duration-300 ease-in-out">
                                                 <SeatButton
                                                     seat={seat}
                                                     onClick={handleSeatClick(seat)}
                                                     onHover={handleSeatHover(seat)}
                                                     onLeave={onSeatLeave}
-                                                    getSeatColor={() => getSeatColor(seat)}
+                                                    getSeatVisual={() => getSeatVisual(seat)}
                                                 />
                                             </div>
                                         ) : (
@@ -100,10 +100,9 @@ function SeatGrid({ processedRows, seatLetters, selectedSeats, onSeatClick, onSe
                                                 onClick={handleSeatClick(seat)}
                                                 onHover={handleSeatHover(seat)}
                                                 onLeave={onSeatLeave}
-                                                getSeatColor={() => getSeatColor(seat)}
+                                                getSeatVisual={() => getSeatVisual(seat)}
                                             />
                                         )}
-
                                     </div>
                                 ) : (
                                     <div key={letter} className="w-16 h-16 bg-gray-50"></div>

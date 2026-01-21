@@ -36,7 +36,7 @@ export default function SignInModal({ onClose }) {
                 </div>
 
                 {/* Heading */}
-                <h2 className="secondary-font text-2xl font-semibold text-center mb-2">
+                <h2 className=" text-2xl font-semibold text-center mb-2">
                     SIGN IN WITH EMAIL
                 </h2>
                 <p className="text-gray-500 text-center text-sm mb-6">
@@ -76,7 +76,7 @@ export default function SignInModal({ onClose }) {
                         </div>
 
                         {/* Divider */}
-                        <div className="flex items-center my-6 secondary-font">
+                        <div className="flex items-center my-6 ">
                             <div className="flex-grow border-t border-gray-300"></div>
                             <span className="mx-3 text-gray-400 text-sm"><span className="underline">sign up</span></span>
                             <div className="flex-grow border-t border-gray-300"></div>

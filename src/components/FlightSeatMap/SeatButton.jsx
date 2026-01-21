@@ -1,8 +1,10 @@
 import React from "react";
 import { Plus, LogOut } from "lucide-react";
-import FlightSeatIcon from "./FlightSeat";
+import FlightSeatIcon from "./FlightSeatIcon";
 
-function SeatButton({ seat, onClick, onHover, onLeave, getSeatColor }) {
+function SeatButton({ seat, onClick, onHover, onLeave, getSeatVisual }) {
+    const visual = getSeatVisual(seat);
+
     return (
         <button
             onClick={onClick}
@@ -11,13 +13,17 @@ function SeatButton({ seat, onClick, onHover, onLeave, getSeatColor }) {
             onMouseLeave={onLeave}
             onTouchStart={onHover}
             onTouchEnd={onLeave}
-            className={`relative w-16 h-16 flex items-center justify-center rounded-xl transition-all duration-300 ease-in-out transform hover:scale-105 ${getSeatColor(seat)} disabled:opacity-50 disabled:cursor-not-allowed`}
+            className="relative w-16 h-16 flex items-center justify-center rounded-xl transition-all duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-            {/* SVG seat icon */}
-            <FlightSeatIcon className="absolute inset-0 w-full h-full text-gray-600 opacity-70" />
+            {/* SVG seat */}
+            <FlightSeatIcon
+                className="absolute inset-0 w-full h-full"
+                fill={visual.fill}
+                stroke={visual.stroke}
+            />
 
-            {/* Seat number overlay */}
-            <span className="relative z-10 font-semibold text-base text-gray-900">
+            {/* Seat number */}
+            <span className={`relative z-10 font-semibold text-base ${visual.text}`}>
                 {`${seat.rowNumber}${seat.letter}`}
             </span>
 
@@ -31,5 +37,6 @@ function SeatButton({ seat, onClick, onHover, onLeave, getSeatColor }) {
         </button>
     );
 }
+
 
 export default SeatButton;

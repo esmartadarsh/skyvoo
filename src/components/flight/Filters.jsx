@@ -43,25 +43,11 @@ const AircraftSize = [
 ];
 
 function Filters() {
-    const {
-        selectedStops,
-        setSelectedStops,
-        selectedAirlines,
-        setSelectedAirlines,
-        selectedAircraftSizes,
-        setSelectedAircraftSizes,
-        selectedPriceRange,
-        setSelectedPriceRange,
-        selectedDepartureTime,
-        setselectedDepartureTime,
-        selectedArrivalTime,
-        setSelectedArrivalTime
-    } = useFlightFilters();
+
+    const { state, dispatch } = useFlightFilters();
 
     const [showAll, setShowAll] = useState(false);
     const [departureAirport, setDepartureAirport] = useState(null);
-    const [showScrollTop, setShowScrollTop] = useState(false);
-
 
     const [isDragging, setIsDragging] = useState(false);
     const sliderRef = useRef(null);
@@ -98,7 +84,6 @@ function Filters() {
         setValue(newValue);
     };
 
-
     const handleMouseDown = (e) => {
         setIsDragging(true);
         updateValue(e.clientX);
@@ -113,9 +98,7 @@ function Filters() {
         setValue((prev) => Math.round(prev / 100) * 100);
     };
 
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+
 
     useEffect(() => {
         if (isDragging) {
@@ -129,77 +112,97 @@ function Filters() {
     }, [isDragging]);
 
     useEffect(() => {
-        setSelectedPriceRange([minValue, value]);
-    }, [value]);
-
-
-    useEffect(() => {
-        const handleScroll = () => {
-            setShowScrollTop(window.scrollY > 1000); // show after 300px scroll
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+        dispatch({
+            type: "SET_PRICE_RANGE",
+            payload: [minValue, value],
+        });
+    }, [value, dispatch]);
 
     const percentage = ((value - minValue) / (maxValue - minValue)) * 100;
 
     const toggleStopFilter = (label) => {
-        setSelectedStops(prev =>
-            prev.includes(label) ? prev.filter(f => f !== label) : [...prev, label]
-        );
+        const newStops = state.selectedStops.includes(label)
+            ? state.selectedStops.filter(f => f !== label)
+            : [...state.selectedStops, label];
+
+        dispatch({
+            type: "SET_STOPS",
+            payload: newStops,
+        });
     };
 
     const toggleAirlineFilter = (label) => {
-        setSelectedAirlines(prev =>
-            prev.includes(label) ? prev.filter(f => f !== label) : [...prev, label]
-        );
+        const newAirlines = state.selectedAirlines.includes(label)
+            ? state.selectedAirlines.filter(a => a !== label)
+            : [...state.selectedAirlines, label];
+
+        dispatch({
+            type: "SET_AIRLINES",
+            payload: newAirlines,
+        });
     };
 
+
     const toggleAircraftFilter = (label) => {
-        setSelectedAircraftSizes(prev =>
-            prev.includes(label) ? prev.filter(f => f !== label) : [...prev, label]
-        );
+        const newAircraftSizes = state.selectedAircraftSizes.includes(label)
+            ? state.selectedAircraftSizes.filter(size => size !== label)
+            : [...state.selectedAircraftSizes, label];
+
+        dispatch({
+            type: "SET_AIRCRAFT_SIZES",
+            payload: newAircraftSizes,
+        });
     };
 
     const clearAllFilters = () => {
-        setSelectedStops([]);
-        setSelectedAirlines([]);
-        setSelectedAircraftSizes([]);
-        setSelectedPriceRange([minValue, DEFAULT_SELECTED_PRICE]);
+        dispatch({ type: "RESET_FILTERS" });
         setValue(DEFAULT_SELECTED_PRICE);
         setDepartureAirport(null);
-        setselectedDepartureTime(null);
-        setSelectedArrivalTime(null);
     };
 
     const selected = [
-        ...selectedStops,
-        ...selectedAircraftSizes,
+        ...state.selectedStops,
+        ...state.selectedAircraftSizes,
         departureAirport,
-        selectedDepartureTime,
-        selectedArrivalTime,
-        ...selectedAirlines.map(code => {
+        state.selectedDepartureTime,
+        state.selectedArrivalTime,
+        ...state.selectedAirlines.map(code => {
             const airline = Airlines.find(a => a.code === code);
             return airline ? airline.name : code;
         })
     ].filter(Boolean);
 
     const removeFilter = (filter) => {
-        if (selectedStops.includes(filter)) setSelectedStops(prev => prev.filter(f => f !== filter));
-        else if (selectedAirlines.includes(filter)) setSelectedAirlines(prev => prev.filter(f => f !== filter));
-        else if (selectedAircraftSizes.includes(filter)) setSelectedAircraftSizes(prev => prev.filter(f => f !== filter));
-        else if (departureAirport === filter) setDepartureAirport(null);
-        else if (selectedDepartureTime === filter) setselectedDepartureTime(null);
-        else if (selectedArrivalTime === filter) setSelectedArrivalTime(null);
+        if (state.selectedStops.includes(filter)) {
+            dispatch({
+                type: "SET_STOPS",
+                payload: state.selectedStops.filter(f => f !== filter),
+            });
+        } else if (state.selectedAirlines.includes(filter)) {
+            dispatch({
+                type: "SET_AIRLINES",
+                payload: state.selectedAirlines.filter(a => a !== filter),
+            });
+        } else if (state.selectedAircraftSizes.includes(filter)) {
+            dispatch({
+                type: "SET_AIRCRAFT_SIZES",
+                payload: state.selectedAircraftSizes.filter(s => s !== filter),
+            });
+        } else if (state.selectedDepartureTime === filter) {
+            dispatch({ type: "SET_DEPARTURE_TIME", payload: null });
+        } else if (state.selectedArrivalTime === filter) {
+            dispatch({ type: "SET_ARRIVAL_TIME", payload: null });
+        }
     };
 
     return (
         <>
+
             <div className="w-80 bg-[#D5D5D5] rounded-lg shadow-sm px-6 pb-6 pt-3 h-fit filters sticky -top-120"
                 style={{ boxShadow: '0px 3px 22.3px 10px rgba(0,0,0,0.2),0px 4px 6.1px 4px rgba(0,0,0,0.25)' }}>
 
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold secondary-font">Applied Filters</h3>
+                    <h3 className="text-lg font-semibold ">Applied Filters</h3>
                     <button className="cursor-pointer text-[#78080B] text-sm font-medium hover:underline" onClick={clearAllFilters}>CLEAR ALL</button>
                 </div>
 
@@ -210,8 +213,8 @@ function Filters() {
                             {selected.map((filter) => {
                                 let Icon = null;
 
-                                if (filter === selectedDepartureTime) Icon = PlaneTakeoff;
-                                else if (filter === selectedArrivalTime) Icon = PlaneLanding;
+                                if (filter === state.selectedDepartureTime) Icon = PlaneTakeoff;
+                                else if (filter === state.selectedArrivalTime) Icon = PlaneLanding;
 
                                 return (
                                     <span
@@ -331,7 +334,7 @@ function Filters() {
                                 <span className="flex items-center">
                                     <input
                                         type="checkbox"
-                                        checked={selectedStops.includes(label)}
+                                        checked={state.selectedStops.includes(label)}
                                         onChange={() => toggleStopFilter(label)}
                                         className="mr-3 cursor-pointer accent-red-600"
                                     />
@@ -355,14 +358,17 @@ function Filters() {
                         ].map(({ label, icon, lines }) => (
                             <div
                                 key={label}
-                                onClick={() => setselectedDepartureTime(selectedDepartureTime === label ? null : label)}
+                                onClick={() => dispatch({
+                                    type: "SET_DEPARTURE_TIME",
+                                    payload: state.selectedDepartureTime === label ? null : label,
+                                })}
                                 className="cursor-pointer text-center flex flex-col items-center hover:opacity-80"
                             >
-                                <div className={`w-10 h-10 rounded-full p-2 flex items-center justify-center mb-2 transition-colors duration-200 ${selectedDepartureTime === label ? 'bg-[#78080B]' : 'border-[#B5B5B5] border-2 border-solid'}`}>
+                                <div className={`w-10 h-10 rounded-full p-2 flex items-center justify-center mb-2 transition-colors duration-200 ${state.selectedDepartureTime === label ? 'bg-[#78080B]' : 'border-[#B5B5B5] border-2 border-solid'}`}>
                                     <img
                                         src={icon}
                                         alt={label}
-                                        className={selectedDepartureTime === label ? 'filter invert brightness-0' : ''}
+                                        className={state.selectedDepartureTime === label ? 'filter invert brightness-0' : ''}
                                     />
                                 </div>
                                 <div className="text-xs font-medium text-center">
@@ -389,14 +395,16 @@ function Filters() {
                         ].map(({ label, icon, lines }) => (
                             <div
                                 key={label}
-                                onClick={() => setSelectedArrivalTime(selectedArrivalTime === label ? null : label)}
-                                className="cursor-pointer text-center flex flex-col items-center hover:opacity-80"
-                            >
-                                <div className={`w-10 h-10 rounded-full p-2 flex items-center justify-center mb-2 transition-colors duration-200 ${selectedArrivalTime === label ? 'bg-[#78080B]' : 'border-[#B5B5B5] border-2 border-solid'}`}>
+                                onClick={() => dispatch({
+                                    type: "SET_ARRIVAL_TIME",
+                                    payload: state.selectedArrivalTime === label ? null : label,
+                                })}
+                                className="cursor-pointer text-center flex flex-col items-center hover:opacity-80">
+                                <div className={`w-10 h-10 rounded-full p-2 flex items-center justify-center mb-2 transition-colors duration-200 ${state.selectedArrivalTime === label ? 'bg-[#78080B]' : 'border-[#B5B5B5] border-2 border-solid'}`}>
                                     <img
                                         src={icon}
                                         alt={label}
-                                        className={selectedArrivalTime === label ? 'filter invert brightness-0' : ''}
+                                        className={state.selectedArrivalTime === label ? 'filter invert brightness-0' : ''}
                                     />
                                 </div>
                                 <div className="text-xs font-medium text-center">
@@ -420,7 +428,7 @@ function Filters() {
                                 <span className="flex items-center">
                                     <input
                                         type="checkbox"
-                                        checked={selectedAirlines.includes(code)}
+                                        checked={state.selectedAirlines.includes(code)}
                                         onChange={() => toggleAirlineFilter(code)}
                                         className="mr-3 cursor-pointer accent-red-600"
                                     />
@@ -440,7 +448,7 @@ function Filters() {
                                 <label className="flex items-start gap-3 flex-1">
                                     <input
                                         type="checkbox"
-                                        checked={selectedAircraftSizes.includes(label)} // using context for selected airlines/facility
+                                        checked={state.selectedAircraftSizes.includes(label)}
                                         onChange={() => toggleAircraftFilter(label)}
                                         className="mt-1 cursor-pointer accent-red-600"
                                     />
@@ -451,15 +459,7 @@ function Filters() {
                         ))}
                     </div>
                 </div>
-            </div>
-            {showScrollTop && (
-                <button
-                    onClick={scrollToTop}
-                    className="cursor-pointer fixed bottom-6 right-6 bg-[#78080B] text-white px-4 py-2 rounded-full shadow-lg hover:bg-red-700 transition-colors"
-                >
-                    <p className='flex font-medium'> <ChevronUp className='mr-1' /> TOP</p>
-                </button>
-            )}
+            </div >
 
         </>
     )
