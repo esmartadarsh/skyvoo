@@ -3,7 +3,6 @@ import { Plus, LogOut } from "lucide-react";
 import FlightSeatIcon from "./FlightSeatIcon";
 
 function SeatButton({ seat, onClick, onHover, onLeave, getSeatVisual }) {
-    console.log(getSeatVisual)
     const visual = getSeatVisual(seat);
 
     return (

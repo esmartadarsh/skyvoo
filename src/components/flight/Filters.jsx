@@ -48,7 +48,6 @@ function Filters() {
 
     const [showAll, setShowAll] = useState(false);
     const [departureAirport, setDepartureAirport] = useState(null);
-    const [showScrollTop, setShowScrollTop] = useState(false);
 
     const [isDragging, setIsDragging] = useState(false);
     const sliderRef = useRef(null);
@@ -99,9 +98,7 @@ function Filters() {
         setValue((prev) => Math.round(prev / 100) * 100);
     };
 
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+
 
     useEffect(() => {
         if (isDragging) {
@@ -120,15 +117,6 @@ function Filters() {
             payload: [minValue, value],
         });
     }, [value, dispatch]);
-
-
-    useEffect(() => {
-        const handleScroll = () => {
-            setShowScrollTop(window.scrollY > 1000); // show after 300px scroll
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
 
     const percentage = ((value - minValue) / (maxValue - minValue)) * 100;
 
@@ -166,13 +154,11 @@ function Filters() {
         });
     };
 
-
     const clearAllFilters = () => {
         dispatch({ type: "RESET_FILTERS" });
         setValue(DEFAULT_SELECTED_PRICE);
         setDepartureAirport(null);
     };
-
 
     const selected = [
         ...state.selectedStops,
@@ -208,7 +194,6 @@ function Filters() {
             dispatch({ type: "SET_ARRIVAL_TIME", payload: null });
         }
     };
-
 
     return (
         <>
@@ -475,15 +460,6 @@ function Filters() {
                     </div>
                 </div>
             </div >
-            {showScrollTop && (
-                <button
-                    onClick={scrollToTop}
-                    className="cursor-pointer fixed bottom-6 right-6 bg-[#78080B] text-white px-4 py-2 rounded-full shadow-lg hover:bg-red-700 transition-colors"
-                >
-                    <p className='flex font-medium'> <ChevronUp className='mr-1' /> TOP</p>
-                </button>
-            )
-            }
 
         </>
     )

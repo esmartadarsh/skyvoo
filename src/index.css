@@ -1,6 +1,10 @@
 /* src/index.css */
 @import "tailwindcss";
 
+@theme {
+  --breakpoint-xs: 460px;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -151,13 +155,31 @@ button {
   scrollbar-color: #6366f1 rgba(0, 0, 0, 0.05);
 }
 
-/* @media (max-width: 767px) {
-  .plane {
-    position: relative !important;
-    right: 0 !important;
-    top: 0 !important;
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+@media (max-width: 768px) {
+  #FlightComparisonsSection {
+    width: 300px;
+    max-height: 500px;
+    font-size: 0.8rem;
   }
-} */
+}
 
 @media (max-width: 1280px) {
   .plane {

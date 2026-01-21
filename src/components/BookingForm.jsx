@@ -403,15 +403,15 @@ function BookingForm() {
             <div className="col-span-12 p-4 sm:p-6 lg:pt-10 lg:pb-5 lg:px-10 ">
                 {/* Tabs */}
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 text-black text-base sm:text-lg font-semibold">
-                    <button className="secondary-font flex items-center space-x-1 bg-[#D9D9D9] rounded-md px-3 sm:px-4 py-1 cursor-pointer text-black border-2 border-black">
+                    <button className="secondary-font flex items-center space-x-1 bg-[#D9D9D9] rounded-md px-2 xs:px-4 py-1 cursor-pointer text-black border-2 border-black">
                         <img src={Plane} alt="plane" className="w-5 h-5" />
                         <span>Flights</span>
                     </button>
-                    <button className="secondary-font flex items-center space-x-1 rounded-md px-3 sm:px-4 py-1 cursor-pointer border-2 border-transparent hover:bg-[#D9D9D9] hover:border-black">
+                    <button className="secondary-font flex items-center space-x-1 rounded-md px-2 xs:px-4 py-1 cursor-pointer border-2 border-transparent hover:bg-[#D9D9D9] hover:border-black">
                         <img src={Bed} alt="bed" className="w-6 h-6 sm:w-7 sm:h-7" />
                         <span>Hotels</span>
                     </button>
-                    <button className="secondary-font flex items-center space-x-1 rounded-md px-3 sm:px-4 py-1 cursor-pointer border-2 border-transparent hover:bg-[#D9D9D9] hover:border-black">
+                    <button className="secondary-font flex items-center space-x-1 rounded-md px-2 xs:px-4 py-1 cursor-pointer border-2 border-transparent hover:bg-[#D9D9D9] hover:border-black">
                         <img src={Car} alt="car" className="w-6 h-6 sm:w-7 sm:h-7" />
                         <span>Cabs</span>
                     </button>

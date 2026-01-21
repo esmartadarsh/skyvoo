@@ -144,7 +144,8 @@ const AirportOptions = [
     }
 ];
 
-function FlightResultsSearchHeader() {
+function FlightResultsSearchHeaderMobile({ open, onClose }) {
+
 
     const [flightSearchInfo, setFlightSearchInfo] = useState({
         from: '',
@@ -154,7 +155,6 @@ function FlightResultsSearchHeader() {
         traveller: 1,
     });
 
-    const [isEditable, setIsEditable] = useState(false);
     const [isSwapping, setIsSwapping] = useState(false);
     const [rotation, setRotation] = useState(0);
     const [tripType, setTripType] = useState('roundTrip');
@@ -174,8 +174,6 @@ function FlightResultsSearchHeader() {
     const returnRef = useRef();
 
     const travellerBoxRef = useRef(null);
-
-    const handleModifySearch = () => setIsEditable(true);
 
     const [travellers, setTravellers] = useState({
         adults: 1,
@@ -229,7 +227,6 @@ function FlightResultsSearchHeader() {
         setDepartOpen(false);
     };
 
-
     const handleReturnSelect = (date) => {
         handleFlightInputChange("return", date);
         setReturnOpen(false);
@@ -251,14 +248,6 @@ function FlightResultsSearchHeader() {
             document.removeEventListener('keydown', handleEsc);
         };
     }, []);
-
-    useEffect(() => {
-        if (isEditable && contentRef.current) {
-            setFareTypeHeight(contentRef.current.scrollHeight);
-        } else {
-            setFareTypeHeight(0);
-        }
-    }, [isEditable]);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -297,42 +286,53 @@ function FlightResultsSearchHeader() {
         }));
     };
 
+
     return (
-        <div className="relative bg-[#78080B] text-white px-2 sm:px-4 py-3 sm:py-5 z-999 mb-4" style={{ boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.25)' }}>
-            <div className="max-w-7xl mx-auto flex items-center justify-between">
-                {/* Main Search Grid */}
-                <div className="w-full grid grid-cols-15 gap-3 items-end secondary-font font-semibold">
+        <>
+            <div className={`fixed inset-0 z-[9999] transition-all  duration-300 ${open ? 'opacity-100 visible' : 'opacity-0 invisible'} `} >
+                {/* Background Blur */}
+                <div onClick={onClose} className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
 
-                    {/* Trip Type */}
-                    <div className="col-span-1 col-span-2">
-                        <label className="block text-sm sm:text-base text-white mb-1">Trip Type</label>
-                        <select
-                            value={tripType}
-                            onChange={(e) => setTripType(e.target.value)}
-                            className="w-full p-2 bg-transparent font-medium text-base sm:text-lg border-b border-white text-white placeholder-white focus:outline-none"
-                            disabled={!isEditable}
-                        >
-                            <option value="oneWay" className='text-black font-medium'>One Way</option>
-                            <option value="roundTrip" className='text-black font-medium'>Round Trip</option>
-                            <option value="multiCity" className='text-black font-medium'>Multi City</option>
-                        </select>
-                    </div>
+                {/* Sliding Panel */}
+                <div
+                    className={` absolute top-0 left-0 right-0 bg-[#78080B] text-white transform transition-transform duration-300 max-h-[80vh] overflow-hidden ${open ? 'translate-y-0' : '-translate-y-full'} `}>
+                    <div className="max-h-[80vh] overflow-y-auto overscroll-contain touch-pan-y">
+                        <div className="flex items-center justify-between px-4 py-3">
 
-                    {tripType === 'multiCity' ? (
-                        <div className="col-span-11 flex flex-col items-start">
-                            <label className="block text-sm sm:text-base text-white ">From (Multi City)</label>
-                            <input
-                                type="text"
-                                placeholder="Enter multiple destinations"
-                                value={flightSearchInfo.from}
-                                onChange={(e) => handleFlightInputChange('from', e.target.value)}
-                                className="w-full bg-transparent font-medium text-base sm:text-lg border-b border-white text-white placeholder-white focus:outline-none"
-                            />
+                            {/* Close button */}
+                            <button
+                                onClick={onClose}
+                                className="p-2 -ml-2 rounded-full active:scale-95 transition"
+                                aria-label="Close modify search"
+                            >
+                                <X size={20} />
+                            </button>
+
+                            {/* Title */}
+                            <h2 className="text-sm font-semibold tracking-wide">
+                                Modify Flight Search
+                            </h2>
+
+                            {/* Spacer to balance layout */}
+                            <div className="w-8" />
                         </div>
-                    ) : (
-                        <>
-                            {/* From */}
 
+
+                        <div className="flex gap-2 px-4 pb-2">
+                            {['oneWay', 'roundTrip', 'multiCity'].map(type => (
+                                <button
+                                    key={type}
+                                    onClick={() => setTripType(type)}
+                                    className={` flex-1 py-2 rounded-full text-sm font-semibold ${tripType === type ? 'bg-white text-[#78080B]' : 'bg-white/20 text-white'}`}>
+                                    {type === 'oneWay' && 'One Way'}
+                                    {type === 'roundTrip' && 'Round Trip'}
+                                    {type === 'multiCity' && 'Multi City'}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="grid grid-cols-5 gap-2 px-4">
+                            {/* From */}
                             <div className="col-span-2">
                                 <label className="block text-lg text-white">From</label>
                                 <Select
@@ -341,7 +341,6 @@ function FlightResultsSearchHeader() {
                                     onChange={(option) => { handleFlightInputChange("from", option) }}
                                     placeholder="Origin"
                                     isSearchable
-                                    isDisabled={!isEditable}
                                     menuPlacement="bottom"
                                     getOptionLabel={(option) => `${option.city} - ${option.airportName}`}
                                     components={{
@@ -407,9 +406,8 @@ function FlightResultsSearchHeader() {
                                 <button
                                     type="button"
                                     onClick={handleSwap}
-                                    disabled={!isEditable}
                                     aria-label="Swap origin and destination"
-                                    className={`${isEditable ? '!cursor-pointer' : '!cursor-default'} p-2 rounded-full transition-transform duration-300`}
+                                    className={`p-2 rounded-full transition-transform duration-300`}
                                 >
                                     <div
                                         className="relative w-6 h-6 transition-transform duration-500"
@@ -426,7 +424,6 @@ function FlightResultsSearchHeader() {
                             </div>
 
                             {/* To */}
-
                             <div className="col-span-2">
                                 <label className="block text-lg text-white">To</label>
                                 <Select
@@ -435,7 +432,6 @@ function FlightResultsSearchHeader() {
                                     onChange={(option) => { handleFlightInputChange("to", option || null) }}
                                     placeholder="Destination"
                                     isSearchable
-                                    isDisabled={!isEditable}
                                     menuPlacement="bottom"
                                     getOptionLabel={(option) => `${option.city} - ${option.airportName}`}
                                     components={{
@@ -494,9 +490,11 @@ function FlightResultsSearchHeader() {
                                     }}
                                 />
                             </div>
+                        </div>
 
+                        <div className="grid grid-cols-2 gap-2 px-4 mt-4">
                             {/* Depart */}
-                            <div className="col-span-2 relative" ref={departRef}>
+                            <div className="col-span-1 relative" ref={departRef}>
                                 <label className="block text-lg text-white mb-1 flex items-center gap-2">
                                     Depart
                                 </label>
@@ -506,12 +504,8 @@ function FlightResultsSearchHeader() {
                                     readOnly
                                     value={departSelected ? format(departSelected, "PPP") : ""}
                                     placeholder="Select Depart"
-                                    onClick={() => {
-                                        if (!isEditable) return;
-                                        setDepartOpen(prev => !prev);
-                                    }}
+                                    onClick={() => { setDepartOpen(prev => !prev); }}
                                     className="w-full text-xl text-white border-b border-white focus:outline-none placeholder-white p-2 cursor-pointer"
-                                    disabled={!isEditable}
                                 />
 
                                 {departOpen && (
@@ -533,18 +527,13 @@ function FlightResultsSearchHeader() {
 
                             {/* Return (conditionally rendered) */}
                             {tripType === 'roundTrip' && (
-                                <div className="col-span-2 relative" ref={returnRef}>
+                                <div className="col-span-1 relative" ref={returnRef}>
                                     <div className="flex items-center justify-between mb-1">
                                         <label className="block text-lg text-white flex items-center gap-2">Return</label>
                                         {flightSearchInfo.return && (
                                             <div
                                                 className="bg-[#0a223d] rounded-full w-4 h-4 flex justify-center items-center cursor-pointer hover:bg-[#12345a]"
-                                                onClick={() => {
-                                                    if (!isEditable) return;
-                                                    handleFlightInputChange("return", null);
-                                                }}
-
-                                            >
+                                                onClick={() => { handleFlightInputChange("return", null); }}>
                                                 <X className="h-3 w-3 text-white" />
                                             </div>
                                         )}
@@ -555,12 +544,8 @@ function FlightResultsSearchHeader() {
                                         readOnly
                                         value={flightSearchInfo.return ? format(flightSearchInfo.return, "PPP") : ""}
                                         placeholder="Select Return"
-                                        onClick={() => {
-                                            if (!isEditable) return;
-                                            setReturnOpen(prev => !prev);
-                                        }}
+                                        onClick={() => { setReturnOpen(prev => !prev) }}
                                         className="w-full text-xl text-white border-b border-white focus:outline-none placeholder-white p-2 cursor-pointer"
-                                        disabled={!isEditable}
                                     />
 
                                     {returnOpen && (
@@ -580,15 +565,16 @@ function FlightResultsSearchHeader() {
                                 </div>
                             )}
 
+
+                        </div>
+
+                        <div className="px-4 mt-4">
                             {/* Traveler */}
                             <div className="col-span-2 relative">
                                 <label className="block text-sm sm:text-base mb-2">Travelers & Class</label>
                                 <div
-                                    onClick={() => {
-                                        if (!isEditable) return;
-                                        setShowTravellerBox(prev => !prev);
-                                    }}
-                                    className={`border-b border-white text-white font-medium text-base sm:text-lg flex justify-between items-center  ${isEditable ? 'cursor-pointer' : ''}`}>
+                                    onClick={() => { setShowTravellerBox(prev => !prev) }}
+                                    className={`border-b border-white text-white font-medium text-base sm:text-lg flex justify-between items-center`}>
 
                                     <span className="truncate whitespace-nowrap overflow-hidden text-ellipsis p-2">
                                         {(() => {
@@ -606,10 +592,10 @@ function FlightResultsSearchHeader() {
                                     </span>
                                 </div>
 
-                                {isEditable && showTravellerBox && (
+                                {showTravellerBox && (
                                     <div
                                         className="absolute left-0 right-0 lg:right-0 lg:left-auto z-999 mt-2 w-full lg:w-[45rem] bg-white rounded-md shadow-lg px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-6 text-black overflow-hidden transition-all duration-500"
-                                        style={{ height: isEditable && showTravellerBox ? `${travellerBoxRef.current?.scrollHeight}px` : '0px' }}
+                                        style={{ height: showTravellerBox ? `${travellerBoxRef.current?.scrollHeight}px` : '0px' }}
                                         ref={travellerBoxRef}
                                     >
                                         {/* Adults Section */}
@@ -731,59 +717,64 @@ function FlightResultsSearchHeader() {
                                     </div>
                                 )}
                             </div>
-                        </>
-                    )}
+                        </div>
 
-                    {/* Search Button */}
-                    <div className="col-span-2 flex justify-center relative">
-                        <a href="#" id='ModifySearchButton' onClick={handleModifySearch} className="text-sm sm:text-base">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                            {isEditable ? "SEARCH" : "MODIFY SEARCH"}
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            {/* Fare Type */}
-            <div
-                className="filter-section max-w-7xl mx-auto mt-4 font-medium overflow-hidden transition-all duration-500"
-                style={{ height: isEditable ? `${fareTypeHeight}px` : '0px' }}
-                ref={fareTypeRef}
-            >
-                <div ref={contentRef}>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-start space-y-3 sm:space-y-0 sm:space-x-6">
-                        <span className="text-sm sm:text-base">Fare Type</span>
-                        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6 rounded-xl filterglasseffect px-3 sm:px-4 w-full sm:w-auto">
-                            {[
-                                { value: "regular", label: "Regular", checked: true },
-                                { value: "student", label: "Student" },
-                                { value: "senior", label: "Senior Citizen" },
-                                { value: "armed", label: "Armed Forces" },
-                                { value: "doctor", label: "Doctor and Nurses" },
-                            ].map(({ value, label, checked }, i) => (
-                                <div key={value} className={`${i !== 0 ? "sm:border-l border-white" : ""}`}>
-                                    <label className="flex py-2 sm:ml-2 items-center space-x-1 cursor-pointer text-sm sm:text-base">
-                                        <input
-                                            type="radio"
-                                            name="fareType"
-                                            value={value}
-                                            defaultChecked={checked}
-                                            className="mr-2 text-red-600 focus:ring-0"
-                                            disabled={!isEditable}
-                                        />
-                                        <span>{label}</span>
-                                    </label>
+                        <div className="px-4 mt-4 space-y-2">
+                            {/* Fare Type */}
+                            <div
+                                className="filter-section max-w-7xl mx-auto mt-4 font-medium overflow-hidden transition-all duration-500"
+                                ref={fareTypeRef}
+                            >
+                                <div ref={contentRef}>
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-start space-y-3 sm:space-y-0 sm:space-x-6">
+                                        <span className="text-sm sm:text-base">Fare Type</span>
+                                        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6 rounded-xl filterglasseffect px-3 sm:px-4 w-full sm:w-auto">
+                                            {[
+                                                { value: "regular", label: "Regular", checked: true },
+                                                { value: "student", label: "Student" },
+                                                { value: "senior", label: "Senior Citizen" },
+                                                { value: "armed", label: "Armed Forces" },
+                                                { value: "doctor", label: "Doctor and Nurses" },
+                                            ].map(({ value, label, checked }, i) => (
+                                                <div key={value} className={`${i !== 0 ? "sm:border-l border-white" : ""}`}>
+                                                    <label className="flex py-2 sm:ml-2 items-center space-x-1 cursor-pointer text-sm sm:text-base">
+                                                        <input
+                                                            type="radio"
+                                                            name="fareType"
+                                                            value={value}
+                                                            defaultChecked={checked}
+                                                            className="mr-2 text-red-600 focus:ring-0"
+                                                        />
+                                                        <span>{label}</span>
+                                                    </label>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
-                            ))}
+                            </div>
+                        </div>
+
+                        <div className="p-4">
+                            <button
+                                onClick={() => {
+                                    // trigger search
+                                    onClose();
+                                }}
+                                className="w-full bg-white text-[#78080B] py-3 rounded-xl font-bold"
+                            >
+                                SEARCH FLIGHTS
+
+                            </button>
                         </div>
                     </div>
+
+
                 </div>
             </div>
-        </div >
+        </>
+
     )
 }
 
-export default FlightResultsSearchHeader
+export default FlightResultsSearchHeaderMobile

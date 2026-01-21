@@ -1,12 +1,13 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import FareRulesModal from '@/components/common/Modals/FareRulesModal';
 import TripBenefitsModal from '@/components/common/Modals/TripBenefitsModal';
 import TicketDetailsReviewModal from '@/components/common/Modals/TicketDetailsReviewModal';
+import ViewAllCouponsModal from '@/components/common/Modals/ViewAllCouponsModal';
 import BaggageModal from '@/components/common/Modals/BaggageModal';
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 import CouponBg from '@/assets/imgs/couponbg.webp';
-import Dash from '@/assets/vectors/Dash.svg'
-import { Trash2, Plane, User, Luggage, AlertCircle, ShieldCheck, CirclePlus, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import OfferPromo from '@/assets/vectors/OfferPromo.svg';
+import { Trash2, Plane, User, Luggage, AlertCircle, ShieldCheck, CirclePlus, ShieldAlert, ChevronRight } from 'lucide-react';
 import Select from "react-select";
 import { useNavigate } from 'react-router-dom';
 
@@ -17,6 +18,7 @@ export default function ReviewDetails() {
   const [isFareModalOpen, setIsFareModalOpen] = useState(false);
   const [isTripBenefitsModal, setIsTripBenefitsModal] = useState(false);
   const [isTicketDetailsReviewModal, setIsTicketDetailsReviewModal] = useState(false);
+  const [isViewAllCouponsModal, setIsViewAllCouponsModal] = useState(false);
   const [isBaggageModal, setIsBaggageModal] = useState(false);
   const [selectedFare, setSelectedFare] = useState('your-selection');
   const [isTripSecure, setIsTripSecure] = useState(false);
@@ -125,6 +127,7 @@ export default function ReviewDetails() {
       section.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
+
   const TotalTravellers = { Adults: 4, Childs: 2, Infants: 2 }
 
   const { Adults, Childs, Infants } = TotalTravellers;
@@ -136,6 +139,14 @@ export default function ReviewDetails() {
     Childs: [],
     Infants: [],
   });
+
+  const [activeTab, setActiveTab] = useState("flight-summary");
+
+  const handleTabClick = (id) => {
+    setActiveTab(id);
+    handleScroll(id);
+  };
+
 
   const updateTraveller = (category, index, field, value) => {
     const updated = { ...travellers };
@@ -178,6 +189,7 @@ export default function ReviewDetails() {
   const [showCoupons, setShowCoupons] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [manualCode, setManualCode] = useState("");
+  const [couponCode, setCouponCode] = useState('');
 
   const coupons = [
     { code: "SAVE200", label: "₹200 off on your booking", discountType: "flat", value: 200 },
@@ -202,6 +214,12 @@ export default function ReviewDetails() {
     return Math.max(subtotal - discount, 0);
   }, [selectedCoupon, subtotal]);
 
+  const handleApply = () => {
+    if (couponCode.trim()) {
+      console.log('Applying coupon:', couponCode);
+    }
+  };
+
   const handleApplyCoupon = (coupon) => {
     setSelectedCoupon(coupon);
   };
@@ -220,34 +238,68 @@ export default function ReviewDetails() {
     }
   };
 
+  useEffect(() => {
+    const sections = [
+      "flight-summary",
+      "travel-insurance",
+      "traveller-details",
+      "seats-meals",
+      "add-ons",
+    ];
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveTab(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: "-40% 0px -50% 0px" }
+    );
+
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+
   return (
     <>
       {isFareModalOpen && <FareRulesModal onClose={() => setIsFareModalOpen(false)} />}
       {isTripBenefitsModal && <TripBenefitsModal onClose={() => setIsTripBenefitsModal(false)} />}
       {isTicketDetailsReviewModal && <TicketDetailsReviewModal onClose={() => setIsTicketDetailsReviewModal(false)} />}
-
       {isBaggageModal && <BaggageModal onClose={() => setIsBaggageModal(false)} />}
 
-      <div className="min-h-screen">
+      {/* Coupons Filters Drawer */}
+      {isViewAllCouponsModal && (
+        <ViewAllCouponsModal
+          onClose={() => setIsViewAllCouponsModal(false)}
+        />
+      )}
+
+      <div className="min-h-screen relative">
         {/* Header */}
-        {/* <div className="z-999 bg-slate-900 text-white py-6 px-4 sticky top-0"> */}
         <div className="z-999 bg-[#78080B] text-white py-6 px-4 sticky top-0" style={{ boxShadow: ' 0px 4px 4px 0px rgba(0, 0, 0, 0.25)' }}>
 
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Complete your booking</h1>
-            <div className="flex gap-4 text-sm">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <h1 className="text-xl sm:text-2xl font-bold">Complete your booking</h1>
+            <div className="hidden lg:flex gap-4 text-sm">
               <span
                 className="cursor-pointer text-slate-300 hover:text-white transition"
                 onClick={() => handleScroll("flight-summary")}
               >
                 Flights Summary
               </span>
-              <span
+              {/* <span
                 className="cursor-pointer text-slate-300 hover:text-white transition"
                 onClick={() => handleScroll("travel-insurance")}
               >
                 Travel Insurance
-              </span>
+              </span> */}
               <span
                 className="cursor-pointer text-slate-300 hover:text-white transition"
                 onClick={() => handleScroll("traveller-details")}
@@ -268,16 +320,46 @@ export default function ReviewDetails() {
               </span>
             </div>
           </div>
+
+          <div className="flex mt-1 lg:hidden gap-2 overflow-x-auto scrollbar-hide text-sm whitespace-nowrap px-1">
+            {[
+              ["flight-summary", "Flights Summary"],
+              // ["travel-insurance", "Travel Insurance"],
+              ["traveller-details", "Traveller Details"],
+              ["seats-meals", "Seats & Meals"],
+              ["add-ons", "Add-ons"],
+            ].map(([id, label]) => {
+              const isActive = activeTab === id;
+
+              return (
+                <button
+                  key={id}
+                  onClick={() => handleTabClick(id)}
+                  className={`
+          px-4 py-1 rounded-full transition-all duration-200 flex-shrink-0
+          ${isActive
+                      ? "bg-white text-[#78080B] font-semibold shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-white/10"}
+        `}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+
+
         </div>
 
         <div className="relative z-20 pb-5 sm:pb-2 bg-cover bg-center">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6">
               {/* Main Content */}
-              <div className="lg:col-span-3 space-y-6">
+              <div className="order-1 lg:order-1 lg:col-span-3 space-y-4 sm:space-y-6">
                 {/* Airport Alert */}
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg py-1 px-2 flex items-start gap-3">
                   <Plane className="w-5 h-5 text-yellow-600 mt-0.5" />
+
                   <p className="text-sm text-yellow-800">
                     Your flight departs from <strong>Hindon Airport</strong>, which is <strong>32 km away from Indira Gandhi International Airport</strong>.
                   </p>
@@ -285,18 +367,28 @@ export default function ReviewDetails() {
 
                 {/* Flight Details Card */}
                 <div id="flight-summary" className="bg-white rounded-lg shadow-sm border border-slate-200">
-                  <div className="p-4" >
+                  <div className="p-2 sm:p-4" >
                     <div className='p-2' style={{ boxShadow: '0 1px 4px 0 rgba(0, 0, 0, .21)' }}>
                       {/* Route Header */}
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-1 h-20 bg-blue-500 rounded"></div>
+                      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
+                        <div className="flex items-start gap-3">
+                          <div className="w-1 h-16 sm:h-20 bg-blue-500 rounded"></div>
+
                           <div>
-                            <h2 className="text-2xl font-bold text-slate-900">Ghaziabad → Bengaluru</h2>
-                            <p className="text-sm text-slate-600 mt-1"><span className='bg-yellow-50 border border-yellow-200 rounded-lg py-1 px-2'>Thursday, Oct 9</span> Non Stop · 2h 50m</p>
+                            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-900">
+                              Ghaziabad → Bengaluru
+                            </h2>
+
+                            <p className="text-xs sm:text-sm text-slate-600 mt-1 flex flex-wrap gap-2">
+                              <span className="bg-yellow-50 border border-yellow-200 rounded-lg py-1 px-2">
+                                Thursday, Oct 9
+                              </span>
+                              <span>Non Stop · 2h 50m</span>
+                            </p>
                           </div>
                         </div>
-                        <span className="bg-[#78080B] text-white text-xs font-semibold px-3 py-1 rounded">
+
+                        <span className="self-start lg:self-center bg-[#78080B] text-white text-xs font-semibold px-3 py-1 rounded">
                           CANCELLATION FEES APPLY
                         </span>
                       </div>
@@ -304,52 +396,60 @@ export default function ReviewDetails() {
                       <button className="cursor-pointer text-blue-600 text-sm font-medium mb-4" onClick={() => setIsFareModalOpen(true)}>View Fare Rules</button>
 
                       {/* Airline Info */}
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                          <img src={AirlineLogo} alt="airline logo" />
+                      <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-3 mb-6">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <img src={AirlineLogo} alt="airline logo" className="w-8 h-8" />
+
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                            <span className="font-semibold text-sm">Air India Express</span>
+                            <span className="text-slate-600 text-xs sm:text-sm">IX 1971</span>
+                            <span className="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded">
+                              Boeing 737
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="text-sm">
+                          <span className="text-slate-600">Economy &gt; </span>
+                          <span className="text-blue-600 font-semibold">Xpress Value</span>
+                        </div>
+                      </div>
+
+
+                      {/* Flight Times */}
+                      <div className="space-y-4 p-3 sm:p-4 bg-[#f4f4f4]">
+                        <div className="flex gap-4">
+                          <div className="text-xl sm:text-2xl font-bold">08:50</div>
                           <div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold">Air India Express</span>
-                              <span className="text-slate-600">IX 1971</span>
-                              <span className="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded">Boeing 737</span>
+                            <div className="font-semibold text-sm sm:text-base">Ghaziabad</div>
+                            <div className="text-xs sm:text-sm text-slate-600">
+                              Hindon Airport
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-slate-600">Economy &gt;</span>
-                          <span className="text-blue-600 font-semibold text-sm">Xpress Value</span>
-                        </div>
-                      </div>
 
-                      {/* Flight Times */}
-                      <div className="space-y-4 p-4 bg-[#f4f4f4]">
-                        <div className="flex items-start gap-4">
-                          <div className="text-2xl font-bold">08:50</div>
+                        <div className="ml-6 border-l-2 border-dashed border-slate-300 pl-4 py-2">
+                          <div className="text-xs sm:text-sm text-slate-600">2h 50m</div>
+                        </div>
+
+                        <div className="flex gap-4">
+                          <div className="text-xl sm:text-2xl font-bold">11:40</div>
                           <div>
-                            <div className="font-semibold">Ghaziabad</div>
-                            <div className="text-sm text-slate-600">Hindon Airport</div>
-                          </div>
-                        </div>
-
-                        <div className="ml-7 border-l-2 border-dashed border-slate-300 pl-4 py-2">
-                          <div className="text-sm text-slate-600">2h 50m</div>
-                        </div>
-
-                        <div className="flex items-start gap-4">
-                          <div className="text-2xl font-bold">11:40</div>
-                          <div>
-                            <div className="font-semibold">Bengaluru</div>
-                            <div className="text-sm text-slate-600">Bengaluru International Airport, Terminal T2</div>
+                            <div className="font-semibold text-sm sm:text-base">Bengaluru</div>
+                            <div className="text-xs sm:text-sm text-slate-600">
+                              Bengaluru International Airport, T2
+                            </div>
                           </div>
                         </div>
                       </div>
+
 
                       <div className='bg-[#f4f4f4] flex justify-center'>
                         <div className='border-t border-slate-300 w-[95%]'></div>
                       </div>
 
                       {/* Baggage Info */}
-                      <div className="flex items-center gap-6  p-4 bg-[#f4f4f4]">
+                      <div className="flex flex-col sm:flex-row gap-3 p-4 bg-[#f4f4f4] text-xs sm:text-sm">
                         <div className="flex items-center gap-2">
                           <Luggage className="w-5 h-5 text-slate-600" />
                           <span className="text-sm"><strong>Cabin Baggage:</strong> 7 Kgs / Adult</span>
@@ -361,14 +461,19 @@ export default function ReviewDetails() {
                       </div>
 
                       {/* Extra Baggage Notice */}
-                      <div className="mt-3 bg-[#f4f4f4] border border-blue-200 p-4 flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                          <Luggage className="w-5 h-5 text-[#78080B]" />
-                          <p className="text-sm text-slate-700">
-                            <strong>3 KGs of extra baggage added on your trip for ₹ 2,100!</strong> Total check-in baggage is now 18 KGs.
+                      <div className="mt-3 bg-[#f4f4f4] border border-blue-200 p-4 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+                        <div className="flex items-start gap-3">
+                          <Luggage className="w-5 h-5 text-[#78080B] shrink-0" />
+                          <p className="text-xs sm:text-sm text-slate-700">
+                            <strong>3 KGs of extra baggage added on your trip for ₹ 2,100!</strong>
+                            <br className="sm:hidden" />
+                            Total check-in baggage is now 18 KGs.
                           </p>
                         </div>
-                        <button className="cursor-pointer text-blue-600 font-semibold text-sm whitespace-nowrap" onClick={() => setIsBaggageModal(true)}>ADD BAGGAGE</button>
+
+                        <button className="text-blue-600 font-semibold text-sm whitespace-nowrap self-start sm:self-auto" onClick={() => setIsBaggageModal(true)}>
+                          ADD BAGGAGE
+                        </button>
                       </div>
 
                     </div>
@@ -384,7 +489,7 @@ export default function ReviewDetails() {
                     <div className="flex items-start gap-3 mb-4">
                       <img src={AirlineLogo} alt="Airline logo" className="w-10 h-10 object-contain" />
 
-                      <div className="flex flex-row sm:flex-row gap-4 w-full">
+                      <div className="flex flex-col sm:flex-row gap-4 w-full">
                         <div>
                           <div className="font-semibold mb-1">HDO-BLR</div>
                           <div className="text-sm text-slate-600 mb-3">Cancellation Penalty:</div>
@@ -395,8 +500,8 @@ export default function ReviewDetails() {
                           {/* Timeline */}
                           <div className="relative">
                             <div className="flex items-center justify-around mb-2">
-                              <span className="text-lg font-bold">₹ 4,650</span>
-                              <span className="text-lg font-bold">₹ 6,849</span>
+                              <span className="text-base sm:text-lg font-bold">₹ 4,650</span>
+                              <span className="text-base sm:text-lg font-bold">₹ 6,849</span>
                             </div>
 
                             <div className="h-2 bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 rounded-full mb-2"></div>
@@ -424,16 +529,15 @@ export default function ReviewDetails() {
                 </div>
 
                 {/* Upgrade Fare Options */}
-                <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+                {/* <div className="bg-white rounded-lg shadow-sm border border-slate-200">
                   <div className="p-4" >
                     <div className='p-2' style={{ boxShadow: '0 1px 4px 0 rgba(0, 0, 0, .21)' }}>
                       <h3 className="text-lg font-bold mb-6">Get more benefits by upgrading your fare</h3>
 
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {/* Your Selection */}
-                        <div
-                          className={`border-2 rounded-lg p-4 cursor-pointer ${selectedFare === 'your-selection' ? 'border-[#78080B] bg-blue-50' : 'border-slate-200'
-                            }`}
+                {/* <div
+                          className={`border-2 rounded-lg p-4 cursor-pointer ${selectedFare === 'your-selection' ? 'border-[#78080B] bg-blue-50' : 'border-slate-200'}`}
                           onClick={() => setSelectedFare('your-selection')}
                         >
                           <div className="flex items-center gap-2 mb-3">
@@ -477,10 +581,10 @@ export default function ReviewDetails() {
 
                           </div>
 
-                        </div>
+                        </div> */}
 
-                        {/* Skyvoo Regular */}
-                        <div
+                {/* Skyvoo Regular */}
+                {/* <div
                           className={`border-2 rounded-lg p-4 cursor-pointer ${selectedFare === 'skyvoo-regular' ? 'border-[#78080B] bg-blue-50' : 'border-slate-200'}`}
                           onClick={() => setSelectedFare('skyvoo-regular')}
                         >
@@ -548,10 +652,10 @@ export default function ReviewDetails() {
 
                           </div>
 
-                        </div>
+                        </div> */}
 
-                        {/* Skyvoo Premium */}
-                        <div
+                {/* Skyvoo Premium */}
+                {/* <div
                           className={`border-2 rounded-lg p-4 cursor-pointer ${selectedFare === 'skyvoo-premium' ? 'border-[#78080B] bg-blue-50' : 'border-slate-200'
                             }`}
                           onClick={() => setSelectedFare('skyvoo-premium')}
@@ -624,9 +728,9 @@ export default function ReviewDetails() {
 
                         </div>
                       </div>
-                      <button className="text-blue-600 my-3 text-sm font-medium mb-4">View Fare Rules</button>
-                      {/* Extra Baggage Notice */}
-                      <div className="bg-[#f4f4f4] border border-blue-200 p-4 flex items-start justify-between">
+                      <button className="text-blue-600 my-3 text-sm font-medium mb-4">View Fare Rules</button> */}
+                {/* Extra Baggage Notice */}
+                {/* <div className="bg-[#f4f4f4] border border-blue-200 p-4 flex items-start justify-between">
                         <div className="flex items-center gap-3">
                           <ShieldCheck className="w-5 h-5 text-[#78080B]" />
                           <p className="text-sm text-slate-700">
@@ -638,7 +742,7 @@ export default function ReviewDetails() {
 
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Important Information */}
                 <div className="bg-white rounded-lg shadow-sm border border-slate-200">
@@ -684,23 +788,23 @@ export default function ReviewDetails() {
                 </div>
 
                 {/* Trip Secure */}
-                <div id="travel-insurance" className="bg-white rounded-lg shadow-sm border border-slate-200">
-                  <div className="p-5">
-                    {/* Header */}
-                    <div className="flex items-center mb-4">
+                {/* <div id="travel-insurance" className="bg-white rounded-lg shadow-sm border border-slate-200">
+                  <div className="p-5"> */}
+                {/* Header */}
+                {/* <div className="flex items-center mb-4">
                       <ShieldCheck className="mr-4 w-5 h-5 text-[#78080B]" />
                       <h3 className="text-lg font-bold">Trip Secure</h3>
-                    </div>
+                    </div> */}
 
-                    {/* Pricing + Benefits Section */}
-                    <div className="bg-[#f4f4f4] py-3 px-3 rounded-md">
-                      {/* Pricing */}
-                      <p className="text-lg font-semibold mb-3">
+                {/* Pricing + Benefits Section */}
+                {/* <div className="bg-[#f4f4f4] py-3 px-3 rounded-md"> */}
+                {/* Pricing */}
+                {/* <p className="text-lg font-semibold mb-3">
                         ₹199 <span className="text-xs text-slate-500">/Traveller (18% GST included)</span>
-                      </p>
+                      </p> */}
 
-                      {/* Benefits Grid */}
-                      <div className="flex gap-3s grid grid-cols-7 items-center flex-wrap">
+                {/* Benefits Grid */}
+                {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                         <div className="flex col-span-2 items-center bg-white rounded-md px-2 py-2 border border-slate-200">
                           <Luggage className="mr-2 text-slate-600" />
                           <div>
@@ -732,10 +836,10 @@ export default function ReviewDetails() {
                           View All Benefits →
                         </div>
                       </div>
-                    </div>
+                    </div> */}
 
-                    {/* Selection Section */}
-                    <div className="mt-4 space-y-3">
+                {/* Selection Section */}
+                {/* <div className="mt-4 space-y-3">
                       <p className="text-xs text-slate-500 bg-slate-100 px-2 py-1 inline-block rounded">
                         Chosen by 2 lakh+ people in last 1 month
                       </p>
@@ -743,8 +847,8 @@ export default function ReviewDetails() {
                       <label className="flex items-center space-x-2">
                         <input type="radio" name="tripSecure" onClick={() => { setIsTripSecure(true) }} />
                         <span className="text-slate-800">Yes, Secure my trip.</span>
-                      </label>
-                      {isTripSecure && (
+                      </label> */}
+                {/* {isTripSecure && (
                         <div className="bg-green-100 border border-green-300 rounded-md p-2 flex items-center space-x-2">
                           <CheckCircle2 className="w-4 h-4 text-green-600" />
                           <span className="text-green-700 text-sm">Great! Your trip is secured.</span>
@@ -769,10 +873,10 @@ export default function ReviewDetails() {
                         </label>
                       )}
 
-                    </div>
+                    </div> */}
 
-                    {/* Testimonials */}
-                    <div className='mt-5'>
+                {/* Testimonials */}
+                {/* <div className='mt-5'>
                       <p className="text-xs px-2 py-1 mb-3">
                         Preferred by millions of travellers
                       </p>
@@ -794,16 +898,16 @@ export default function ReviewDetails() {
                           <span className="text-xs font-semibold">~ Karthik Ritesh</span>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
 
 
-                    {/* Footer */}
-                    <p className="text-xs text-slate-500 mt-4">
+                {/* Footer */}
+                {/* <p className="text-xs text-slate-500 mt-4">
                       Trip Secure is non-refundable. By selecting it, I confirm that the age of all travellers is between 6 months and 90 years,
                       and I agree to the <a href="#" className="text-blue-600 underline">T&Cs</a>.
                     </p>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Travellers Details */}
                 <div id="traveller-details" className="bg-white rounded-lg shadow-sm border border-slate-200">
@@ -846,7 +950,8 @@ export default function ReviewDetails() {
                               )}
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+
                               <input
                                 type="text"
                                 placeholder="First & Middle Name"
@@ -863,7 +968,7 @@ export default function ReviewDetails() {
                               />
 
                               {/* Gender */}
-                              <div className="flex gap-2">
+                              <div className="flex flex-col sm:flex-row gap-2">
                                 {['MALE', 'FEMALE'].map((g) => (
                                   <button
                                     key={g}
@@ -956,81 +1061,108 @@ export default function ReviewDetails() {
                 </div>
 
                 {/* State Info */}
-                <div className="bg-white rounded-lg shadow-sm border border-slate-200">
-                  <div className="p-5">
-                    {/* Booking Details Section */}
-                    <p className="text-slate-800 mb-3 text-xs"><span className='font-semibold text-lg'>Your State</span>  (Required for GST purpose on your tax invoice. You can edit this anytime later in your profile section.) </p>
+                <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-5">
+                  {/* Booking Details Section */}
+                  <p className="text-slate-800 mb-3 text-xs"><span className='font-semibold text-lg'>Your State</span>  (Required for GST purpose on your tax invoice. You can edit this anytime later in your profile section.) </p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                      {/* Select State */}
-                      <div>
-                        <label className="block text-xs text-slate-600 mb-1">Select the State</label>
-                        <Select
-                          options={stateOptions}
-                          placeholder="Select state..."
-                          isSearchable
-                          classNamePrefix="state-select"
-                          styles={{
-                            control: (base, state) => ({
-                              ...base,
-                              borderColor: state.isFocused ? "#3b82f6" : "#cbd5e1",
-                              boxShadow: state.isFocused ? "0 0 0 2px rgba(59, 130, 246, 0.2)" : "none",
-                              minHeight: "36px",
-                              fontSize: "0.875rem",
-                              "&:hover": { borderColor: "#3b82f6" },
-                            }),
-                            placeholder: (base) => ({
-                              ...base,
-                              color: "#94a3b8",
-                            }),
-                            menu: (base) => ({
-                              ...base,
-                              zIndex: 50,
-                            }),
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* GST Details */}
-                    <div className="flex items-center gap-2 mb-3">
-                      <input
-                        type="checkbox"
-                        id="billing-details-checkbox"
-                        className="cursor-pointer w-4 h-4"
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    {/* Select State */}
+                    <div>
+                      <label className="block text-xs text-slate-600 mb-1">Select the State</label>
+                      <Select
+                        options={stateOptions}
+                        placeholder="Select state..."
+                        isSearchable
+                        classNamePrefix="state-select"
+                        styles={{
+                          control: (base, state) => ({
+                            ...base,
+                            borderColor: state.isFocused ? "#3b82f6" : "#cbd5e1",
+                            boxShadow: state.isFocused ? "0 0 0 2px rgba(59, 130, 246, 0.2)" : "none",
+                            minHeight: "36px",
+                            fontSize: "0.875rem",
+                            "&:hover": { borderColor: "#3b82f6" },
+                          }),
+                          placeholder: (base) => ({
+                            ...base,
+                            color: "#94a3b8",
+                          }),
+                          menu: (base) => ({
+                            ...base,
+                            zIndex: 50,
+                          }),
+                        }}
                       />
-                      <label className="text-sm font-medium text-slate-800">
-                        Confirm and save billing details to your profile
-                      </label>
                     </div>
-
                   </div>
+
+                  {/* GST Details */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <input
+                      type="checkbox"
+                      id="billing-details-checkbox"
+                      className="cursor-pointer w-4 h-4"
+                    />
+                    <label className="text-sm font-medium text-slate-800">
+                      Confirm and save billing details to your profile
+                    </label>
+                  </div>
+
                 </div>
 
-                <button
-                  type="button"
-                  className="cursor-pointer bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-medium text-base px-6 py-2.5 rounded-full shadow-sm transition-all duration-200 flex items-center justify-center gap-2"
-                  onClick={() => setIsTicketDetailsReviewModal(true)}
-                >
-                  CONTINUE
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
+                {/* Mobile Coupons Section */}
+                <div className="block lg:hidden bg-white rounded-lg shadow-sm border border-slate-200 p-5">
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      Offers & promo codes
+                    </h2>
+                    <div>
+                      <img src={OfferPromo} alt="Offer & Promo" />
+                    </div>
+                  </div>
 
+                  {/* Coupon Input */}
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 border-2 border-gray-300 rounded-lg p-3 focus-within:border-red-700 transition-colors">
+                      <input
+                        type="text"
+                        placeholder="Enter Coupon Code"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value)}
+                        className="flex-1 outline-none text-gray-700 placeholder-gray-400"
+                      />
+                      <button
+                        onClick={handleApply}
+                        className="text-red-800 font-semibold text-sm hover:text-red-900 transition-colors"
+                      >
+                        APPLY
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* View All Coupons Link */}
+                  <button className="text-red-800 font-medium text-sm hover:text-red-900 transition-colors" onClick={() => setIsViewAllCouponsModal(true)}>
+                    View All Coupons
+                  </button>
+                </div>
+
+                <div>
+                  <button
+                    type="button"
+                    className="hidden lg:flex  items-center justify-center gap-2 w-full sm:w-auto cursor-pointer bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-medium text-base px-6 py-3 rounded-full shadow-sm transition-all duration-200"
+                    onClick={() => setIsTicketDetailsReviewModal(true)}
+                  >
+                    CONTINUE
+                    <ChevronRight />
+                  </button>
+                </div>
 
               </div>
 
               {/* Sidebar - Fare Summary */}
-              <div className="lg:col-span-1">
-                <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 sticky top-25">
+              <div className="hidden lg:block order-2 lg:order-2 lg:col-span-1">
+                <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 static lg:sticky lg:top-24">
                   <h2 className="text-xl font-bold mb-4">Fare Summary</h2>
 
                   {/* --- Fare Breakdown --- */}
@@ -1074,7 +1206,7 @@ export default function ReviewDetails() {
                   </div>
 
                   {/* --- Manual Code Input --- */}
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex flex-col sm:flex-row gap-2 mb-3">
                     <input
                       type="text"
                       value={manualCode}
@@ -1118,7 +1250,69 @@ export default function ReviewDetails() {
             </div>
           </div>
         </div>
-      </div>
+
+        <div
+          className="block lg:hidden sticky bottom-0 z-[999] bg-[#78080B] text-white px-4 py-4 sm:py-5 shadow-[0_-4px_8px_rgba(0,0,0,0.25)]"
+        >
+          <div className="max-w-7xl mx-auto flex flex-row sm:items-center justify-between gap-4">
+
+            {/* Price Section */}
+            <div className="flex flex-col sm:items-center gap-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xl sm:text-2xl font-bold">₹ 5,641</span>
+
+                <button
+                  type="button"
+                  aria-label="Price information"
+                  className="flex items-center"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-4 h-4 sm:w-5 sm:h-5 text-white opacity-80 hover:opacity-100 transition cursor-pointer"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="16" x2="12" y2="12" />
+                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                  </svg>
+                </button>
+
+              </div>
+
+              <span className="text-xs sm:text-sm font-medium opacity-90">
+                FOR 1 ADULT
+              </span>
+            </div>
+
+            {/* CTA */}
+            <button
+              type="button"
+              className="
+        bg-[#D9D9D9]
+        text-[#78080B] font-semibold
+        text-base
+        px-6 py-3
+        rounded-full
+        shadow-sm
+        transition-all duration-200
+        flex items-center justify-center gap-2
+      "
+              onClick={() => setIsTicketDetailsReviewModal(true)}
+            >
+              CONTINUE
+              <ChevronRight className="w-5 h-5" />
+            </button>
+
+          </div>
+        </div>
+
+
+      </div >
 
     </>
   );
