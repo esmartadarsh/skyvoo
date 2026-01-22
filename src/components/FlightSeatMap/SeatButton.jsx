@@ -13,7 +13,7 @@ function SeatButton({ seat, onClick, onHover, onLeave, getSeatVisual }) {
             onMouseLeave={onLeave}
             onTouchStart={onHover}
             onTouchEnd={onLeave}
-            className="relative w-16 h-16 flex items-center justify-center rounded-xl transition-all duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="relative w-10 h-10 xs:w-14 xs:h-14 lg:w-16 lg:h-16 flex items-center justify-center rounded-xl transition-all duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
         >
             {/* SVG seat */}
             <FlightSeatIcon
@@ -23,7 +23,7 @@ function SeatButton({ seat, onClick, onHover, onLeave, getSeatVisual }) {
             />
 
             {/* Seat number */}
-            <span className={`relative z-10 font-semibold text-base ${visual.text}`}>
+            <span className={`relative z-10 font-semibold text-xs xs:text-base ${visual.text}`}>
                 {`${seat.rowNumber}${seat.letter}`}
             </span>
 

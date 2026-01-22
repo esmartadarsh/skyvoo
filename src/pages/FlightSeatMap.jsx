@@ -179,11 +179,11 @@ const FlightSeatMap = ({ onClose }) => {
                 <div className="min-h-screen">
 
                     {/* Header */}
-                    <div className='bg-[#f1f0f29e] shadow-sm'>
-                        <div className="p-4 flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center max-w-7xl mx-auto">
+                    <div className='bg-[#f1f0f29e] shadow-sm  rounded-b-4xl border border-2 border-[#920000]'>
+                        <div className="p-4 flex flex-col gap-4 xs:flex-row xs:justify-between sm:items-center max-w-7xl mx-auto">
 
                             {/* Flight Info */}
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-center gap-3">
                                 <img src={AirlineLogo} className="w-10 h-10 sm:w-12 sm:h-12" />
                                 <div>
                                     <h2 className="text-lg sm:text-xl font-bold text-gray-800">AI 304</h2>
@@ -234,9 +234,9 @@ const FlightSeatMap = ({ onClose }) => {
 
                         <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 lg:gap-10">
 
-                            <div className='lg:col-span-7 flex flex-col'>
+                            <div className='lg:col-span-7 flex flex-col '>
 
-                                <div className="bg-[#f1f0f29e] shadow-sm rounded-xl border border-gray-200 p-4 mb-5">
+                                <div className="bg-[#f1f0f29e] shadow-sm rounded-3xl xs:rounded-2xl border border-2 border-[#920000] p-4 mb-5">
                                     <h3 className="text-lg font-bold text-gray-800 mb-4">Legend</h3>
                                     <div className="flex flex-wrap gap-4">
                                         {legendItems.map((item) => (
@@ -251,7 +251,7 @@ const FlightSeatMap = ({ onClose }) => {
                                 </div>
 
                                 {/* Seat Map */}
-                                <div className="overflow-x-auto pb-4">
+                                <div className="pb-4">
                                     <SeatGrid
                                         processedRows={processedRows}
                                         seatLetters={seatLetters}
@@ -270,7 +270,7 @@ const FlightSeatMap = ({ onClose }) => {
                             <div className="lg:col-span-3 flex flex-col gap-4">
 
                                 {/* Summary Panel */}
-                                <div className="sticky bottom-0 bg-white z-20">
+                                <div className="sticky lg:static bottom-0 bg-white z-20">
                                     <SummaryPanel
                                         selectedSeats={selectedSeats}
                                         seatMap={seatMap}

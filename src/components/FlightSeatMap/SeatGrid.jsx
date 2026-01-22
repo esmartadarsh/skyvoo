@@ -13,32 +13,32 @@ function SeatGrid({ processedRows, seatLetters, selectedSeats, onSeatClick, onSe
     );
 
     return (
-        <div className="min-w-[700px] sm:min-w-full">
-            <div className="bg-[#f1f0f29e] shadow-sm rounded-xl py-8 px-20 border border-gray-200">
+        <div className="">
+            <div className="bg-[#f1f0f29e] shadow-sm rounded-3xl xs:rounded-xl py-6 px-0 xs:px-5 lg:px-20 border border-2 border-[#920000]">
 
                 {/* Top Header Row */}
-                <div className="grid grid-cols-10 justify-items-center mb-6">
-                    <div></div>
-                    <div></div>
+                <div className="grid grid-cols-8 lg:grid-cols-10 justify-items-center mb-6">
+                    <div className='hidden lg:block'></div>
+                    <div ></div>
                     {seatLetters.map((letter, idx) => (
                         <React.Fragment key={letter}>
                             {idx === 3 && <div className="w-8"></div>}
-                            <div className="text-gray-700 font-bold text-lg">{letter}</div>
+                            <div className="text-gray-700 font-bold text-base xs:text-lg">{letter}</div>
                         </React.Fragment>
                     ))}
                 </div>
 
                 {/* Seat Rows */}
-                <div className="space-y-2 max-h-[520px] overflow-y-auto p-3 custom-seat-scroll">
+                <div className="space-y-2 max-h-[520px] overflow-y-auto p-3 scrollbar ">
                     {processedRows.map(row => {
                         const rowSeatsMap = Object.fromEntries(row.seats.map(seat => [seat.letter, seat]));
 
                         return (
-                            <div key={row.rowNumber} className="grid grid-cols-10 justify-items-center items-center">
-                                <div></div>
+                            <div key={row.rowNumber} className="grid grid-cols-8 lg:grid-cols-10 justify-items-center items-center">
+                                <div className='hidden lg:block'></div>
 
                                 {/* Row Number */}
-                                <div className="text-gray-700 font-semibold text-lg text-start">
+                                <div className="text-gray-700 font-semibold text-base xs:text-lg text-start">
                                     <div>{row.rowNumber}</div>
                                 </div>
 
@@ -109,6 +109,9 @@ function SeatGrid({ processedRows, seatLetters, selectedSeats, onSeatClick, onSe
                                         <div key={letter} className="w-16 h-16 bg-gray-50"></div>
                                     );
                                 })}
+
+                                <div className='hidden lg:block'></div>
+
 
                             </div>
                         );

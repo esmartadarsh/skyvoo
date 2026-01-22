@@ -487,14 +487,21 @@ export default function ReviewDetails() {
                     </div>
 
                     <div className="flex items-start gap-3 mb-4">
-                      <img src={AirlineLogo} alt="Airline logo" className="w-10 h-10 object-contain" />
 
                       <div className="flex flex-col sm:flex-row gap-4 w-full">
-                        <div>
-                          <div className="font-semibold mb-1">HDO-BLR</div>
-                          <div className="text-sm text-slate-600 mb-3">Cancellation Penalty:</div>
-                          <div className="text-sm text-slate-600 mt-2">Cancel Between (IST):</div>
+                        <div className='flex flex-row space-x-2'>
+                          <div>
+                            <img src={AirlineLogo} alt="Airline logo" className="w-10 h-10 object-contain" />
+                          </div>
+
+                          <div>
+                            <div className="font-semibold mb-1">HDO-BLR</div>
+                            <div className="text-sm text-slate-600 mb-3">Cancellation Penalty:</div>
+                            <div className="text-sm text-slate-600 mt-2">Cancel Between (IST):</div>
+                          </div>
+
                         </div>
+
 
                         <div className="flex-1">
                           {/* Timeline */}
