@@ -1,24 +1,26 @@
 import React, { useState, useEffect } from 'react'
 import { X, Tag, Lock } from 'lucide-react';
+import OfferAndPromo from '@/assets/imgs/offerAndPromo.png';
+import OfferPromo from '@/assets/vectors/OfferPromo.svg';
 
 const offers = [
     {
         id: 1,
-        code: 'MMTSECURE',
+        code: 'SKYVOOSECURE',
         discount: '₹346 off',
         description: 'Get an instant discount ₹346 on your flight booking and trip secure combo',
         category: 'all'
     },
     {
         id: 2,
-        code: 'MMTSECURE',
+        code: 'SKYVOOSECURE',
         discount: '₹346 off',
         description: 'Get an instant discount ₹346 on your flight booking and trip secure combo',
         category: 'bank'
     },
     {
         id: 3,
-        code: 'MMTSECURE',
+        code: 'SKYVOOSECURE',
         discount: '₹346 off',
         description: 'Get an instant discount ₹346 on your flight booking and trip secure combo',
         category: 'add-ons'
@@ -69,67 +71,48 @@ export default function ViewAllCouponsModal({ onClose }) {
     return (
         <div className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm" onClick={handleClose} >
             <div
-                className={`fixed bottom-0 left-0 right-0 bg-gradient-to-br from-stone-50 via-neutral-100 to-stone-100 rounded-t-3xl shadow-2xl w-full max-h-[90vh] overflow-hidden ${isClosing ? 'animate-slideDown' : 'animate-slideUp'}`}
+                className={`fixed bottom-0 left-0 right-0 bg-[#D9D9D9] rounded-t-3xl shadow-[0_-5px_4px_0_rgba(0,0,0,0.25)] w-full max-h-[90vh] ${isClosing ? 'animate-slideDown' : 'animate-slideUp'}`}
                 onClick={(e) => e.stopPropagation()}
             >
-
+                <div className="absolute -top-25 left-2 p-3 z-10 h-40 w-40 rounded-full flex justify-center items-center bg-[#D9D9D9] shadow-[0_-6px_4px_0_rgba(0,0,0,0.25)]">
+                    <img src={OfferAndPromo} alt="OfferAndPromo" className='w-[100%] h-full' />
+                </div>
 
                 {/* Header with decorative coins */}
-                <div className="relative bg-gradient-to-r from-stone-200 to-neutral-200 px-6 py-5 border-b-2 border-amber-200/50">
-                    <div className="absolute -left-4 -top-4 w-24 h-24 opacity-80">
-                        <div className="relative w-full h-full animate-float">
-                            <div className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-500 to-red-600 rounded-full transform rotate-12 shadow-xl"></div>
-                            <div className="absolute inset-1 bg-gradient-to-br from-amber-300 via-orange-400 to-red-500 rounded-full flex items-center justify-center">
-                                <Tag className="w-8 h-8 text-white transform -rotate-12" />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="absolute -left-2 top-8 w-16 h-16 opacity-70" style={{ animationDelay: '0.2s' }}>
-                        <div className="relative w-full h-full animate-float">
-                            <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-600 rounded-full transform -rotate-6 shadow-lg"></div>
-                        </div>
-                    </div>
-                    <div className="absolute left-14 -top-2 w-12 h-12 opacity-60" style={{ animationDelay: '0.4s' }}>
-                        <div className="relative w-full h-full animate-float">
-                            <div className="absolute inset-0 bg-gradient-to-br from-orange-400 via-red-500 to-pink-600 rounded-full transform rotate-45 shadow-lg"></div>
-                        </div>
-                    </div>
+                <div className="relative z-1 px-6 pb-5 pt-[4rem]">
 
                     <div className="flex items-center justify-between relative z-10">
                         <div>
-                            <div className="text-xs font-medium text-stone-600 tracking-wider uppercase mb-1">
-                                Economy › SAVER
-                            </div>
                             <h2 className="text-2xl font-bold text-stone-900 tracking-tight">
                                 Offers & promo codes
                             </h2>
                         </div>
                         <button
                             onClick={handleClose}
-                            className="w-9 h-9 rounded-full bg-stone-300/70 hover:bg-stone-400/80 flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
+                            className="w-9 h-9 rounded-full bg-[#727272] hover:bg-stone-400/80 flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
                         >
-                            <X className="w-5 h-5 text-stone-700" />
+                            <X className="w-5 h-5 text-white" />
                         </button>
                     </div>
                 </div>
 
                 {/* Coupon Input */}
-                <div className="px-6 py-4 bg-white/50 border-b border-stone-200">
-                    <div className="flex gap-2">
+                <div className="px-6 py-4 bg-[#D9D9D9] border-b border-stone-200">
+                    <div className="relative">
                         <input
                             type="text"
                             value={couponCode}
                             onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                             placeholder="Enter Coupon Code"
-                            className="flex-1 px-4 py-3 rounded-xl border-2 border-stone-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-stone-800 placeholder-stone-400 font-medium text-sm transition-all duration-200"
-                        />
+                            className="filterglasseffect w-full px-4 pr-28 py-3 rounded-xl border-2 border-stone-300 focus:border-red-800 focus:ring-2 focus:ring-red-600 
+                                      outline-none text-stone-800 placeholder-stone-400 font-medium text-sm transition-all duration-200" />
                         <button
                             onClick={handleApplyCoupon}
-                            className="px-6 py-3 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl uppercase text-sm tracking-wide"
-                        >
+                            className="absolute right-2 top-1/2 -translate-y-1/2 px-5 py-2 text-[#78080B] font-semibold rounded-lg text-lg tracking-wide uppercase transition-all duration-200 active:scale-95">
                             Apply
                         </button>
                     </div>
+
                     {appliedCoupon && (
                         <div className="mt-3 text-xs text-green-700 bg-green-50 px-3 py-2 rounded-lg border border-green-200 font-medium animate-fadeIn">
                             ✓ Coupon "{appliedCoupon}" applied successfully
@@ -137,8 +120,9 @@ export default function ViewAllCouponsModal({ onClose }) {
                     )}
                 </div>
 
+
                 {/* Filter Tabs */}
-                <div className="px-6 py-3 bg-gradient-to-r from-stone-100 to-neutral-100 border-b border-stone-200">
+                <div className="px-6 py-3 border-b border-stone-200">
                     <div className="flex gap-2">
                         {[
                             { id: 'all', label: 'All' },
@@ -160,7 +144,7 @@ export default function ViewAllCouponsModal({ onClose }) {
                 </div>
 
                 {/* Offers List */}
-                <div className="max-h-96 overflow-y-auto px-6 py-4 bg-gradient-to-b from-white/30 to-stone-50/30">
+                <div className="max-h-96 overflow-y-auto px-6 py-4 bg-[#D9D9D9]">
                     <div className="space-y-3">
                         {filteredOffers.map((offer, index) => (
                             <div
@@ -172,8 +156,8 @@ export default function ViewAllCouponsModal({ onClose }) {
                             >
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex items-start gap-3 flex-1">
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-stone-800 to-stone-900 flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 transition-transform duration-200">
-                                            <Lock className="w-5 h-5 text-white" />
+                                        <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0  group-hover:scale-110 transition-transform duration-200">
+                                            <img src={OfferPromo} alt="" />
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-baseline gap-2 mb-1">
@@ -188,13 +172,13 @@ export default function ViewAllCouponsModal({ onClose }) {
                                     </div>
                                     <div className="flex flex-col items-end gap-2 flex-shrink-0">
                                         <div className="text-right">
-                                            <div className="text-orange-600 font-bold text-lg whitespace-nowrap">
+                                            <div className="text-[#78080B] font-bold text-lg whitespace-nowrap">
                                                 {offer.discount}
                                             </div>
                                         </div>
                                         <button
                                             onClick={() => handleApplyOffer(offer.code)}
-                                            className="text-orange-600 hover:text-orange-700 font-bold text-sm transition-all duration-200 hover:scale-105 active:scale-95 uppercase tracking-wide"
+                                            className="text-[#78080B] hover:text-red-700 font-bold text-sm transition-all duration-200 hover:scale-105 active:scale-95 uppercase tracking-wide"
                                         >
                                             Apply
                                         </button>

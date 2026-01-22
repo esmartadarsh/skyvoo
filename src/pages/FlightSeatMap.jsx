@@ -9,7 +9,7 @@ import ServicePanel from '../components/FlightSeatMap/ServicePanel.jsx';
 import { SSRTypes, seatLetters } from '../Data/ExtraData.js';
 import { useSeatSelection } from "../hooks/useSeatSelection.js";
 import SeatTooltip from '../components/FlightSeatMap/SeatTooltip.jsx';
-{/* https://togmanga.com/manga/tower-of-god-chapter-303/ */}
+{/* https://togmanga.com/manga/tower-of-god-chapter-303/ */ }
 
 const FlightSeatMap = ({ onClose }) => {
 
@@ -102,7 +102,7 @@ const FlightSeatMap = ({ onClose }) => {
                 priceStr === "" ||
                 priceStr === "0";
 
-            if (isFree) return sum; // skip adding if free
+            if (isFree) return sum;
 
             const numericPrice = parseFloat(priceStr.replace(/[₹,]/g, "")) || 0;
             return sum + numericPrice;
@@ -167,14 +167,12 @@ const FlightSeatMap = ({ onClose }) => {
     };
 
     return (
-
-        <div
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] "
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]"
             onClick={onClose}
             style={{ animation: "fadeIn 0.3s ease-out forwards" }}
         >
             <div
-                className="bg-white w-full max-w-7xl max-h-[90vh] overflow-y-auto rounded-sm shadow-xl relative"
+                className="bg-white w-full max-w-7xl max-h-[90vh] overflow-y-auto rounded-none sm:rounded-sm shadow-xl relative"
                 onClick={(e) => e.stopPropagation()}
             >
 
@@ -182,23 +180,19 @@ const FlightSeatMap = ({ onClose }) => {
 
                     {/* Header */}
                     <div className='bg-[#f1f0f29e] shadow-sm'>
-                        <div className="p-4 flex justify-between items-center max-w-7xl mx-auto">
+                        <div className="p-4 flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center max-w-7xl mx-auto">
 
                             {/* Flight Info */}
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-3">
+                                <img src={AirlineLogo} className="w-10 h-10 sm:w-12 sm:h-12" />
                                 <div>
-                                    <img
-                                        src={AirlineLogo}
-                                        className="w-12 h-12"
-                                    />
-                                </div>
-                                <div>
-                                    <h2 className="text-xl font-bold text-gray-800">AI 304</h2>
-                                    <p className="text-sm text-gray-500">Airbus A320</p>
+                                    <h2 className="text-lg sm:text-xl font-bold text-gray-800">AI 304</h2>
+                                    <p className="text-xs sm:text-sm text-gray-500">Airbus A320</p>
                                 </div>
                             </div>
 
-                            <div className="flex items-center">
+
+                            <div className="flex items-center justify-between sm:justify-center gap-4 sm:gap-6">
                                 {/* From */}
                                 <div className="flex flex-col items-center">
                                     <p className="text-sm text-gray-500">From</p>
@@ -227,24 +221,27 @@ const FlightSeatMap = ({ onClose }) => {
 
                         </div>
                     </div>
-                    <div className="max-w-7xl mx-2 my-2">
-
+                    <div className="max-w-7xl mx-2 sm:mx-4 my-2">
                         {/* Header */}
                         <div className="text-start my-6">
-                            <h1 className="text-2xl font-bold text-gray-800 mb-1 tracking-tight">Select Your Seat</h1>
-                            <p className="text-gray-600 text-md">Choose your preferred seats for a more comfortable journey</p>
+                            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
+                                Select Your Seat
+                            </h1>
+                            <p className="text-sm sm:text-md text-gray-600">
+                                Choose your preferred seats
+                            </p>
                         </div>
 
-                        <div className="grid lg:grid-cols-10 gap-10">
+                        <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 lg:gap-10">
 
                             <div className='lg:col-span-7 flex flex-col'>
 
                                 <div className="bg-[#f1f0f29e] shadow-sm rounded-xl border border-gray-200 p-4 mb-5">
                                     <h3 className="text-lg font-bold text-gray-800 mb-4">Legend</h3>
-                                    <div className="flex space-x-5">
+                                    <div className="flex flex-wrap gap-4">
                                         {legendItems.map((item) => (
                                             <div key={item.label} className="flex items-center">
-                                                <div className={`w-7 h-7 mr-2 rounded-md flex items-center justify-center relative ${item.color}`}>
+                                                <div className={`w-6 h-6 sm:w-7 sm:h-7 mr-2 rounded-md flex items-center justify-center relative ${item.color}`}>
                                                     {item.icon}
                                                 </div>
                                                 <span className="text-sm text-gray-700">{item.label}</span>
@@ -254,32 +251,36 @@ const FlightSeatMap = ({ onClose }) => {
                                 </div>
 
                                 {/* Seat Map */}
-                                <SeatGrid
-                                    processedRows={processedRows}
-                                    seatLetters={seatLetters}
-                                    selectedSeats={selectedSeats}
-                                    seatMap={seatMap}
-                                    getSeatVisual={getSeatVisual}
-                                    onSeatClick={handleSeatClick}
-                                    onSeatHover={handleSeatMouseEnter}
-                                    onSeatLeave={handleSeatMouseLeave}
-                                />
+                                <div className="overflow-x-auto pb-4">
+                                    <SeatGrid
+                                        processedRows={processedRows}
+                                        seatLetters={seatLetters}
+                                        selectedSeats={selectedSeats}
+                                        seatMap={seatMap}
+                                        getSeatVisual={getSeatVisual}
+                                        onSeatClick={handleSeatClick}
+                                        onSeatHover={handleSeatMouseEnter}
+                                        onSeatLeave={handleSeatMouseLeave}
+                                    />
+                                </div>
 
                             </div>
 
 
-                            <div className='lg:col-span-3'>
+                            <div className="lg:col-span-3 flex flex-col gap-4">
 
                                 {/* Summary Panel */}
-                                <SummaryPanel
-                                    selectedSeats={selectedSeats}
-                                    seatMap={seatMap}
-                                    SSRTypes={SSRTypes}
-                                    selectedServices={selectedServices}
-                                    onRemoveService={handleRemoveService}
-                                    totalAmount={totalAmount}
-                                    onContinue={() => navigate('/payment', { state: { selectedSeats, selectedServices } })}
-                                />
+                                <div className="sticky bottom-0 bg-white z-20">
+                                    <SummaryPanel
+                                        selectedSeats={selectedSeats}
+                                        seatMap={seatMap}
+                                        SSRTypes={SSRTypes}
+                                        selectedServices={selectedServices}
+                                        onRemoveService={handleRemoveService}
+                                        totalAmount={totalAmount}
+                                        onContinue={() => navigate('/payment', { state: { selectedSeats, selectedServices } })}
+                                    />
+                                </div>
 
                                 {/* Service Panel */}
                                 <ServicePanel
@@ -290,7 +291,7 @@ const FlightSeatMap = ({ onClose }) => {
 
                         </div>
                     </div>
-                    {tooltipData && (
+                    {tooltipData && window.innerWidth > 768 && (
                         <SeatTooltip seat={tooltipData.seat} position={tooltipData.pos} />
                     )}
 
