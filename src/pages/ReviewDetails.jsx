@@ -1302,16 +1302,7 @@ export default function ReviewDetails() {
             {/* CTA */}
             <button
               type="button"
-              className="
-        bg-[#D9D9D9]
-        text-[#78080B] font-semibold
-        text-base
-        px-6 py-3
-        rounded-full
-        shadow-sm
-        transition-all duration-200
-        flex items-center justify-center gap-2
-      "
+              className="bg-[#D9D9D9] text-[#78080B] font-semibold text-base px-6 py-3 rounded-full shadow-sm transition-all duration-200 flex items-center justify-center gap-2"
               onClick={() => setIsTicketDetailsReviewModal(true)}
             >
               CONTINUE

@@ -5,7 +5,6 @@ import Gpay from '@/assets/imgs/upiIcons/gpay.png'
 import Paytm from '@/assets/imgs/upiIcons/paytm.avif'
 import Phonepe from '@/assets/imgs/upiIcons/phonepe.webp'
 import MYQR from '@/assets/imgs/upiIcons/myqr.png'
-import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 
 const flight = {
     from: "Delhi (DEL)",
@@ -130,14 +129,13 @@ export default function FlightPaymentPage() {
 
     return (
         <>
-
-            <div className="max-w-7xl  mx-auto relative z-100">
+            <div className="max-w-7xl mx-auto relative z-100 px-3 sm:px-4">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Left Section */}
                     <div className="lg:col-span-2 space-y-6">
                         {/* Flight Card */}
                         <div className="bg-white rounded-lg shadow-sm p-6">
-                            <div className="flex items-start justify-between mb-4">
+                            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                                 <div className="flex items-center gap-3">
                                     <div className="w-12 h-12 bg-red-600 rounded flex items-center justify-center">
                                         <Plane className="w-6 h-6 text-white" />
@@ -148,7 +146,7 @@ export default function FlightPaymentPage() {
                                         <h2 className="text-lg font-bold text-gray-900">
                                             {flight.from} → {flight.to}
                                         </h2>
-                                        <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
+                                        <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-gray-600 mt-1">
                                             <span className="flex items-center gap-1">
                                                 <Clock className="w-4 h-4" />
                                                 {flight.date}
@@ -192,7 +190,7 @@ export default function FlightPaymentPage() {
                                 </div>
                             )}
 
-                            <div className="flex items-center gap-4 text-sm text-gray-600 pt-4 border-t">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-600 pt-4 border-t">
                                 <span className="flex items-center gap-2">
                                     <User className="w-4 h-4" />
                                     {flight.airline} (Primary)
@@ -208,55 +206,6 @@ export default function FlightPaymentPage() {
                             </div>
                         </div>
 
-                        {/* Flight Delay Protection */}
-                        {/* <div className={`rounded-lg p-6 border-2 transition-all ${ addProtection 
-                                ? 'bg-green-50 border-green-500' 
-                                : 'bg-blue-50 border-blue-200'
-                                }`}>
-                                <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-2">
-                                <Shield className={`w-5 h-5 ${addProtection ? 'text-green-600' : 'text-blue-600'}`} />
-                                <h3 className="font-bold text-gray-900">Flight Delay Protection</h3>
-                                {addProtection && (
-                                    <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full font-medium">
-                                    ADDED ✓
-                                    </span>
-                                    )}
-                                    </div>
-                                    <p className="text-gray-700 mb-1">
-                                    <span className="font-semibold">Worry Free Travel!</span>
-                                    </p>
-                                    <p className="text-sm text-gray-600">
-                                    Get hassle-free compensation of <span className="font-semibold">₹5,000</span> if your flight is delayed by{' '}
-                                    <span className="font-semibold">1 hour</span> or more for any reason.
-                                    </p>
-                                    <p className="text-xs text-gray-500 mt-2">
-                                    NOTE : Around 30% of flights were delayed last month. <a href="#" className="text-blue-600 underline">View T&Cs</a>
-                                    </p>
-                                    </div>
-                                    <div className="text-right ml-4">
-                                    <p className="text-xs text-gray-600 mb-2">per person</p>
-                                    <button
-                                    onClick={() => setAddProtection(!addProtection)}
-                                    className={`px-6 py-2 rounded-lg font-medium transition-all transform hover:scale-105 ${
-                                        addProtection
-                                        ? 'bg-green-600 text-white shadow-lg'
-                                        : 'bg-blue-600 text-white hover:bg-blue-700'
-                                        }`}
-                                        >
-                                        {addProtection ? (
-                                            <span className="flex items-center gap-2">
-                                            <Check className="w-4 h-4" /> Added
-                                            </span>
-                                            ) : (
-                                                `Add @ ₹${pricing.protectionFee}`
-                                                )}
-                                                </button>
-                                                </div>
-                                                </div>
-                                                </div> */}
-
                         {/* Payment Options */}
                         <div className="bg-white rounded-lg shadow-sm p-6">
                             <h3 className="text-xl font-bold text-gray-900 mb-4">Payment Options</h3>
@@ -265,7 +214,7 @@ export default function FlightPaymentPage() {
                                     <div key={method.id}>
                                         <button
                                             onClick={() => handlePaymentSelect(method.id)}
-                                            className={`w-full flex items-center justify-between p-4 rounded-lg border-2 transition-all ${selectedPayment === method.id
+                                            className={`w-full flex items-center justify-between p-3 sm:p-4 rounded-lg border-2 transition-all ${selectedPayment === method.id
                                                 ? 'border-blue-600 bg-blue-50 shadow-md'
                                                 : 'border-gray-200 hover:border-gray-300 bg-white hover:shadow'
                                                 }`}
@@ -292,7 +241,7 @@ export default function FlightPaymentPage() {
 
                                         {/* Expanded Payment Options */}
                                         {expandedPayment === method.id && (
-                                            <div className="mt-2 p-4 bg-gray-50 rounded-lg border border-gray-200 animate-in slide-in-from-top">
+                                            <div className="mt-2 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200 animate-in slide-in-from-top">
 
                                                 {method.id === 'upi' && (
                                                     <div className="space-y-2">
@@ -379,104 +328,96 @@ export default function FlightPaymentPage() {
 
                     {/* Right Section */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white rounded-lg shadow-sm p-6 sticky top-4">
-                            <div className='flex justify-between mb-3'>
-                                <h3 className="text-2xl font-bold text-gray-900 flex justify-center items-center">
-                                    Total Due
-                                </h3>
-                                <h3 className="text-2xl font-bold text-gray-900">
-                                    <span className="text-blue-600">₹{calculateTotal().toLocaleString()}</span>
-                                </h3>
-                            </div>
+                        {/* Gradient Border Wrapper */}
+                        <div className="p-[2px] rounded-lg bg-gradient-to-r from-[#78080B] to-[#B20000] lg:sticky lg:top-4">
 
-                            <div className="space-y-3 mb-6 pb-6 border-b">
-                                <div className="flex justify-between text-gray-700">
-                                    <span>Fare</span>
-                                    <span>₹{pricing.fare.toLocaleString()}</span>
+                            {/* Actual Card */}
+                            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+
+                                <div className='flex justify-between mb-3'>
+                                    <h3 className="text-2xl font-bold text-gray-900 flex justify-center items-center">
+                                        Total Due
+                                    </h3>
+                                    <h3 className="text-2xl font-bold text-gray-900">
+                                        <span className="text-blue-600">₹{calculateTotal().toLocaleString()}</span>
+                                    </h3>
                                 </div>
-                                <div className="flex justify-between text-gray-700">
-                                    <span>Convenience Fee</span>
-                                    <span>₹{pricing.convenienceFee.toLocaleString()}</span>
-                                </div>
-                                <div className="flex justify-between text-green-600 font-medium">
-                                    <span>SKYVOOOFF</span>
-                                    <span>-₹{pricing.discount.toLocaleString()}</span>
-                                </div>
-                                {addProtection && (
-                                    <div className="flex justify-between text-gray-700 animate-in slide-in-from-right">
-                                        <span className="flex items-center gap-1">
-                                            <Shield className="w-4 h-4 text-green-600" />
-                                            Protection Fee
-                                        </span>
-                                        <span>₹{pricing.protectionFee.toLocaleString()}</span>
+
+                                <div className="space-y-3 mb-6 pb-6 border-b border-[#B8B6B6]">
+                                    <div className="flex justify-between text-gray-700">
+                                        <span>Fare</span>
+                                        <span>₹{pricing.fare.toLocaleString()}</span>
                                     </div>
-                                )}
-                            </div>
-
-                            {/* Scan to Pay */}
-                            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-4 mb-6 border border-blue-200">
-                                <h4 className="font-bold text-gray-900 mb-2">Scan to Pay</h4>
-                                <p className="text-xs text-gray-600 mb-3">Instant Refund & High Success Rate</p>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex gap-2">
-                                        <div className="w-8 h-8  rounded flex items-center justify-center ">
-                                            <img src={Bhim} alt="" />
-                                        </div>
-                                        <div className="w-8 h-8 rounded flex items-center justify-center">
-                                            <img src={Gpay} alt="" />
-
-                                        </div>
-                                        <div className="w-8 h-8  rounded flex items-center justify-center ">
-                                            <img src={Phonepe} alt="" />
-                                        </div>
-                                        <div className="w-8 h-8  rounded flex items-center justify-center ">
-                                            <img src={Paytm} alt="" />
-
-                                        </div>
+                                    <div className="flex justify-between text-gray-700">
+                                        <span>Convenience Fee</span>
+                                        <span>₹{pricing.convenienceFee.toLocaleString()}</span>
                                     </div>
-                                    <button
-                                        onClick={() => setShowQR(true)}
-                                        className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all transform hover:scale-105 flex items-center gap-2"
-                                    >
-                                        <QrCode className="w-4 h-4" />
-                                        VIEW QR
-                                    </button>
+                                    <div className="flex justify-between text-green-600 font-medium">
+                                        <span>SKYVOOOFF</span>
+                                        <span>-₹{pricing.discount.toLocaleString()}</span>
+                                    </div>
+
+                                    {addProtection && (
+                                        <div className="flex justify-between text-gray-700 animate-in slide-in-from-right">
+                                            <span className="flex items-center gap-1">
+                                                <Shield className="w-4 h-4 text-green-600" />
+                                                Protection Fee
+                                            </span>
+                                            <span>₹{pricing.protectionFee.toLocaleString()}</span>
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
 
-                            {/* Complete Payment Button */}
-                            <button
-                                onClick={handleProceedPayment}
-                                disabled={!selectedPayment || isProcessing}
-                                className={`w-full py-4 rounded-lg font-bold text-lg transition-all shadow-lg ${selectedPayment && !isProcessing
-                                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 hover:shadow-xl transform hover:scale-105'
-                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                    }`}
-                            >
-                                {isProcessing ? (
-                                    <span className="flex items-center justify-center gap-2">
-                                        <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
-                                        Processing...
-                                    </span>
-                                ) : selectedPayment ? (
-                                    'Proceed to Payment'
-                                ) : (
-                                    'Select Payment Method'
+                                {/* Scan to Pay */}
+                                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-4 mb-6 border border-blue-200">
+                                    <h4 className="font-bold text-gray-900 mb-2">Scan to Pay</h4>
+                                    <p className="text-xs text-gray-600 mb-3">Instant Refund & High Success Rate</p>
+
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex gap-2">
+                                            <img src={Bhim} className="w-8 h-8 object-contain" />
+                                            <img src={Gpay} className="w-8 h-8 object-contain" />
+                                            <img src={Phonepe} className="w-8 h-8 object-contain" />
+                                            <img src={Paytm} className="w-8 h-8 object-contain" />
+                                        </div>
+
+                                        <button
+                                            onClick={() => setShowQR(true)}
+                                            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all transform hover:scale-105 flex items-center gap-2"
+                                        >
+                                            <QrCode className="w-4 h-4" />
+                                            VIEW QR
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* CTA */}
+                                <button
+                                    onClick={handleProceedPayment}
+                                    disabled={!selectedPayment || isProcessing}
+                                    className={`w-full py-4 rounded-lg font-bold text-lg transition-all shadow-lg ${selectedPayment && !isProcessing
+                                            ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 hover:shadow-xl transform hover:scale-105'
+                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                        }`}
+                                >
+                                    {isProcessing ? 'Processing...' : selectedPayment ? 'Proceed to Payment' : 'Select Payment Method'}
+                                </button>
+
+                                {!selectedPayment && (
+                                    <p className="text-xs text-gray-500 text-center mt-2">
+                                        Please select a payment method to continue
+                                    </p>
                                 )}
-                            </button>
 
-                            {!selectedPayment && (
-                                <p className="text-xs text-gray-500 text-center mt-2">
-                                    Please select a payment method to continue
-                                </p>
-                            )}
+                                <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-500">
+                                    <Shield className="w-4 h-4" />
+                                    <span>100% Secure Payment</span>
+                                </div>
 
-                            <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-500">
-                                <Shield className="w-4 h-4" />
-                                <span>100% Secure Payment</span>
                             </div>
                         </div>
                     </div>
+
                 </div>
 
 
@@ -487,7 +428,7 @@ export default function FlightPaymentPage() {
             {/* QR Code Modal */}
             {showQR && (
                 <div className="fixed inset-0 bg-black flex items-center justify-center z-9999 p-4">
-                    <div className="bg-white rounded-2xl p-8 max-w-md w-full relative animate-in zoom-in">
+                    <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 max-w-md w-full relative animate-in zoom-in">
                         <button onClick={() => setShowQR(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
                             <X className="w-6 h-6" />
                         </button>
