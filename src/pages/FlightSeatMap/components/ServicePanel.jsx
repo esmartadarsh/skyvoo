@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 // import { motion, AnimatePresence } from "framer-motion";
 import { UtensilsCrossed, Briefcase, Clock, Accessibility, ChevronDown } from 'lucide-react';
-import { wheelchairOptions, mealsOptions, priorityBaggageOptions, fastForwardOptions, extraBaggage } from '../../Data/ExtraData';
+import { wheelchairOptions, mealsOptions, priorityBaggageOptions, fastForwardOptions, extraBaggage } from '../../../Data/ExtraData';
 
 // --- Place these ABOVE the ServicePanel function ---
 const SmoothCollapse = React.memo(({ isOpen, children, id }) => {

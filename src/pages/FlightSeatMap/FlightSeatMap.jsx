@@ -1,15 +1,15 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import SeatMapData from '../Data/SeatMapData.js';
 import { Plus, LogOut, ChevronRight } from 'lucide-react';
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 import { useNavigate } from 'react-router-dom';
-import SeatGrid from '../components/FlightSeatMap/SeatGrid.jsx';
-import SummaryPanel from '../components/FlightSeatMap/SummaryPanel.jsx';
-import ServicePanel from '../components/FlightSeatMap/ServicePanel.jsx';
-import { SSRTypes, seatLetters } from '../Data/ExtraData.js';
-import { useSeatSelection } from "../hooks/useSeatSelection.js";
-import SeatTooltip from '../components/FlightSeatMap/SeatTooltip.jsx';
-import Modal from '../components/common/Modals/Modal.jsx';
+import SeatGrid from './components/SeatGrid.jsx';
+import SummaryPanel from './components/SummaryPanel.jsx';
+import ServicePanel from './components/ServicePanel.jsx';
+import { SSRTypes, seatLetters } from '../../Data/ExtraData.js';
+import SeatMapData from '../../Data/SeatMapData.js';
+import { useSeatSelection } from "../../hooks/useSeatSelection.js";
+import SeatTooltip from './components/SeatTooltip.jsx';
+import Modal from '../../components/common/Modals/Modal.jsx';
 
 const FlightSeatMap = ({ onClose }) => {
 

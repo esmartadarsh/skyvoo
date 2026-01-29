@@ -1,5 +1,5 @@
 import React from 'react'
-import { SSRTypes } from '../../Data/ExtraData';
+import { SSRTypes } from '../../../Data/ExtraData';
 
 const SeatTooltip = ({ seat, position }) => {
     const seatSSRTypes = Array.isArray(seat.SSRType)

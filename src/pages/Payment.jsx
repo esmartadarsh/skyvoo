@@ -143,10 +143,10 @@ export default function FlightPaymentPage() {
                                     {/* <img src={AirlineLogo} alt="airline logo" /> */}
 
                                     <div>
-                                        <h2 className="text-lg font-bold text-gray-900">
+                                        <h2 className="text-sm xs:text-lg font-bold text-gray-900">
                                             {flight.from} → {flight.to}
                                         </h2>
-                                        <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-gray-600 mt-1">
+                                        <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[10px] xs:text-sm text-gray-600 mt-1">
                                             <span className="flex items-center gap-1">
                                                 <Clock className="w-4 h-4" />
                                                 {flight.date}
