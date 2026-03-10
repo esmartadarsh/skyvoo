@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import PromotionalCard from '@/components/PromotionalCard';
-import BookingForm from '@/components/BookingForm';
+import PromotionalCard from './components/PromotionalCard';
+import BookingForm from './components/BookingForm';
 import BookingFlightSectionBg from '@/assets/imgs/bookingbg.webp';
 
 export default function Home() {

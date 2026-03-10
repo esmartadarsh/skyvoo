@@ -1,15 +1,5 @@
 import React from "react";
-import {
-    Briefcase,
-    HeartPulse,
-    Clock,
-    Plane,
-    AlertTriangle,
-    Stethoscope,
-    Phone,
-    UserCheck,
-    Ambulance,
-} from "lucide-react";
+import { Briefcase, Plane } from "lucide-react";
 
 export default function BaggageModal({ onClose }) {
     return (

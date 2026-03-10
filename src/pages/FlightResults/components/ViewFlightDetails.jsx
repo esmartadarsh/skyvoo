@@ -1,6 +1,6 @@
 import { useState } from "react";
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
-import { formatDate, formatMonth, formatDay, formatTime } from '../../utils/formatDateTime';
+import { formatDate, formatMonth, formatDay, formatTime } from '../../../utils/formatDateTime';
 
 const ViewFlightDetails = ({ flight }) => {
     const [activeTab, setActiveTab] = useState("details");
@@ -40,9 +40,8 @@ const ViewFlightDetails = ({ flight }) => {
                     {/* Top Row */}
                     <div className="flex justify-between mb-1">
                         <h3 className="font-semibold text-xs sm:text-base">
-                            {flight.Segments[0].Origin_City} to {flight.Segments[0].Destination_City},{" "}
-                            {formatDate(flight.Segments[0].Departure_DateTime)}{" "}
-                            {formatDay(flight.Segments[0].Departure_DateTime)}
+                            {flight.AirlineDeparture?.city} to {flight.AirlineArrival?.city},{" "}
+                            {flight.DepartureDate}
                         </h3>
                     </div>
 
@@ -52,31 +51,31 @@ const ViewFlightDetails = ({ flight }) => {
                                 <img src={AirlineLogo} alt="airline logo" />
                             </div>
                             <div>
-                                <div className="font-semibold text-sm xs:text-xl">{flight.Segments[0].Airline_Name} <span className="text-[10px] text-gray-500"> {flight.Segments[0].Flight_Number}</span></div>
+                                <div className="font-semibold text-sm xs:text-xl"> {flight.AirlineName} <span className="text-[10px] text-gray-500">  {flight.AirlineCodeAndId} </span></div>
                             </div>
                         </div>
                         <div className="my-2 flex flex-row sm:items-start justify-around">
 
                             {/* Departure */}
                             <div className="text-start">
-                                <div className="text-[9px] xs:text-xs sm:text-xl font-bold">{formatTime(flight.Segments[0].Departure_DateTime)}</div>
-                                <div className="text-[8px] xs:text-[10px] sm:text-base text-[#78080B] font-medium">{formatDay(flight.Segments[0].Departure_DateTime)}, {formatMonth(flight.Segments[0].Departure_DateTime)} {formatDate(flight.Segments[0].Departure_DateTime)}</div>
-                                <div className="text-[9px] xs:text-xs text-gray-500">{flight.Segments[0].Origin_City}</div>
+                                <div className="text-[9px] xs:text-xs sm:text-xl font-bold">{flight.DepartureTime}</div>
+                                <div className="text-[8px] xs:text-[10px] sm:text-base text-[#78080B] font-medium"> {flight.DepartureDate} </div>
+                                <div className="text-[9px] xs:text-xs text-gray-500"> {flight.AirlineDeparture?.city}</div>
                             </div>
 
                             {/* Flight duration and stops */}
                             <div className="flex flex-col items-center justify-start font-semibold">
-                                <div className="text-[10px] sm:text-sm text-gray-500 mb-1">{flight.Segments[0].Duration}</div>
+                                <div className="text-[10px] sm:text-sm text-gray-500 mb-1">{flight.AirlineDuration}</div>
                                 <div className="relative w-8 xs:w-12 sm:w-24 h-0.5 bg-[#920000] rounded">
                                 </div>
-                                <div className="text-xs sm:text-sm text-gray-500 mt-1">{flight.Segments[0].Stop_Over}</div>
+                                <div className="text-xs sm:text-sm text-gray-500 mt-1"> {flight.Airlinestops === 0 ? "Non Stop" : `${flight.Airlinestops} Stop`}</div>
                             </div>
 
                             {/* Arrival */}
                             <div className="text-start">
-                                <div className="text-[9px] xs:text-xs sm:text-xl font-bold">{formatTime(flight.Segments[0].Arrival_DateTime)}</div>
-                                <div className="text-[8px] xs:text-[10px] sm:text-base text-[#78080B] font-medium">{formatDay(flight.Segments[0].Arrival_DateTime)}, {formatMonth(flight.Segments[0].Arrival_DateTime)} {formatDate(flight.Segments[0].Arrival_DateTime)}</div>
-                                <div className="text-[9px] xs:text-xs sm:text-sm text-gray-500">{flight.Segments[0].Destination_City}</div>
+                                <div className="text-[9px] xs:text-xs sm:text-xl font-bold">{flight.ArrivalTime}</div>
+                                <div className="text-[8px] xs:text-[10px] sm:text-base text-[#78080B] font-medium"> {flight.ArrivalDate} </div>
+                                <div className="text-[9px] xs:text-xs sm:text-sm text-gray-500">  {flight.AirlineArrival?.city}</div>
                             </div>
 
                             {/* Price */}
@@ -146,15 +145,23 @@ const ViewFlightDetails = ({ flight }) => {
                             {/* Values */}
                             <div className="text-left sm:text-right space-y-1 xs:space-y-2">
                                 <p className="text-[11px] xs:text-sm sm:text-base text-gray-700">
-                                    {flight.Fares[0].FareDetails[0].Basic_Amount}
+                                    {flight.AirlineMinPrice}
                                 </p>
-                                <p className="text-[11px] xs:text-sm sm:text-base text-gray-700">
+                                <p className="text-[11px] xs:text-sm sm:text-base text-gray-700">Included</p>
+
+                                <hr className="my-1 sm:my-2 border-gray-300" />
+
+                                <p className="text-sm xs:text-base sm:text-lg font-bold text-[#78080B]">
+                                    {flight.AirlineMinPrice}
+                                </p>
+
+                                {/* <p className="text-[11px] xs:text-sm sm:text-base text-gray-700">
                                     {flight.Fares[0].FareDetails[0].GST}
                                 </p>
                                 <hr className="my-1 sm:my-2 border-gray-300" />
                                 <p className="text-sm xs:text-base sm:text-lg font-bold text-[#78080B]">
                                     {flight.Fares[0].FareDetails[0].Total_Amount}
-                                </p>
+                                </p> */}
                             </div>
 
                         </div>
@@ -175,7 +182,7 @@ const ViewFlightDetails = ({ flight }) => {
 
                         {/* Route */}
                         <p className="font-medium text-[11px] xs:text-sm sm:text-base text-gray-700 mb-1 sm:mb-2">
-                            {`${flight.Origin} - ${flight.Destination}`}
+                            {`${flight.AirlineDeparture?.city} - ${flight.AirlineArrival?.city}`}
                         </p>
 
                         {/* Info Text */}

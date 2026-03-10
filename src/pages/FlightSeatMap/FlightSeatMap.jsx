@@ -9,7 +9,7 @@ import { SSRTypes, seatLetters } from '../../Data/ExtraData.js';
 import SeatMapData from '../../Data/SeatMapData.js';
 import { useSeatSelection } from "../../hooks/useSeatSelection.js";
 import SeatTooltip from './components/SeatTooltip.jsx';
-import Modal from '../../components/common/Modals/Modal.jsx';
+import Modal from '@/components/modals/Modal.jsx';
 
 const FlightSeatMap = ({ onClose }) => {
 

@@ -1,8 +1,8 @@
 // src/App.jsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
-import Home from './pages/Home';
-import FlightResults from './pages/FlightResults';
+import Home from './pages/Home/Home.jsx';
+import FlightResults from './pages/FlightResults/FlightResults.jsx';
 import CompareFlights from './pages/CompareFlights';
 import ReviewDetails from './pages/ReviewDetails';
 import FlightSeatMap from './pages/FlightSeatMap/FlightSeatMap.jsx';
@@ -15,7 +15,6 @@ import ComplaintRegister from './pages/ComplaintRegister';
 import Statement from './pages/Statement';
 import FlightReschedule from './pages/FlightReschedule';
 import FlightCancellation from './pages/FlightCancellation';
-
 import { FlightFilterProvider } from './contexts/FlightFilterContext';
 import { CompareProvider } from './features/flights/contexts/CompareContext';
 
@@ -23,7 +22,6 @@ function App() {
   return (
     <Router>
       <Routes>
-
         {/* 🔹 Pages wrapped with layout */}
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />

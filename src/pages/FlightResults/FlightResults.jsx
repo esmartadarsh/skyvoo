@@ -1,29 +1,29 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
-import FlightResultsHeader from '@/components/flight/FlightResultsHeader';
-import FlightResultsSearchHeader from '@/components/flight/FlightResultsSearchHeader';
-import FlightResultsSearchHeaderMobile from '@/components/flight/FlightResultsSearchHeaderMobile';
-import Filters from '@/components/flight/Filters';
-import FlightPriceDetailsModal from '@/components/common/Modals/FlightPriceDetailsModal';
-import SignInModal from '@/components/common/Modals/SignInModal';
+import FlightResultsHeader from './components/FlightResultsHeader';
+import FlightResultsSearchHeader from './components/FlightResultsSearchHeader';
+import FlightResultsSearchHeaderMobile from './components/FlightResultsSearchHeaderMobile';
+import Filters from './components/Filters';
+import FlightPriceDetailsModal from '@/components/modals/FlightPriceDetailsModal';
+import SignInModal from '@/components/modals/SignInModal';
 import { X, ChevronUp, Search, Pencil } from 'lucide-react';
 import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp'
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 import RipSide from '@/assets/imgs/ripSide.webp'
-import Stopwatch from '@/assets/vectors/stopwatch.svg'
 import Cheapest from '@/assets/vectors/Cheapest.svg'
 import Nonstop from '@/assets/vectors/Nonstop.svg'
 import Other from '@/assets/vectors/Other.svg'
 import Preference from '@/assets/vectors/Preference.svg'
 import Lock from '@/assets/vectors/lock.svg'
-import ViewFlightDetails from '../components/flight/ViewFlightDetails.jsx'
 import BookingFlightFormBg from "@/assets/imgs/flightresultsbg.webp";
-import FlightsData from '../Data/FlightsData.js';
-import { formatTime } from '../utils/formatDateTime.js';
-import { useFlightFilters } from '../contexts/FlightFilterContext.jsx';
-import LoadingBar from "../components/layout/LoadingBar.jsx";
+import { useFlightFilters } from '../../contexts/FlightFilterContext.jsx';
+import LoadingBar from "@/components/layout/LoadingBar.jsx";
 import { useFilteredFlights } from "@/features/flights/hooks/useFilteredFlights";
-import { useCompareFlights } from '../features/flights/contexts/CompareContext.jsx';
+import { useCompareFlights } from '@/features/flights/contexts/CompareContext.jsx';
+import { useLocation } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import api from '@/services/api.js';
+const ViewFlightDetails = lazy(() => import("./components/ViewFlightDetails.jsx"));
 
 const sortOptions = [
     {
@@ -61,43 +61,67 @@ const otherOptions = [
 ];
 
 export default function FlightResults() {
+    const { state: locationState } = useLocation();
+    const payload = locationState?.searchPayload;
+
+    const { data, isLoading, isError, error, } = useQuery({
+        queryKey: ["flight-search", payload],
+        queryFn: async () => {
+
+            const response = await api.post(
+                "/Flight/SearchFlight",
+                payload,
+            );
+
+            return response.data;
+        },
+        staleTime: 1000 * 60 * 5,
+    });
+
+    const [progress, setProgress] = useState(0);
+
+    const apiFlights = data?.Data?.oneWayResponses || [];
+    const apiFlightsCounts = data?.Data?.flightcounts || [];
+
     const loadMoreRef = useRef(null);
 
     const PAGE_SIZE = 10;
-
-    const RawFlightDetails = FlightsData.TripDetails[0].Flights;
 
     const { state: filters } = useFlightFilters();
 
     const navigate = useNavigate();
 
+    const filterParams = {
+        minPrice: Math.min(...apiFlights.map(f => f.AirlineMinNetPrice)),
+        maxPrice: Math.max(...apiFlights.map(f => f.AirlineMinNetPrice)),
+        totalStops: [...new Set(apiFlights.map(f => f.Airlinestops))],
+        airlines: [...new Set(apiFlightsCounts.map(f => f.AirlineName))]
+    };
+
     const [page, setPage] = useState(1);
 
     const [selectedSorting, setSelectedSorting] = useState("");
 
-    const [progress, setProgress] = useState(0);
-
-    const [showLoader, setShowLoader] = useState(true);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const [collapsed, setCollapsed] = useState(false);
 
     const [selectedFlightId, setSelectedFlightId] = useState(null);
 
-    const { state, dispatch } = useCompareFlights();
-    const selectedFlights = state.selectedFlights;
+    const { state: compareState, dispatch } = useCompareFlights();
+    const selectedFlights = compareState.selectedFlights;
 
     const [isSignInModal, setIsSignInModal] = useState(false);
     const [isFlightDetailsModalOpen, setIsFlightDetailsModalOpen] = useState(false);
+    const [IsFlightDetailsModalData, setIsFlightDetailsModalData] = useState([]);
 
     const [showOtherMenu, setShowOtherMenu] = useState(false);
     const [showScrollTop, setShowScrollTop] = useState(false);
 
     const [showMobileSearch, setShowMobileSearch] = useState(false);
 
-
     const FlightDetails = useFilteredFlights({
-        flights: RawFlightDetails,
+        flights: apiFlights,
         filters,
         sorting: selectedSorting,
     });
@@ -108,7 +132,7 @@ export default function FlightResults() {
 
     const toggleCompare = (flight) => {
         const exists = selectedFlights.some(
-            f => f.Flight_Id === flight.Flight_Id
+            f => f.flightkey === flight.flightkey
         );
 
         if (!exists && selectedFlights.length >= 3) {
@@ -116,10 +140,7 @@ export default function FlightResults() {
             return;
         }
 
-        dispatch({
-            type: exists ? "REMOVE_FLIGHT" : "ADD_FLIGHT",
-            payload: exists ? flight.Flight_Id : flight,
-        });
+        dispatch({ type: exists ? "REMOVE_FLIGHT" : "ADD_FLIGHT", payload: exists ? flight.Flight_Id : flight });
     };
 
     const toggleFlightDetails = (flightId) => {
@@ -173,24 +194,6 @@ export default function FlightResults() {
     }, [page, FlightDetails.length]);
 
     useEffect(() => {
-        const sequence = [70, 90, 100];
-        let index = 0;
-
-        const timer = setInterval(() => {
-            setProgress(sequence[index]);
-            index++;
-
-            if (index >= sequence.length) {
-                clearInterval(timer);
-                // hide loader after short delay
-                setTimeout(() => setShowLoader(false), 500);
-            }
-        }, 800);
-
-        return () => clearInterval(timer);
-    }, []);
-
-    useEffect(() => {
         document.body.style.overflow = isFilterOpen ? 'hidden' : 'auto';
         return () => (document.body.style.overflow = 'auto');
     }, [isFilterOpen]);
@@ -203,6 +206,30 @@ export default function FlightResults() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    useEffect(() => {
+        let timer;
+
+        if (isLoading) {
+            setProgress(10);
+
+            timer = setInterval(() => {
+                setProgress((prev) => {
+                    if (prev >= 90) return prev;
+                    return prev + Math.random() * 15;
+                });
+            }, 300);
+        } else {
+            setProgress(100);
+
+            setTimeout(() => {
+                setProgress(0);
+            }, 500);
+        }
+
+        return () => clearInterval(timer);
+    }, [isLoading]);
+
+
     return (
         <>
             {/* Mobile Filters Drawer */}
@@ -213,7 +240,9 @@ export default function FlightResults() {
             <div
                 className={`fixed top-0 left-0 z-[9999] bg-white transform transition-transform duration-300 ease-in-out ${isFilterOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 <div className="h-screen w-80 overflow-y-auto overscroll-contain">
-                    <Filters />
+                    <Filters
+                        filters={filterParams}
+                    />
                 </div>
             </div>
 
@@ -245,26 +274,23 @@ export default function FlightResults() {
                                             <div className="flex items-center space-x-2">
                                                 <img
                                                     src={AirlineLogo}
-                                                    alt={selectedFlight.Segments[0].Airline_Name}
+                                                    alt={selectedFlight.AirlineName}
                                                     className="w-6 h-6 rounded"
                                                 />
-                                                <span className="font-medium text-gray-800">{selectedFlight.Segments[0].Airline_Name}</span>
+                                                <span className="font-medium text-gray-800">{selectedFlight.AirlineName}</span>
                                             </div>
 
                                             {/* Middle: Times + Progress */}
                                             <div className="flex items-center ">
-                                                <div className="text-xs xs:text-sm font-medium mr-4">{formatTime(selectedFlight.Segments[0].Departure_DateTime)}</div>
+                                                <div className="text-xs xs:text-sm font-medium mr-4">{selectedFlight.ArrivalTime}</div>
                                                 <div className="h-1 w-10 xs:w-16 bg-green-400 mx-auto my-1 rounded" />
-                                                <div className="text-xs xs:text-sm font-medium ml-4">{formatTime(selectedFlight.Segments[0].Arrival_DateTime)}</div>
+                                                <div className="text-xs xs:text-sm font-medium ml-4">{selectedFlight.DepartureTime}</div>
                                             </div>
 
                                             {/* Remove button */}
                                             <button
                                                 onClick={() =>
-                                                    dispatch({
-                                                        type: "REMOVE_FLIGHT",
-                                                        payload: selectedFlight.Flight_Id,
-                                                    })
+                                                    dispatch({ type: "REMOVE_FLIGHT", payload: selectedFlight.Flight_Id })
                                                 }
                                             >
                                                 ✕
@@ -287,10 +313,14 @@ export default function FlightResults() {
 
             )}
 
-            {isFlightDetailsModalOpen && <FlightPriceDetailsModal onClose={() => setIsFlightDetailsModalOpen(false)} />}
-            {isSignInModal && <SignInModal onClose={() => setIsSignInModal(false)} />}
-            {/* Mobile Filter Button */}
+            {isFlightDetailsModalOpen &&
+                <FlightPriceDetailsModal
+                    data={IsFlightDetailsModalData}
+                    onClose={() => setIsFlightDetailsModalOpen(false)}
+                />
+            }
 
+            {isSignInModal && <SignInModal onClose={() => setIsSignInModal(false)} />}
 
             {showScrollTop && (
                 <button
@@ -325,9 +355,10 @@ export default function FlightResults() {
                     />
                 </div>
 
-                {showLoader && (
+                {isLoading && progress > 0 && (
                     <LoadingBar progress={progress} />
                 )}
+
 
                 {/* Main Content */}
                 <div className="relative max-w-7xl mx-auto px-5 sm:px-4 py-6 z-50">
@@ -335,7 +366,9 @@ export default function FlightResults() {
 
                         {/* Filters Sidebar */}
                         <div className="hidden lg:block">
-                            <Filters />
+                            <Filters
+                                filters={filterParams}
+                            />
                         </div>
 
                         {/* Results Area */}
@@ -446,7 +479,15 @@ export default function FlightResults() {
 
                             {/* Flight Results */}
                             <div className="space-y-4">
-                                {FlightDetails.length > 0 ? (
+                                {isLoading ? (
+                                    <div className="text-center py-10 text-lg font-medium">
+                                        Searching flights...
+                                    </div>
+                                ) : isError ? (
+                                    <div className="text-center py-10 text-red-600">
+                                        Something went wrong.
+                                    </div>
+                                ) : FlightDetails.length > 0 ? (
                                     visibleFlights.map((flight) => (
                                         <div key={flight.Flight_Id} className="rounded-2xl">
                                             <div
@@ -500,8 +541,8 @@ export default function FlightResults() {
                                                             <img src={AirlineLogo} alt="airline logo" />
                                                         </div>
                                                         <div>
-                                                            <div className="w-max font-semibold text-[10px] xs:text-xl">{flight.Segments[0].Airline_Name}</div>
-                                                            <div className="font-medium text-[8px] xs:text-base">{flight.Segments[0].Flight_Number}</div>
+                                                            <div className="w-max font-semibold text-[10px] xs:text-xl">{flight.AirlineName}</div>
+                                                            <div className="font-medium text-[8px] xs:text-base">{flight.AirlineCodeAndId}</div>
                                                         </div>
                                                     </div>
 
@@ -510,40 +551,40 @@ export default function FlightResults() {
                                                         {/* Departure */}
                                                         <div className="text-center">
                                                             <div className="text-[9px] xs:text-base sm:text-xl md:text-2xl font-bold leading-tight">
-                                                                {formatTime(flight.Segments[0].Departure_DateTime)}
+                                                                {flight.DepartureTime}
                                                             </div>
                                                             <div className="text-[10px] sm:text-xs md:text-sm font-medium text-gray-700">
-                                                                {flight.Segments[0].Origin_City}
+                                                                {flight.AirlineDeparture?.city}
                                                             </div>
                                                         </div>
 
                                                         {/* Duration */}
                                                         <div className="flex flex-col items-center font-semibold px-2">
                                                             <div className="text-[8px] xs:text-[10px] sm:text-xs md:text-sm font-medium mb-[1px] xs:mb-1 text-gray-700">
-                                                                {flight.Segments[0].Duration}
+                                                                {flight.AirlineDuration}
                                                             </div>
 
                                                             <div className="relative w-10 xs:w-14 sm:w-16 md:w-24 h-0.5 rounded-xl bg-[#920000]" />
 
                                                             <div className="text-[8px] xs:text-[10px] sm:text-xs md:text-sm font-medium mt-[1px] xs:mt-1 text-gray-700">
-                                                                {flight.Segments[0].Stop_Over === null ? 'Non Stop' : flight.Segments[0].Stop_Over}
+                                                                {flight.Airlinestops === 0 ? "Non Stop" : `${flight.Airlinestops} Stop`}
                                                             </div>
                                                         </div>
 
                                                         {/* Arrival */}
                                                         <div className="text-center">
                                                             <div className="text-[9px] xs:text-base sm:text-xl md:text-2xl font-bold leading-tight">
-                                                                {formatTime(flight.Segments[0].Arrival_DateTime)}
+                                                                {flight.ArrivalTime}
                                                             </div>
                                                             <div className="text-[10px] sm:text-xs md:text-sm font-medium text-gray-700">
-                                                                {flight.Segments[0].Destination_City}
+                                                                {flight.AirlineArrival?.city}
                                                             </div>
                                                         </div>
 
                                                         {/* Price */}
                                                         <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-1 md:gap-2">
                                                             <div className="text-[10px] xs:text-base sm:text-xl md:text-2xl font-bold text-[#811919]">
-                                                                ₹ {flight.Fares[0].FareDetails[0].Total_Amount}
+                                                                ₹ {flight.AirlineMinNetPrice}
                                                             </div>
                                                             <div className="hidden lg:block text-xs font-medium text-gray-600">
                                                                 Per Adult
@@ -556,6 +597,7 @@ export default function FlightResults() {
                                                         className="w-full hidden md:flex md:w-auto cursor-pointer bg-[#811919] hover:bg-[#741111] text-white px-4 py-2 md:py-1 rounded-full font-medium text-sm"
                                                         onClick={(e) => {
                                                             e.stopPropagation()
+                                                            setIsFlightDetailsModalData(flight.totalPriceList)
                                                             setIsFlightDetailsModalOpen(true)
                                                         }}
                                                     >
@@ -565,7 +607,7 @@ export default function FlightResults() {
 
                                                 {/* ---- Mid Bottom Row ---- */}
                                                 <div className="flex flex-row md:items-center justify-between  text-[10px] xs:text-xs sm:text-sm font-medium gap-2">
-                                                    {selectedFlights.some((f) => f.Flight_Id === flight.Flight_Id) ? (
+                                                    {selectedFlights.some((f) => f.flightkey === flight.flightkey) ? (
                                                         <div
                                                             className="ml-2 pr-3 cursor-pointer flex items-center px-3 py-1 rounded hover:bg-red-200 transition-colors duration-300 ease-in-out"
                                                             onClick={(e) => {
@@ -642,9 +684,9 @@ export default function FlightResults() {
                                                         {/* View / Hide Flight Details */}
                                                         <button
                                                             className="text-[#811919] cursor-pointer hover:underline text-[10px] xs:text-xs sm:text-sm text-left"
-                                                            onClick={() => toggleFlightDetails(flight.Flight_Id)}
+                                                            onClick={() => toggleFlightDetails(flight.AirlineCodeAndId)}
                                                         >
-                                                            {selectedFlightId === flight.Flight_Id ? "Hide" : "View"} Flight Details
+                                                            {selectedFlightId === flight.AirlineCodeAndId ? "Hide" : "View"} Flight Details
                                                         </button>
 
                                                     </div>
@@ -654,9 +696,13 @@ export default function FlightResults() {
 
                                             {/* ---- Slide-Down Details ---- */}
                                             < div
-                                                className={`shadow-2xl mt-5 overflow-hidden transition-[max-height] duration-900 ease-in-out ${selectedFlightId === flight.Flight_Id ? "max-h-96" : "max-h-0"}`}
+                                                className={`shadow-2xl mt-5 overflow-hidden transition-[max-height] duration-900 ease-in-out ${selectedFlightId === flight.AirlineCodeAndId ? "max-h-96" : "max-h-0"}`}
                                             >
-                                                {selectedFlightId === flight.Flight_Id && <ViewFlightDetails flight={flight} />}
+                                                {selectedFlightId === flight.AirlineCodeAndId && (
+                                                    <Suspense fallback={<div className="p-4 text-sm">Loading details...</div>}>
+                                                        <ViewFlightDetails flight={flight} />
+                                                    </Suspense>
+                                                )}
                                             </div>
                                         </div>
                                     ))

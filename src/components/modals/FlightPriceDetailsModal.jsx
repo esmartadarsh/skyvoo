@@ -8,91 +8,36 @@ import { useNavigate } from 'react-router-dom';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import "@splidejs/react-splide/css";
 
-export default function FlightPriceDetailsModal({ onClose }) {
+export default function FlightPriceDetailsModal({ data, onClose }) {
     const navigate = useNavigate();
 
-    const fareCards = [
-        {
-            title: "SKYVOO",
-            price: "₹ 5,330",
-            oldPrice: "₹ 5,530",
-            type: "Per adult",
-            benefitsWorth: "₹ 5,330",
-            insurance: "Travel Insurance for 1 days",
-            baggage: ["7 kgs Cabin Baggage", "15 kgs Check-in Baggage"],
-            flexibility: [
-                "Cancellation fee start at ₹ 5,330 (up to 24 hours before departure)",
-                "Date Change fee start at ₹ 5,330 up to 3hrs before departure",
-            ],
-            seatsMeals: ["Chargeable Seats", "Chargeable Meals"],
-            buttons: ["BOOK NOW"],
-        },
-        {
-            title: "FLEXI PLUS",
-            price: "₹ 5,340",
-            oldPrice: "₹ 5,530",
-            type: "Per adult",
-            baggage: ["7 kgs Cabin Baggage", "15 kgs Check-in Baggage"],
-            flexibility: [
-                "Lower Cancellation fee start at ₹ 5,330 (up to 24 hours before departure)",
-                "Free Date Change fee start at ₹ 5,330 up to 3hrs before departure",
-            ],
-            seatsMeals: ["Free Seats", "Chargeable Meals"],
-            buttons: ["LOCK PRICE", "BOOK NOW"],
-        },
-        {
-            title: "SUPER 6E",
-            price: "₹ 5,350",
-            oldPrice: "₹ 5,530",
-            type: "Per adult",
-            baggage: ["7 kgs Cabin Baggage", "15 kgs Check-in Baggage"],
-            flexibility: [
-                "Lower Cancellation fee start at ₹ 5,330 (up to 24 hours before departure)",
-                "Free Date Change fee start at ₹ 5,330 up to 3hrs before departure",
-            ],
-            seatsMeals: ["Free Seats", "Chargeable Meals"],
-            buttons: ["LOCK PRICE", "BOOK NOW"],
-        },
-        {
-            title: "TELLY 6E",
-            price: "₹ 5,250",
-            oldPrice: "₹ 5,520",
-            type: "Per adult",
-            baggage: ["7 kgs Cabin Baggage", "15 kgs Check-in Baggage"],
-            flexibility: [
-                "Lower Cancellation fee start at ₹ 2,330 (up to 24 hours before departure)",
-                "Free Date Change fee start at ₹ 1,330 up to 3hrs before departure",
-            ],
-            seatsMeals: ["Free Seats", "Chargeable Meals"],
-            buttons: ["LOCK PRICE", "BOOK NOW"],
-        },
-        {
-            title: "EXTRA 6E",
-            price: "₹ 5,360",
-            oldPrice: "₹ 5,560",
-            type: "Per adult",
-            baggage: ["7 kgs Cabin Baggage", "15 kgs Check-in Baggage"],
-            flexibility: [
-                "Lower Cancellation fee start at ₹ 2,330 (up to 24 hours before departure)",
-                "Free Date Change fee start at ₹ 1,330 up to 3hrs before departure",
-            ],
-            seatsMeals: ["Free Seats", "Chargeable Meals"],
-            buttons: ["LOCK PRICE", "BOOK NOW"],
-        },
-        {
-            title: "EXTRA 7E",
-            price: "₹ 5,370",
-            oldPrice: "₹ 5,570",
-            type: "Per adult",
-            baggage: ["7 kgs Cabin Baggage", "15 kgs Check-in Baggage"],
-            flexibility: [
-                "Lower Cancellation fee start at ₹ 2,330 (up to 24 hours before departure)",
-                "Free Date Change fee start at ₹ 1,330 up to 3hrs before departure",
-            ],
-            seatsMeals: ["Free Seats", "Chargeable Meals"],
-            buttons: ["LOCK PRICE", "BOOK NOW"],
-        },
-    ];
+    const fareCards = data?.map((item) => ({
+        title: item.FareType || "SKYVOO",
+
+        price: `₹ ${item.PriceList?.TotalFare}`,
+        oldPrice: `₹ ${item.PriceList?.BaseFare}`,
+
+        type: "Per adult",
+
+        baggage: [
+            `${item.Baggages?.[0]?.HandBag || 0} kgs Cabin Baggage`,
+            `${item.Baggages?.[0]?.CabinBag || 0} kgs Check-in Baggage`,
+        ],
+
+        flexibility: [
+            item.RefundFlag === 0
+                ? "Non-Refundable ticket"
+                : "Refundable ticket",
+            "Date change allowed as per airline rules",
+        ],
+
+        seatsMeals: [
+            "Chargeable Seats",
+            item.Meal ? "Meal Included" : "Chargeable Meals",
+        ],
+
+        buttons: ["BOOK NOW"],
+    }));
 
     return (
         <div

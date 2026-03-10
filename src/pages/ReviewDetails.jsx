@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import FareRulesModal from '@/components/common/Modals/FareRulesModal';
-import TripBenefitsModal from '@/components/common/Modals/TripBenefitsModal';
-import TicketDetailsReviewModal from '@/components/common/Modals/TicketDetailsReviewModal';
-import ViewAllCouponsModal from '@/components/common/Modals/ViewAllCouponsModal';
-import BaggageModal from '@/components/common/Modals/BaggageModal';
+import FareRulesModal from '@/components/modals/FareRulesModal';
+import TripBenefitsModal from '@/components/modals/TripBenefitsModal';
+import TicketDetailsReviewModal from '@/components/modals/TicketDetailsReviewModal';
+import ViewAllCouponsModal from '@/components/modals/ViewAllCouponsModal';
+import BaggageModal from '@/components/modals/BaggageModal';
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 import CouponBg from '@/assets/imgs/couponbg.webp';
 import OfferPromo from '@/assets/vectors/OfferPromo.svg';

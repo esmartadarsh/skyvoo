@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp'
-import SignInModal from '@/components/common/Modals/SignInModal';
+import SignInModal from '@/components/modals/SignInModal';
 
 function Layout() {
     const [isModalOpen, setIsModalOpen] = useState(false);

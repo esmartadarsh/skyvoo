@@ -14,151 +14,13 @@ import BookingFlightFormBg from "@/assets/imgs/bookingForm.webp";
 import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-
-const AirportOptions = [
-    {
-        airportCode: "BOM",
-        airportName: "Chhatrapati Shivaji International Airport",
-        city: "Mumbai",
-        state: "Maharashtra",
-        country: "India",
-        countryCode: "IN"
-    },
-    {
-        airportCode: "DEL",
-        airportName: "Indira Gandhi International Airport",
-        city: "New Delhi",
-        state: "Delhi",
-        country: "India",
-        countryCode: "IN"
-    },
-    {
-        airportCode: "IATA",
-        airportName: "Safdarjung Airport",
-        city: "New Delhi",
-        state: "Delhi",
-        country: "India",
-        countryCode: "IN"
-    },
-    {
-        airportCode: "HDO",
-        airportName: "Hindon Airport",
-        city: "Ghaziabad",
-        state: "Delhi",
-        country: "India",
-        countryCode: "IN"
-    },
-    {
-        airportCode: "BLR",
-        airportName: "Kempegowda International Airport",
-        city: "Bengaluru",
-        state: "Karnataka",
-        country: "India",
-        countryCode: "IN"
-    },
-    {
-        airportCode: "MAA",
-        airportName: "Chennai International Airport",
-        city: "Chennai",
-        state: "Tamil Nadu",
-        country: "India",
-        countryCode: "IN"
-    },
-    {
-        airportCode: "CCU",
-        airportName: "Netaji Subhas Chandra Bose International Airport",
-        city: "Kolkata",
-        state: "West Bengal",
-        country: "India",
-        countryCode: "IN"
-    },
-    {
-        airportCode: "PQQ",
-        airportName: "Lune Airport",
-        city: "Tune",
-        state: "Unknown",
-        country: "India",
-        countryCode: "IN"
-    },
-    {
-        airportCode: "BKK",
-        airportName: "Suvarnabhumi Airport",
-        city: "Bangkok",
-        state: "Bangkok",
-        country: "Thailand",
-        countryCode: "TH"
-    },
-    {
-        airportCode: "LHR",
-        airportName: "Heathrow Airport",
-        city: "London",
-        state: "England",
-        country: "United Kingdom",
-        countryCode: "GB"
-    },
-    {
-        airportCode: "JFK",
-        airportName: "John F. Kennedy International Airport",
-        city: "New York",
-        state: "New York",
-        country: "USA",
-        countryCode: "US"
-    },
-    {
-        airportCode: "CDG",
-        airportName: "Charles de Gaulle Airport",
-        city: "Paris",
-        state: "Île-de-France",
-        country: "France",
-        countryCode: "FR"
-    },
-    {
-        airportCode: "DXB",
-        airportName: "Dubai International Airport",
-        city: "Dubai",
-        state: "Dubai",
-        country: "UAE",
-        countryCode: "AE"
-    },
-    {
-        airportCode: "SYD",
-        airportName: "Sydney Kingsford Smith Airport",
-        city: "Sydney",
-        state: "New South Wales",
-        country: "Australia",
-        countryCode: "AU"
-    },
-    {
-        airportCode: "HND",
-        airportName: "Tokyo Haneda Airport",
-        city: "Tokyo",
-        state: "Tokyo",
-        country: "Japan",
-        countryCode: "JP"
-    },
-    {
-        airportCode: "FRA",
-        airportName: "Frankfurt am Main Airport",
-        city: "Frankfurt",
-        state: "Hesse",
-        country: "Germany",
-        countryCode: "DE"
-    },
-    {
-        airportCode: "SIN",
-        airportName: "Changi Airport",
-        city: "Singapore",
-        state: "Singapore",
-        country: "Singapore",
-        countryCode: "SG"
-    }
-];
+import { useQuery } from "@tanstack/react-query";
+import api from '../../../services/api.js';
 
 const CoachOptions = [
     { value: 0, label: "Economy" },
-    { value: 3, label: "Premium Economy" },
-    { value: 1, label: "Business" },
-    { value: 2, label: "First Class" },
+    { value: 1, label: "First Class" },
+    { value: 2, label: "Business" },
 ];
 
 
@@ -191,11 +53,82 @@ function BookingForm() {
     const [returnOpen, setReturnOpen] = useState(false);
     const [departSelected, setDepartSelected] = useState(flightSearchInfo.depart);
 
+    const [fromSearch, setFromSearch] = useState("");
+    const [toSearch, setToSearch] = useState("");
+
+    const [debouncedFrom, setDebouncedFrom] = useState("");
+    const [debouncedTo, setDebouncedTo] = useState("");
+
     const [showTravellerBox, setShowTravellerBox] = useState(false);
 
     const departRef = useRef();
     const returnRef = useRef();
     const travellerBoxRef = useRef(null);
+
+    const { data: fromAirportOptions = [], isLoading: fromLoading, isError: fromError } = useQuery({
+        queryKey: ['airportlistcodes-from', debouncedFrom],
+
+        queryFn: async () => {
+
+            const res = await api.post(
+                `/Flight/ListAirportsByCode?airportCode=${debouncedFrom}`
+            );
+
+            if (!res.data?.IsSuccess) {
+                throw new Error(res.data?.ErrorMessage || "Failed to fetch airports");
+            }
+
+            return res.data.Data.map((item) => ({
+                airportCode: item.AirportCode,
+                airportName: item.AirportName,
+                city: item.CityName,
+                cityCode: item.CityCode,
+                countryCode: item.CountryCode
+            }));
+        },
+        enabled: debouncedFrom?.length >= 1
+    });
+
+    const { data: toAirportOptions = [], isLoading: toLoading, isError: toError } = useQuery({
+        queryKey: ['airportlistcodes-to', debouncedTo],
+
+        queryFn: async () => {
+
+            const res = await api.post(
+                `/Flight/ListAirportsByCode?airportCode=${debouncedTo}`
+            );
+            if (!res.data?.IsSuccess) {
+                throw new Error(res.data?.ErrorMessage || "Failed to fetch airports");
+            }
+
+            return res.data.Data.map((item) => ({
+                airportCode: item.AirportCode,
+                airportName: item.AirportName,
+                city: item.CityName,
+                cityCode: item.CityCode,
+                countryCode: item.CountryCode
+            }));
+        },
+        enabled: debouncedTo?.length >= 1
+    });
+
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedFrom(fromSearch);
+        }, 400);
+
+        return () => clearTimeout(timer);
+    }, [fromSearch]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedTo(toSearch);
+        }, 400);
+
+        return () => clearTimeout(timer);
+    }, [toSearch]);
+
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -247,7 +180,7 @@ function BookingForm() {
         <components.Option {...props}>
             <div className="flex justify-between w-full">
                 <div className="flex flex-col">
-                    <span className="text-gray-900">{props.data.city}, {props.data.country}</span>
+                    <span className="text-gray-900">{props.data.city}, {props.data.countryCode}</span>
                     <span className="text-gray-400 text-sm">{props.data.airportName}</span>
                 </div>
                 <span className="font-medium text-gray-700">{props.data.airportCode}</span>
@@ -332,38 +265,51 @@ function BookingForm() {
     };
 
     const buildFlightDataFormat = () => {
-        const TravelType = flightSearchInfo.to?.countryCode?.toUpperCase() !== 'IN' ? 1 : 0;
-        const BookingType = tripType;
-        let TravelDate = flightSearchInfo.depart
-            ? (() => {
-                const date = new Date(flightSearchInfo.depart);
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
-                const year = date.getFullYear();
-                return `${month}/${day}/${year}`;
-            })()
-            : null;
+        const isInternational = flightSearchInfo.from?.countryCode !== flightSearchInfo.to?.countryCode;
+
+        const formatDate = (date) => {
+            const d = new Date(date);
+            const month = String(d.getMonth() + 1).padStart(2, "0");
+            const day = String(d.getDate()).padStart(2, "0");
+            const year = d.getFullYear();
+            return `${year}-${month}-${day}`;
+        };
+
+        const tripInfo = [
+            {
+                Origin: flightSearchInfo.from.airportCode,
+                Destination: flightSearchInfo.to.airportCode,
+                TravelDate: formatDate(flightSearchInfo.depart),
+                Trip_Id: 0,
+            },
+        ];
+
+        if (tripType === "ROUND_TRIP" && flightSearchInfo.return) {
+            tripInfo.push({
+                Origin: flightSearchInfo.to.airportCode,
+                Destination: flightSearchInfo.from.airportCode,
+                TravelDate: formatDate(flightSearchInfo.return),
+                Trip_Id: 1,
+            });
+        }
 
         return {
-            Travel_Type: TravelType,
-            Booking_Type: BookingType,
-            TripInfo: [
-                {
-                    Origin: flightSearchInfo.from.airportCode,
-                    Destination: flightSearchInfo.to.airportCode,
-                    TravelDate,
-                    Trip_Id: 0
-                }
-            ],
-            Adult_Count: flightSearchInfo.traveller.adults,
-            Child_Count: flightSearchInfo.traveller.children,
-            Infant_Count: flightSearchInfo.traveller.infants,
+            Travel_Type: 0,
+            Booking_Type: 0,
+            TripInfo: tripInfo,
+            Adult_Count: travellers.adults,
+            Child_Count: travellers.children,
+            Infant_Count: travellers.children,
             Class_Of_Travel: flightSearchInfo.coach,
             InventoryType: 0,
             Source_Type: 0,
+            SrCitizen_Search: false,
+            StudentFare_Search: false,
+            DefenceFare_Search: false,
             Filtered_Airline: [{ Airline_Code: "" }]
         };
     };
+
 
     const validateFlightInfoInputs = () => {
         const { from, to, depart, traveller, coach } = flightSearchInfo;
@@ -377,21 +323,21 @@ function BookingForm() {
         return true;
     };
 
-    const searchFlightResults = () => {
+    const searchFlightResults = async () => {
         if (!validateFlightInfoInputs()) return;
 
-        // defer heavy computation
-        setTimeout(() => {
-            const dataformat = buildFlightDataFormat();
+        const payload = buildFlightDataFormat();
 
-
-            navigate('/flight-results');
-        }, 0);
+        navigate("/flight-results", {
+            state: {
+                searchPayload: payload,
+            },
+        });
     };
 
+
     return (
-        <div
-            className="relative grid grid-cols-12 gap-4 sm:gap-6 md:gap-8 bg-no-repeat bg-cover bg-center rounded-[30px] md:rounded-[45px] shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+        <div className="relative grid grid-cols-12 gap-4 sm:gap-6 md:gap-8 bg-no-repeat bg-cover bg-center rounded-[30px] md:rounded-[45px] shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
             style={{ backgroundImage: `url(${BookingFlightFormBg})` }}
         >
             <img
@@ -519,29 +465,22 @@ function BookingForm() {
                         <div className="col-span-12 sm:col-span-6 md:col-span-2">
                             <label className="block text-lg text-gray-700">From</label>
                             <Select
-                                options={AirportOptions}
-                                value={flightSearchInfo.from} // store full object
-                                onChange={(option) => { handleFlightInputChange("from", option) }}
+                                options={fromAirportOptions}
+                                onInputChange={(value) => setFromSearch(value)}
+                                isLoading={fromLoading}
+                                value={flightSearchInfo.from}
+                                onChange={(option) => {
+                                    handleFlightInputChange("from", option)
+                                }}
                                 placeholder="Origin"
                                 isSearchable
                                 menuPlacement="top"
                                 getOptionLabel={(option) => `${option.city} - ${option.airportName}`}
+                                getOptionValue={(option) => option.airportCode}
                                 components={{
                                     Option: CustomOption,
                                     DropdownIndicator: () => null,
                                     IndicatorSeparator: () => null,
-                                }}
-                                filterOption={(option, inputValue) => {
-                                    const { airportCode, airportName, city, state, country, countryCode } = option.data;
-                                    const search = inputValue.toLowerCase();
-                                    return (
-                                        airportCode.toLowerCase().includes(search) ||
-                                        airportName.toLowerCase().includes(search) ||
-                                        city.toLowerCase().includes(search) ||
-                                        state.toLowerCase().includes(search) ||
-                                        country.toLowerCase().includes(search) ||
-                                        countryCode.toLowerCase().includes(search)
-                                    );
                                 }}
                                 classNamePrefix="flight-select"
                                 styles={{
@@ -605,29 +544,22 @@ function BookingForm() {
                         <div className="col-span-12 sm:col-span-6 md:col-span-2">
                             <label className="block text-lg text-gray-700">To</label>
                             <Select
-                                options={AirportOptions}
-                                value={flightSearchInfo.to || null} // store full object
-                                onChange={(option) => { handleFlightInputChange("to", option || null) }}
+                                options={toAirportOptions}
+                                onInputChange={(value) => setToSearch(value)}
+                                isLoading={toLoading}
+                                value={flightSearchInfo.to}
+                                onChange={(option) => {
+                                    handleFlightInputChange("to", option)
+                                }}
                                 placeholder="Destination"
                                 isSearchable
                                 menuPlacement="top"
-                                getOptionLabel={(option) => `${option.city} - ${option.airportName}`} // display format
+                                getOptionLabel={(option) => `${option.city} - ${option.airportName}`}
+                                getOptionValue={(option) => option.airportCode}
                                 components={{
                                     Option: CustomOption,
                                     DropdownIndicator: () => null,
                                     IndicatorSeparator: () => null,
-                                }}
-                                filterOption={(option, inputValue) => {
-                                    const { airportCode, airportName, city, state, country, countryCode } = option.data;
-                                    const search = inputValue.toLowerCase();
-                                    return (
-                                        airportCode.toLowerCase().includes(search) ||
-                                        airportName.toLowerCase().includes(search) ||
-                                        city.toLowerCase().includes(search) ||
-                                        state.toLowerCase().includes(search) ||
-                                        country.toLowerCase().includes(search) ||
-                                        countryCode.toLowerCase().includes(search)
-                                    );
                                 }}
                                 classNamePrefix="flight-select"
                                 styles={{

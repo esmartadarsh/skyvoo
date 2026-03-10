@@ -3,8 +3,8 @@ import { Plane, Utensils, Coffee, Clock, Plug, Tv, Luggage, DollarSign, RockingC
 import Header from '@/components/layout/Header';
 import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp';
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
-import FlightPriceDetailsModal from '@/components/common/Modals/FlightPriceDetailsModal';
-import SignInModal from '@/components/common/Modals/SignInModal';
+import FlightPriceDetailsModal from '@/components/modals/FlightPriceDetailsModal';
+import SignInModal from '@/components/modals/SignInModal';
 import { useCompareFlights } from "../features/flights/contexts/CompareContext";
 
 export default function CompareFlights() {

@@ -4,7 +4,7 @@ import Sunrise from '@/assets/vectors/sunrise.svg';
 import Sunnyday from '@/assets/vectors/sunnyday.svg';
 import Afternoon from '@/assets/vectors/afternoon.svg';
 import Night from '@/assets/vectors/night.svg';
-import { useFlightFilters } from '../../contexts/FlightFilterContext';
+import { useFlightFilters } from '@/contexts/FlightFilterContext';
 
 const PopularFilters = [
     { label: 'Non Stop', price: 5500 },
@@ -23,11 +23,6 @@ const DepartureAirports = [
     { label: 'Indira Gandhi International Airport', price: 7500 },
 ];
 
-const Stops = [
-    { label: 'Non Stop', price: 8900 },
-    { label: '1 Stop', price: 7900 },
-];
-
 const Airlines = [
     { code: "6E", name: "IndiGo" },
     { code: "AI", name: "Air India" },
@@ -42,8 +37,7 @@ const AircraftSize = [
     { label: 'Large Aircraft', price: 9478 },
 ];
 
-function Filters() {
-
+function Filters({ filters }) {
     const { state, dispatch } = useFlightFilters();
 
     const [showAll, setShowAll] = useState(false);
@@ -52,10 +46,13 @@ function Filters() {
     const [isDragging, setIsDragging] = useState(false);
     const sliderRef = useRef(null);
 
-    const DEFAULT_SELECTED_PRICE = 18000;
-    const minValue = 1900;
-    const maxValue = 21000;
-    const [value, setValue] = useState(DEFAULT_SELECTED_PRICE);
+    const minValue = filters?.minPrice || 0;
+    const maxValue = filters?.maxPrice || 0;
+
+    const stopsList = filters?.totalStops || [];
+    const airlinesList = filters?.airlines || [];
+
+    const [value, setValue] = useState(maxValue);
 
     const [prevValue, setPrevValue] = useState(18500);
 
@@ -98,7 +95,9 @@ function Filters() {
         setValue((prev) => Math.round(prev / 100) * 100);
     };
 
-
+    useEffect(() => {
+        setValue(maxValue);
+    }, [maxValue]);
 
     useEffect(() => {
         if (isDragging) {
@@ -118,7 +117,7 @@ function Filters() {
         });
     }, [value, dispatch]);
 
-    const percentage = ((value - minValue) / (maxValue - minValue)) * 100;
+    const percentage = maxValue === minValue ? 0 : ((value - minValue) / (maxValue - minValue)) * 100;
 
     const toggleStopFilter = (label) => {
         const newStops = state.selectedStops.includes(label)
@@ -156,7 +155,7 @@ function Filters() {
 
     const clearAllFilters = () => {
         dispatch({ type: "RESET_FILTERS" });
-        setValue(DEFAULT_SELECTED_PRICE);
+        setValue(maxValue);
         setDepartureAirport(null);
     };
 
@@ -240,7 +239,7 @@ function Filters() {
 
 
                 {/* Popular Filters */}
-                <div className="mb-8">
+                {/* <div className="mb-8">
                     <h4 className="font-semibold mb-4">Popular Filters</h4>
                     <div className="space-y-3 text-sm">
                         {visibleFilters.map(({ label, price }) => (
@@ -264,7 +263,7 @@ function Filters() {
                         )}
                     </div>
 
-                </div>
+                </div> */}
 
                 {/* Departure Airports */}
                 <div className="mb-8">
@@ -329,19 +328,26 @@ function Filters() {
                 <div className="mb-8">
                     <h4 className="font-semibold mb-4">Stops From New Delhi</h4>
                     <div className="space-y-3 text-sm">
-                        {Stops.map(({ label }) => (
-                            <label key={label} className="flex items-center justify-between">
-                                <span className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        checked={state.selectedStops.includes(label)}
-                                        onChange={() => toggleStopFilter(label)}
-                                        className="mr-3 cursor-pointer accent-red-600"
-                                    />
-                                    {label}
-                                </span>
-                            </label>
-                        ))}
+                        {stopsList.map((stop) => {
+                            const label =
+                                stop === 0 ? "Non Stop"
+                                    : stop === 1 ? "1 Stop"
+                                        : `${stop} Stops`;
+
+                            return (
+                                <label key={stop} className="flex items-center justify-between">
+                                    <span className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={state.selectedStops.includes(label)}
+                                            onChange={() => toggleStopFilter(label)}
+                                            className="mr-3 cursor-pointer accent-red-600"
+                                        />
+                                        {label}
+                                    </span>
+                                </label>
+                            );
+                        })}
                     </div>
                 </div>
 
@@ -423,24 +429,28 @@ function Filters() {
                 <div className="mb-8">
                     <h4 className="font-semibold mb-4">Airlines</h4>
                     <div className="space-y-3 text-sm">
-                        {Airlines.map(({ code, name }) => (
-                            <label key={code} className="flex items-center justify-between">
-                                <span className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        checked={state.selectedAirlines.includes(code)}
-                                        onChange={() => toggleAirlineFilter(code)}
-                                        className="mr-3 cursor-pointer accent-red-600"
-                                    />
-                                    {name}
-                                </span>
-                            </label>
-                        ))}
+                        {airlinesList.map((code) => {
+                            const airline = Airlines.find(a => a.code === code);
+
+                            return (
+                                <label key={code} className="flex items-center justify-between">
+                                    <span className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={state.selectedAirlines.includes(code)}
+                                            onChange={() => toggleAirlineFilter(code)}
+                                            className="mr-3 cursor-pointer accent-red-600"
+                                        />
+                                        {airline ? airline.name : code}
+                                    </span>
+                                </label>
+                            );
+                        })}
                     </div>
                 </div>
 
                 {/* Aircraft Size */}
-                <div className="mb-8">
+                {/* <div className="mb-8">
                     <h4 className="font-semibold mb-4">Aircraft Size</h4>
                     <div className="space-y-3 text-sm">
                         {AircraftSize.map(({ label, price }) => (
@@ -458,7 +468,7 @@ function Filters() {
                             </div>
                         ))}
                     </div>
-                </div>
+                </div> */}
             </div >
 
         </>

@@ -22,23 +22,16 @@ export function useFilteredFlights({ flights, filters, sorting }) {
 
         /* ---------------- FILTERING ---------------- */
         let result = flights.filter((flight) => {
-            const airlineCode = flight.Airline_Code || "";
 
-            const lowestFare = Math.min(
-                ...flight.Fares.map(f => f.FareDetails[0].Total_Amount)
-            );
+            const airlineCode = flight.AirlineCodeAndId?.split("-")[0] || "";
 
-            const stopsCount = Array.isArray(flight?.Segments?.[0]?.Stop_Over)
-                ? flight.Segments[0].Stop_Over.length
-                : 0;
+            const lowestFare = flight.AirlineMinNetPrice || 0;
 
-            const depHour = new Date(
-                flight.Segments[0].Departure_DateTime
-            ).getHours();
+            const stopsCount = flight.Airlinestops || 0;
 
-            const arrHour = new Date(
-                flight.Segments[0].Arrival_DateTime
-            ).getHours();
+            const depHour = Number(flight.DepartureTime?.split(":")[0]) || 0;
+
+            const arrHour = Number(flight.ArrivalTime?.split(":")[0]) || 0;
 
             // 1️⃣ Airline filter
             if (selectedAirlines.length && !selectedAirlines.includes(airlineCode)) {
@@ -46,15 +39,24 @@ export function useFilteredFlights({ flights, filters, sorting }) {
             }
 
             // 2️⃣ Price range
-            if (selectedPriceRange?.length === 2) {
+            if (selectedPriceRange?.length === 2 && lowestFare > 0) {
                 const [min, max] = selectedPriceRange;
                 if (lowestFare < min || lowestFare > max) return false;
             }
 
             // 3️⃣ Stops filter
-            if (selectedStops.includes("Non Stop") && stopsCount !== 0) return false;
-            if (selectedStops.includes("1 Stop") && stopsCount !== 1) return false;
-            if (selectedStops.includes("2+ Stops") && stopsCount < 2) return false;
+            if (selectedStops.length > 0) {
+                const stopLabel =
+                    stopsCount === 0
+                        ? "Non Stop"
+                        : stopsCount === 1
+                            ? "1 Stop"
+                            : `${stopsCount} Stops`;
+
+                if (!selectedStops.includes(stopLabel)) {
+                    return false;
+                }
+            }
 
             // 4️⃣ Departure time
             if (selectedDepartureTime) {
@@ -76,59 +78,27 @@ export function useFilteredFlights({ flights, filters, sorting }) {
 
         switch (sorting) {
             case "CHEAPEST":
-                sorted.sort((a, b) => {
-                    const fareA = Math.min(
-                        ...a.Fares.map(f => f.FareDetails[0].Total_Amount)
-                    );
-                    const fareB = Math.min(
-                        ...b.Fares.map(f => f.FareDetails[0].Total_Amount)
-                    );
-                    return fareA - fareB;
-                });
+                sorted.sort((a, b) => a.AirlineMinPrice - b.AirlineMinPrice);
                 break;
 
             case "NONSTOP":
-                sorted.sort((a, b) => {
-                    const stopsA = Array.isArray(a.Segments[0]?.Stop_Over)
-                        ? a.Segments[0].Stop_Over.length
-                        : 0;
-                    const stopsB = Array.isArray(b.Segments[0]?.Stop_Over)
-                        ? b.Segments[0].Stop_Over.length
-                        : 0;
-                    return stopsA - stopsB;
-                });
+                sorted.sort((a, b) => a.Airlinestops - b.Airlinestops);
                 break;
 
             case "EARLY_DEPARTURE":
-                sorted.sort(
-                    (a, b) =>
-                        new Date(a.Segments[0].Departure_DateTime) -
-                        new Date(b.Segments[0].Departure_DateTime)
-                );
+                sorted.sort((a, b) => a.DepartureTime.localeCompare(b.DepartureTime));
                 break;
 
             case "LATE_DEPARTURE":
-                sorted.sort(
-                    (a, b) =>
-                        new Date(b.Segments[0].Departure_DateTime) -
-                        new Date(a.Segments[0].Departure_DateTime)
-                );
+                sorted.sort((a, b) => b.DepartureTime.localeCompare(a.DepartureTime));
                 break;
 
             case "EARLY_ARRIVAL":
-                sorted.sort(
-                    (a, b) =>
-                        new Date(a.Segments[0].Arrival_DateTime) -
-                        new Date(b.Segments[0].Arrival_DateTime)
-                );
+                sorted.sort((a, b) => a.ArrivalTime.localeCompare(b.ArrivalTime));
                 break;
 
             case "LATE_ARRIVAL":
-                sorted.sort(
-                    (a, b) =>
-                        new Date(b.Segments[0].Arrival_DateTime) -
-                        new Date(a.Segments[0].Arrival_DateTime)
-                );
+                sorted.sort((a, b) => b.ArrivalTime.localeCompare(a.ArrivalTime));
                 break;
 
             default:
