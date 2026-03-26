@@ -34,7 +34,7 @@ export function useFilteredFlights({ flights, filters, sorting }) {
             const arrHour = Number(flight.ArrivalTime?.split(":")[0]) || 0;
 
             // 1️⃣ Airline filter
-            if (selectedAirlines.length && !selectedAirlines.includes(airlineCode)) {
+            if (selectedAirlines.length && !selectedAirlines.some(a => a.code === airlineCode)) {
                 return false;
             }
 

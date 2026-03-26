@@ -11,9 +11,10 @@ const initialState = {
 
 function reducer(state, action) {
     switch (action.type) {
+
         case "ADD_FLIGHT": {
             const exists = state.selectedFlights.some(
-                f => f.Flight_Id === action.payload.Flight_Id
+                f => f.AirlineCodeAndId === action.payload.AirlineCodeAndId
             );
 
             if (exists || state.selectedFlights.length >= MAX_COMPARE) {
@@ -30,7 +31,7 @@ function reducer(state, action) {
             return {
                 ...state,
                 selectedFlights: state.selectedFlights.filter(
-                    f => f.Flight_Id !== action.payload
+                    f => f.AirlineCodeAndId !== action.payload
                 ),
             };
 

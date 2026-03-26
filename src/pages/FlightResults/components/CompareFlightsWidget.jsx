@@ -40,7 +40,7 @@ export default function CompareFlightsWidget({ collapsed, setCollapsed }) {
                         <ul className="divide-y divide-gray-200 max-h-48">
                             {selectedFlights.map(selectedFlight => (
                                 <li
-                                    key={selectedFlight.Flight_Id}
+                                    key={selectedFlight.AirlineCodeAndId}
                                     className="flex items-center justify-between px-4 py-3"
                                 >
                                     {/* Left side: Logo + Airline */}
@@ -71,7 +71,7 @@ export default function CompareFlightsWidget({ collapsed, setCollapsed }) {
                                         onClick={() =>
                                             dispatch({
                                                 type: "REMOVE_FLIGHT",
-                                                payload: selectedFlight.Flight_Id
+                                                payload: selectedFlight.AirlineCodeAndId
                                             })
                                         }
                                     >

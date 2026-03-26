@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
-import { X, ChevronUp, PlaneTakeoff, PlaneLanding } from 'lucide-react';
+import { X, PlaneTakeoff, PlaneLanding } from 'lucide-react';
 import Sunrise from '@/assets/vectors/sunrise.svg';
 import Sunnyday from '@/assets/vectors/sunnyday.svg';
 import Afternoon from '@/assets/vectors/afternoon.svg';
@@ -37,7 +37,8 @@ const AircraftSize = [
     { label: 'Large Aircraft', price: 9478 },
 ];
 
-function Filters({ filters }) {
+function Filters({ filters, origin, destination }) {
+
     const { state, dispatch } = useFlightFilters();
 
     const [showAll, setShowAll] = useState(false);
@@ -130,17 +131,20 @@ function Filters({ filters }) {
         });
     };
 
-    const toggleAirlineFilter = (label) => {
-        const newAirlines = state.selectedAirlines.includes(label)
-            ? state.selectedAirlines.filter(a => a !== label)
-            : [...state.selectedAirlines, label];
+    const toggleAirlineFilter = (code) => {
+        const airline = Airlines.find(a => a.code === code);
+
+        const exists = state.selectedAirlines.some(a => a.code === code);
+
+        const newAirlines = exists
+            ? state.selectedAirlines.filter(a => a.code !== code)
+            : [...state.selectedAirlines, airline];
 
         dispatch({
             type: "SET_AIRLINES",
             payload: newAirlines,
         });
     };
-
 
     const toggleAircraftFilter = (label) => {
         const newAircraftSizes = state.selectedAircraftSizes.includes(label)
@@ -165,22 +169,21 @@ function Filters({ filters }) {
         departureAirport,
         state.selectedDepartureTime,
         state.selectedArrivalTime,
-        ...state.selectedAirlines.map(code => {
-            const airline = Airlines.find(a => a.code === code);
-            return airline ? airline.name : code;
-        })
+        ...state.selectedAirlines.map(a => a.name)
     ].filter(Boolean);
 
     const removeFilter = (filter) => {
+        console.log(filter)
+        console.log(state.selectedAirlines)
         if (state.selectedStops.includes(filter)) {
             dispatch({
                 type: "SET_STOPS",
                 payload: state.selectedStops.filter(f => f !== filter),
             });
-        } else if (state.selectedAirlines.includes(filter)) {
+        } else if (state.selectedAirlines.some(a => a.name === filter)) {
             dispatch({
                 type: "SET_AIRLINES",
-                payload: state.selectedAirlines.filter(a => a !== filter),
+                payload: state.selectedAirlines.filter(a => a.name !== filter),
             });
         } else if (state.selectedAircraftSizes.includes(filter)) {
             dispatch({
@@ -196,7 +199,6 @@ function Filters({ filters }) {
 
     return (
         <>
-
             <div className="w-80 bg-[#D5D5D5] rounded-lg shadow-sm px-6 pb-6 pt-3 h-fit filters sticky -top-120"
                 style={{ boxShadow: '0px 3px 22.3px 10px rgba(0,0,0,0.2),0px 4px 6.1px 4px rgba(0,0,0,0.25)' }}>
 
@@ -326,7 +328,7 @@ function Filters({ filters }) {
 
                 {/* Stops */}
                 <div className="mb-8">
-                    <h4 className="font-semibold mb-4">Stops From New Delhi</h4>
+                    <h4 className="font-semibold mb-4">Stops From Delhi</h4>
                     <div className="space-y-3 text-sm">
                         {stopsList.map((stop) => {
                             const label =
@@ -354,7 +356,7 @@ function Filters({ filters }) {
 
                 {/* Departure Times */}
                 <div className="mb-8">
-                    <h4 className="font-semibold mb-4">Departure From New Delhi</h4>
+                    <h4 className="font-semibold mb-4">Departure From {origin}</h4>
                     <div className="flex flex-row justify-around gap-1 flex-wrap">
                         {[
                             { label: "Early Morning", icon: Sunrise, lines: ["Before", "6 AM"] },
@@ -391,7 +393,7 @@ function Filters({ filters }) {
 
                 {/* Arrival Times*/}
                 <div className="mb-8">
-                    <h4 className="font-semibold mb-4">Arrival at Bengaluru</h4>
+                    <h4 className="font-semibold mb-4">Arrival at {destination}</h4>
                     <div className="flex flex-row justify-around gap-1 flex-wrap">
                         {[
                             { label: "Early Morning", icon: Sunrise, lines: ["Before", "6 AM"] },
@@ -437,7 +439,7 @@ function Filters({ filters }) {
                                     <span className="flex items-center">
                                         <input
                                             type="checkbox"
-                                            checked={state.selectedAirlines.includes(code)}
+                                            checked={state.selectedAirlines.some(a => a.code === code)}
                                             onChange={() => toggleAirlineFilter(code)}
                                             className="mr-3 cursor-pointer accent-red-600"
                                         />

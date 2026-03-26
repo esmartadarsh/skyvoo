@@ -15,14 +15,14 @@ import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { useQuery } from "@tanstack/react-query";
-import api from '../../../services/api.js';
+import { fetchAirportsByCode } from "@/services/airportsSearch.js";
 
 const CoachOptions = [
     { value: 0, label: "Economy" },
     { value: 1, label: "First Class" },
     { value: 2, label: "Business" },
+    // { value: 3, label: "Premium Economy" },
 ];
-
 
 function BookingForm() {
     const navigate = useNavigate();
@@ -35,7 +35,7 @@ function BookingForm() {
         depart: new Date(),
         return: null,
         coach: 0,
-        traveller: 1
+        traveller: {}
     });
 
     const [travellers, setTravellers] = useState({
@@ -66,57 +66,21 @@ function BookingForm() {
     const travellerBoxRef = useRef(null);
 
     const { data: fromAirportOptions = [], isLoading: fromLoading, isError: fromError } = useQuery({
-        queryKey: ['airportlistcodes-from', debouncedFrom],
-
-        queryFn: async () => {
-
-            const res = await api.post(
-                `/Flight/ListAirportsByCode?airportCode=${debouncedFrom}`
-            );
-
-            if (!res.data?.IsSuccess) {
-                throw new Error(res.data?.ErrorMessage || "Failed to fetch airports");
-            }
-
-            return res.data.Data.map((item) => ({
-                airportCode: item.AirportCode,
-                airportName: item.AirportName,
-                city: item.CityName,
-                cityCode: item.CityCode,
-                countryCode: item.CountryCode
-            }));
-        },
+        queryKey: ["airportlistcodes-from", debouncedFrom],
+        queryFn: () => fetchAirportsByCode(debouncedFrom),
         enabled: debouncedFrom?.length >= 1
     });
 
     const { data: toAirportOptions = [], isLoading: toLoading, isError: toError } = useQuery({
-        queryKey: ['airportlistcodes-to', debouncedTo],
-
-        queryFn: async () => {
-
-            const res = await api.post(
-                `/Flight/ListAirportsByCode?airportCode=${debouncedTo}`
-            );
-            if (!res.data?.IsSuccess) {
-                throw new Error(res.data?.ErrorMessage || "Failed to fetch airports");
-            }
-
-            return res.data.Data.map((item) => ({
-                airportCode: item.AirportCode,
-                airportName: item.AirportName,
-                city: item.CityName,
-                cityCode: item.CityCode,
-                countryCode: item.CountryCode
-            }));
-        },
+        queryKey: ["airportlistcodes-to", debouncedTo],
+        queryFn: () => fetchAirportsByCode(debouncedTo),
         enabled: debouncedTo?.length >= 1
     });
-
 
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedFrom(fromSearch);
-        }, 400);
+        }, 100);
 
         return () => clearTimeout(timer);
     }, [fromSearch]);
@@ -124,7 +88,7 @@ function BookingForm() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedTo(toSearch);
-        }, 400);
+        }, 100);
 
         return () => clearTimeout(timer);
     }, [toSearch]);
@@ -174,7 +138,6 @@ function BookingForm() {
 
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
-
 
     const CustomOption = (props) => (
         <components.Option {...props}>
@@ -265,6 +228,8 @@ function BookingForm() {
     };
 
     const buildFlightDataFormat = () => {
+        if (!flightSearchInfo.from || !flightSearchInfo.to) return;
+
         const isInternational = flightSearchInfo.from?.countryCode !== flightSearchInfo.to?.countryCode;
 
         const formatDate = (date) => {
@@ -299,7 +264,7 @@ function BookingForm() {
             TripInfo: tripInfo,
             Adult_Count: travellers.adults,
             Child_Count: travellers.children,
-            Infant_Count: travellers.children,
+            Infant_Count: travellers.infants,
             Class_Of_Travel: flightSearchInfo.coach,
             InventoryType: 0,
             Source_Type: 0,
@@ -310,12 +275,16 @@ function BookingForm() {
         };
     };
 
-
     const validateFlightInfoInputs = () => {
         const { from, to, depart, traveller, coach } = flightSearchInfo;
 
         if (!from) return alert('Please select origin');
         if (!to) return alert('Please select destination');
+
+        if (from?.airportCode === to?.airportCode) {
+            return alert('Origin and destination cannot be same');
+        }
+
         if (!depart) return alert('Please select a departure date');
         if (!traveller) return alert('Please select travelers');
         if (coach === null || coach === undefined) return alert('Please select a travel class');
@@ -323,18 +292,25 @@ function BookingForm() {
         return true;
     };
 
-    const searchFlightResults = async () => {
+    const searchFlightResults = () => {
         if (!validateFlightInfoInputs()) return;
 
         const payload = buildFlightDataFormat();
 
-        navigate("/flight-results", {
-            state: {
-                searchPayload: payload,
-            },
+        const params = new URLSearchParams({
+            origin: payload.TripInfo[0].Origin,
+            destination: payload.TripInfo[0].Destination,
+            departDate: payload.TripInfo[0].TravelDate,
+            returnDate: payload.TripInfo[1]?.TravelDate || "",
+            adults: payload.Adult_Count,
+            children: payload.Child_Count,
+            infants: payload.Infant_Count,
+            travelClass: payload.Class_Of_Travel,
+            tripType: tripType
         });
-    };
 
+        navigate(`/flight-results?${params.toString()}`);
+    };
 
     return (
         <div className="relative grid grid-cols-12 gap-4 sm:gap-6 md:gap-8 bg-no-repeat bg-cover bg-center rounded-[30px] md:rounded-[45px] shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
@@ -401,7 +377,6 @@ function BookingForm() {
                             value={CoachOptions.find(c => c.value === flightSearchInfo.coach) || null}
                             onChange={(option) => handleFlightInputChange("coach", option?.value ?? null)}
                             placeholder="Coach"
-                            isSearchable
                             classNamePrefix="coach-select"
                             components={{ IndicatorSeparator: () => null }}
                             getOptionLabel={(option) => option.label}
@@ -466,14 +441,25 @@ function BookingForm() {
                             <label className="block text-lg text-gray-700">From</label>
                             <Select
                                 options={fromAirportOptions}
-                                onInputChange={(value) => setFromSearch(value)}
                                 isLoading={fromLoading}
+                                loadingMessage={() => (
+                                    <div className="flex justify-center py-3">
+                                        <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                                    </div>
+                                )}
+                                noOptionsMessage={() => debouncedFrom.length === 0 ? null : "No airports found"}
+                                onInputChange={(value, { action }) => {
+                                    if (action === "input-change") {
+                                        setFromSearch(value);
+                                    }
+                                }}
                                 value={flightSearchInfo.from}
                                 onChange={(option) => {
                                     handleFlightInputChange("from", option)
                                 }}
                                 placeholder="Origin"
                                 isSearchable
+                                filterOption={null}
                                 menuPlacement="top"
                                 getOptionLabel={(option) => `${option.city} - ${option.airportName}`}
                                 getOptionValue={(option) => option.airportCode}
@@ -481,6 +467,7 @@ function BookingForm() {
                                     Option: CustomOption,
                                     DropdownIndicator: () => null,
                                     IndicatorSeparator: () => null,
+                                    LoadingIndicator: () => null
                                 }}
                                 classNamePrefix="flight-select"
                                 styles={{
@@ -545,14 +532,25 @@ function BookingForm() {
                             <label className="block text-lg text-gray-700">To</label>
                             <Select
                                 options={toAirportOptions}
-                                onInputChange={(value) => setToSearch(value)}
+                                noOptionsMessage={() => debouncedTo.length === 0 ? null : "No airports found"}
                                 isLoading={toLoading}
+                                loadingMessage={() => (
+                                    <div className="flex justify-center py-3">
+                                        <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                                    </div>
+                                )}
+                                onInputChange={(value, { action }) => {
+                                    if (action === "input-change") {
+                                        setToSearch(value);
+                                    }
+                                }}
                                 value={flightSearchInfo.to}
                                 onChange={(option) => {
                                     handleFlightInputChange("to", option)
                                 }}
                                 placeholder="Destination"
                                 isSearchable
+                                filterOption={null}
                                 menuPlacement="top"
                                 getOptionLabel={(option) => `${option.city} - ${option.airportName}`}
                                 getOptionValue={(option) => option.airportCode}
@@ -560,6 +558,7 @@ function BookingForm() {
                                     Option: CustomOption,
                                     DropdownIndicator: () => null,
                                     IndicatorSeparator: () => null,
+                                    LoadingIndicator: () => null
                                 }}
                                 classNamePrefix="flight-select"
                                 styles={{
@@ -578,7 +577,7 @@ function BookingForm() {
                                     }),
                                     option: (base, state) => ({
                                         ...base,
-                                        backgroundColor: state.isFocused ? "#e5e7eb" : "transparent", // remove blue for selected
+                                        backgroundColor: state.isFocused ? "#e5e7eb" : "transparent",
                                         color: "#111827",
                                         cursor: "pointer",
                                         "&:active": { backgroundColor: "#d1d5db" },

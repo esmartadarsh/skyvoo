@@ -123,23 +123,38 @@ button {
 }
 
 
-/* Scroll Bar CSS */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-.scrollbar-hide {
-  -ms-overflow-style: none;
+/* Scroll container */
+.scrollbar-container {
+  overflow-y: auto;
   scrollbar-width: none;
+  /* Firefox hide */
 }
 
-.scrollbar::-webkit-scrollbar {
+/* Hide scrollbar by default */
+.scrollbar-container::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+/* Show scrollbar on hover */
+.scrollbar-container:hover::-webkit-scrollbar {
   width: 6px;
 }
 
-.scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
+/* Remove scrollbar track background */
+.scrollbar-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Scrollbar thumb */
+.scrollbar-container::-webkit-scrollbar-thumb {
+  background-color: rgba(120, 120, 120, 0.4);
   border-radius: 3px;
+}
+
+/* Firefox show thin scrollbar on hover */
+.scrollbar-container:hover {
+  scrollbar-width: thin;
 }
 
 /* Media Queries */

@@ -16,9 +16,9 @@ const ViewFlightDetails = ({ flight }) => {
                 >
                     {[
                         { key: "details", label: "FLIGHT DETAILS" },
-                        { key: "fare", label: "FARE SUMMARY" },
+                        // { key: "fare", label: "FARE SUMMARY" },
                         { key: "cancel", label: "CANCELLATION" },
-                        { key: "date", label: "DATE CHANGE" },
+                        { key: "date", label: "RESCHEDULE" },
                     ].map(({ key, label }) => (
                         <button
                             key={key}
