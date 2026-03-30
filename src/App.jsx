@@ -1,20 +1,20 @@
 // src/App.jsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
-import Home from './pages/Home/Home.jsx';
-import FlightResults from './pages/FlightResults/FlightResults.jsx';
-import CompareFlights from './pages/CompareFlights';
-import ReviewDetails from './pages/ReviewDetails';
-import FlightSeatMap from './pages/FlightSeatMap/FlightSeatMap.jsx';
-import Payment from './pages/Payment';
-import Profile from './pages/Profile/Profile.jsx';
-import BookingLists from './pages/BookingLists';
-import MarkUp from './pages/MarkUp';
-import CouponsAndOffers from './pages/CouponsAndOffers';
-import ComplaintRegister from './pages/ComplaintRegister';
-import Statement from './pages/Statement';
-import FlightReschedule from './pages/FlightReschedule';
-import FlightCancellation from './pages/FlightCancellation';
+import Home from '@/pages/Home/Home.jsx';
+import FlightSearch from '@/pages/FlightSearch/FlightSearch.jsx';
+import CompareFlights from '@/pages/CompareFlights';
+import ReviewDetails from '@/pages/ReviewDetails';
+import FlightSeatMap from '@/pages/FlightSeatMap/FlightSeatMap.jsx';
+import Payment from '@/pages/Payment';
+import Profile from '@/pages/Profile/Profile.jsx';
+import BookingLists from '@/pages/BookingLists';
+import MarkUp from '@/pages/MarkUp';
+import CouponsAndOffers from '@/pages/CouponsAndOffers';
+import ComplaintRegister from '@/pages/ComplaintRegister';
+import Statement from '@/pages/Statement';
+import FlightReschedule from '@/pages/FlightReschedule';
+import FlightCancellation from '@/pages/FlightCancellation';
 import { FlightFilterProvider } from './contexts/FlightFilterContext';
 import { CompareProvider } from './features/flights/contexts/CompareContext';
 
@@ -42,7 +42,7 @@ function App() {
           element={
             <FlightFilterProvider>
               <CompareProvider>
-                <FlightResults />
+                <FlightSearch />
               </CompareProvider>
             </FlightFilterProvider>
           }

@@ -2,9 +2,9 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from "@tanstack/react-query";
 import { ChevronUp } from 'lucide-react';
-import FlightResultsHeader from './components/FlightResultsHeader';
-import FlightResultsSearchHeader from './components/FlightResultsSearchHeader';
-import FlightResultsSearchHeaderMobile from './components/FlightResultsSearchHeaderMobile';
+import FlightSearchTopHeader from './components/FlightSearchTopHeader.jsx';
+import FlightSearchHeader from './components/FlightSearchHeader';
+import FlightSearchHeaderMobile from './components/FlightSearchHeaderMobile';
 import Filters from './components/Filters';
 import FlightPriceDetailsModal from '@/components/modals/FlightPriceDetailsModal';
 import CompareFlightsWidget from "./components/CompareFlightsWidget";
@@ -19,7 +19,7 @@ import SortingOptions from './components/SortingOptions.jsx';
 import MobileSearchSummary from "./components/MobileSearchSummary";
 import { searchFlights } from "@/services/flightsSearch.js";
 
-export default function FlightResults() {
+export default function FlightSearch() {
     const [searchParams] = useSearchParams();
 
     const payload = useMemo(() => {
@@ -69,7 +69,7 @@ export default function FlightResults() {
 
     }, [searchParams]);
 
-    const { data: FlightResults, isLoading, isError, error } = useQuery({
+    const { data: FlightSearch, isLoading, isError, error } = useQuery({
         queryKey: ["flight-search", payload],
         queryFn: () => searchFlights(payload),
         staleTime: 1000 * 60 * 5,
@@ -77,8 +77,8 @@ export default function FlightResults() {
 
     const [progress, setProgress] = useState(0);
 
-    const apiFlights = FlightResults?.Data?.oneWayResponses || [];
-    const apiFlightsCounts = FlightResults?.Data?.flightcounts || [];
+    const apiFlights = FlightSearch?.Data?.oneWayResponses || [];
+    const apiFlightsCounts = FlightSearch?.Data?.flightcounts || [];
 
     const loadMoreRef = useRef(null);
 
@@ -281,15 +281,15 @@ export default function FlightResults() {
                     src={GrayFadedBg}
                     alt="gray faded background"
                 />
-                <FlightResultsHeader onOpen={() => setIsSignInModal(true)} />
+                <FlightSearchTopHeader onOpen={() => setIsSignInModal(true)} />
 
                 <div className="hidden lg:block">
-                    <FlightResultsSearchHeader />
+                    <FlightSearchHeader />
                 </div>
 
                 {/* Mobile Search Header */}
                 <div className="block lg:hidden">
-                    <FlightResultsSearchHeaderMobile
+                    <FlightSearchHeaderMobile
                         open={showMobileSearch}
                         onClose={() => setShowMobileSearch(false)}
                     />
