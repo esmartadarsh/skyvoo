@@ -22,7 +22,6 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* 🔹 Pages wrapped with layout */}
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/review-details" element={<ReviewDetails />} />

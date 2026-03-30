@@ -1,10 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import './index.css'
-import './styles/glass.css'
-import "./styles/StickerStack.css";
-import "./styles/glassButton.css";
+import '@/assets/styles/index.css'
+import '@/assets/styles/glass.css'
+import "@/assets/styles/StickerStack.css";
+import "@/assets/styles/glassButton.css";
 import App from './App.jsx'
 
 const queryClient = new QueryClient();
