@@ -7,7 +7,7 @@ import BaggageModal from '@/components/modals/BaggageModal';
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 import CouponBg from '@/assets/imgs/couponbg.webp';
 import OfferPromo from '@/assets/vectors/OfferPromo.svg';
-import { Trash2, Plane, User, Luggage, AlertCircle, ShieldCheck, CirclePlus, ShieldAlert, ChevronRight } from 'lucide-react';
+import { Trash2, Plane, User, Luggage, CirclePlus, ShieldAlert, ChevronRight } from 'lucide-react';
 import Select from "react-select";
 import { useNavigate } from 'react-router-dom';
 
@@ -335,12 +335,7 @@ export default function ReviewDetails() {
                 <button
                   key={id}
                   onClick={() => handleTabClick(id)}
-                  className={`
-          px-4 py-1 rounded-full transition-all duration-200 flex-shrink-0
-          ${isActive
-                      ? "bg-white text-[#78080B] font-semibold shadow-sm"
-                      : "text-slate-300 hover:text-white hover:bg-white/10"}
-        `}
+                  className={`px-4 py-1 rounded-full transition-all duration-200 flex-shrink-0 ${isActive ? "bg-white text-[#78080B] font-semibold shadow-sm" : "text-slate-300 hover:text-white hover:bg-white/10"} `}
                 >
                   {label}
                 </button>

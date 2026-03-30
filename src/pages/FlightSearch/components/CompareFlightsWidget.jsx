@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import AirlineLogo from "@/assets/imgs/airlinelogo.webp";
-import { useCompareFlights } from "@/features/flights/contexts/CompareContext.jsx";
+import { useCompareFlights } from "@/contexts/CompareContext.jsx";
 
 export default function CompareFlightsWidget({ collapsed, setCollapsed }) {
     const navigate = useNavigate();

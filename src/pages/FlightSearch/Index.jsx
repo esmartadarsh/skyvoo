@@ -1,101 +1,27 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { useQuery } from "@tanstack/react-query";
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChevronUp } from 'lucide-react';
 import FlightSearchTopHeader from './components/FlightSearchTopHeader.jsx';
-import FlightSearchHeader from './components/FlightSearchHeader';
-import FlightSearchHeaderMobile from './components/FlightSearchHeaderMobile';
-import Filters from './components/Filters';
+import FlightSearchHeader from './components/FlightSearchHeader.jsx';
+import FlightSearchHeaderMobile from './components/FlightSearchHeaderMobile.jsx';
+import Filters from './components/Filters.jsx';
 import FlightPriceDetailsModal from '@/components/modals/FlightPriceDetailsModal';
-import CompareFlightsWidget from "./components/CompareFlightsWidget";
+import CompareFlightsWidget from "./components/CompareFlightsWidget.jsx";
 import LoadingBar from "@/components/layout/LoadingBar.jsx";
 import SignInModal from '@/components/modals/SignInModal';
 import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp'
 import { useFlightFilters } from '../../contexts/FlightFilterContext.jsx';
-import { useFilteredFlights } from "@/features/flights/hooks/useFilteredFlights";
-import { useCompareFlights } from '@/features/flights/contexts/CompareContext.jsx';
+import { useFilteredFlights } from "@/hooks/useFilteredFlights";
+import { useCompareFlights } from '@/contexts/CompareContext.jsx';
 import FlightCard from './components/FlightCard.jsx';
 import SortingOptions from './components/SortingOptions.jsx';
-import MobileSearchSummary from "./components/MobileSearchSummary";
-import { searchFlights } from "@/services/flightsSearch.js";
+import MobileSearchSummary from "./components/MobileSearchSummary.jsx";
+import { useFlightSearch } from '@/hooks/useFlightSearch.js';
+import { useInfiniteFlights } from '@/hooks/useInfiniteFlights.js';
+import { useScrollTop } from '@/hooks/useScrollTop.js';
 
 export default function FlightSearch() {
-    const [searchParams] = useSearchParams();
-
-    const payload = useMemo(() => {
-        const origin = searchParams.get("origin");
-        const destination = searchParams.get("destination");
-        const departDate = searchParams.get("departDate");
-        const returnDate = searchParams.get("returnDate");
-
-        const adults = Number(searchParams.get("adults") || 1);
-        const children = Number(searchParams.get("children") || 0);
-        const infants = Number(searchParams.get("infants") || 0);
-        const travelClass = Number(searchParams.get("travelClass") || 0);
-
-        const tripInfo = [
-            {
-                Origin: origin,
-                Destination: destination,
-                TravelDate: departDate,
-                Trip_Id: 0
-            }
-        ];
-
-        if (returnDate) {
-            tripInfo.push({
-                Origin: destination,
-                Destination: origin,
-                TravelDate: returnDate,
-                Trip_Id: 1
-            });
-        }
-
-        return {
-            Travel_Type: 0,
-            Booking_Type: 0,
-            TripInfo: tripInfo,
-            Adult_Count: adults,
-            Child_Count: children,
-            Infant_Count: infants,
-            Class_Of_Travel: travelClass,
-            InventoryType: 0,
-            Source_Type: 0,
-            SrCitizen_Search: false,
-            StudentFare_Search: false,
-            DefenceFare_Search: false,
-            Filtered_Airline: [{ Airline_Code: "" }]
-        };
-
-    }, [searchParams]);
-
-    const { data: FlightSearch, isLoading, isError, error } = useQuery({
-        queryKey: ["flight-search", payload],
-        queryFn: () => searchFlights(payload),
-        staleTime: 1000 * 60 * 5,
-    });
-
-    const [progress, setProgress] = useState(0);
-
-    const apiFlights = FlightSearch?.Data?.oneWayResponses || [];
-    const apiFlightsCounts = FlightSearch?.Data?.flightcounts || [];
-
-    const loadMoreRef = useRef(null);
-
-    const PAGE_SIZE = 10;
 
     const { state: filters } = useFlightFilters();
-
-    const prices = apiFlights.map(f => f.AirlineMinNetPrice);
-
-    const filterParams = {
-        minPrice: prices.length ? Math.min(...prices) : 0,
-        maxPrice: prices.length ? Math.max(...prices) : 0,
-        totalStops: [...new Set(apiFlights.map(f => f.Airlinestops))],
-        airlines: [...new Set(apiFlightsCounts.map(f => f.AirlineName))]
-    };
-
-    const [page, setPage] = useState(1);
 
     const [selectedSorting, setSelectedSorting] = useState("");
 
@@ -105,6 +31,8 @@ export default function FlightSearch() {
 
     const [selectedFlightId, setSelectedFlightId] = useState(null);
 
+    const [progress, setProgress] = useState(0);
+
     const { state: compareState, dispatch } = useCompareFlights();
     const selectedFlights = compareState.selectedFlights;
 
@@ -113,9 +41,10 @@ export default function FlightSearch() {
     const [IsFlightDetailsModalData, setIsFlightDetailsModalData] = useState([]);
 
     const [showOtherMenu, setShowOtherMenu] = useState(false);
-    const [showScrollTop, setShowScrollTop] = useState(false);
 
     const [showMobileSearch, setShowMobileSearch] = useState(false);
+
+    const { apiFlights, apiFlightAirlines, isLoading, isError, payload } = useFlightSearch();
 
     const FlightDetails = useFilteredFlights({
         flights: apiFlights,
@@ -123,11 +52,24 @@ export default function FlightSearch() {
         sorting: selectedSorting,
     });
 
-    const visibleFlights = useMemo(() => {
-        return FlightDetails.slice(0, page * PAGE_SIZE);
-    }, [FlightDetails, page]);
+    const { visibleFlights, loadMoreRef } = useInfiniteFlights(FlightDetails);
+    const { showScrollTop, scrollToTop } = useScrollTop();
 
-    const toggleCompare = (flight) => {
+
+    const filterParams = useMemo(() => {
+
+        const prices = apiFlights.map(f => f.AirlineMinNetPrice);
+
+        return {
+            minPrice: prices.length ? Math.min(...prices) : 0,
+            maxPrice: prices.length ? Math.max(...prices) : 0,
+            totalStops: [...new Set(apiFlights.map(f => f.Airlinestops))],
+            airlines: [...new Set(apiFlightAirlines.map(f => f.AirlineName))]
+        }
+
+    }, [apiFlights, apiFlightAirlines]);
+
+    const toggleCompare = useCallback((flight) => {
         const exists = selectedFlights.some(
             f => f.AirlineCodeAndId === flight.AirlineCodeAndId
         );
@@ -141,11 +83,11 @@ export default function FlightSearch() {
             type: exists ? "REMOVE_FLIGHT" : "ADD_FLIGHT",
             payload: exists ? flight.AirlineCodeAndId : flight
         });
-    };
+    }, [selectedFlights, dispatch]);
 
-    const toggleFlightDetails = (flightId) => {
-        setSelectedFlightId((prev) => (prev === flightId ? null : flightId));
-    };
+    const toggleFlightDetails = useCallback((flightId) => {
+        setSelectedFlightId(prev => prev === flightId ? null : flightId);
+    }, []);
 
     const handleClick = (key) => {
         if (key === "OTHER") {
@@ -161,50 +103,15 @@ export default function FlightSearch() {
         setShowOtherMenu(false);
     };
 
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    useEffect(() => {
-        setPage(1);
-    }, [selectedSorting, filters]);
-
-    useEffect(() => {
-        if (!loadMoreRef.current) return;
-
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (
-                    entry.isIntersecting &&
-                    page * PAGE_SIZE < FlightDetails.length
-                ) {
-                    setPage(prev => prev + 1);
-                }
-            },
-            {
-                root: null,
-                rootMargin: "200px",
-                threshold: 0.1,
-            }
-        );
-
-        observer.observe(loadMoreRef.current);
-
-        return () => observer.disconnect();
-    }, [page, FlightDetails.length]);
+    const handleViewPrices = useCallback((data) => {
+        setIsFlightDetailsModalData(data);
+        setIsFlightDetailsModalOpen(true);
+    }, []);
 
     useEffect(() => {
         document.body.style.overflow = isFilterOpen ? 'hidden' : 'auto';
         return () => (document.body.style.overflow = 'auto');
     }, [isFilterOpen]);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            setShowScrollTop(window.scrollY > 1000);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
 
     useEffect(() => {
         let timer;
@@ -358,10 +265,7 @@ export default function FlightSearch() {
                                             )}
                                             onToggleDetails={toggleFlightDetails}
                                             onToggleCompare={toggleCompare}
-                                            onViewPrices={(data) => {
-                                                setIsFlightDetailsModalData(data)
-                                                setIsFlightDetailsModalOpen(true)
-                                            }}
+                                            onViewPrices={handleViewPrices}
                                         />
                                     ))
                                 ) : (

@@ -1,3 +1,4 @@
+import React from 'react';
 import { lazy, Suspense } from "react";
 import { X } from "lucide-react";
 import RipSide from "@/assets/imgs/ripSide.webp";
@@ -19,16 +20,10 @@ const getAirlineLogo = (code) => {
     const path = `../../../assets/imgs/AirlinesLogo/${cleanCode}.png`;
     const logo = logos[path];
 
-    if (logo) {
-        console.log("✅ Logo found:", cleanCode, "->", path);
-    } else {
-        console.warn("❌ Logo NOT found:", cleanCode, "->", path);
-    }
-
     return logo;
 };
 
-export default function FlightCard({ flight, isSelected, isCompared, onToggleDetails, onToggleCompare, onViewPrices }) {
+function FlightCard({ flight, isSelected, isCompared, onToggleDetails, onToggleCompare, onViewPrices }) {
 
     return (
         <div className="rounded-2xl">
@@ -82,14 +77,6 @@ export default function FlightCard({ flight, isSelected, isCompared, onToggleDet
                             <img
                                 src={getAirlineLogo(flight.AirlineName)}
                                 alt={flight.AirlineName}
-                                onLoad={(e) => {
-                                    console.log("🟢 Image loaded successfully:", e.currentTarget.src);
-                                }}
-                                onError={(e) => {
-                                    console.error("🔴 Image failed to load:", e.currentTarget.src);
-                                    e.currentTarget.src = AirlineLogo;
-                                }}
-
                             />
                         </div>
                         <div>
@@ -258,3 +245,5 @@ export default function FlightCard({ flight, isSelected, isCompared, onToggleDet
         </div>
     );
 }
+
+export default React.memo(FlightCard);

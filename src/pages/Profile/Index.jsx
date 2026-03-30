@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { User, Mail, Phone, MapPin, Calendar, CreditCard, Plane, Award, Globe, ReceiptIndianRupee } from 'lucide-react';
-import getCroppedImg from '@/utils/getCroppedImg.jsx';
+import getCroppedImg from '@/utils/getCroppedImg.js';
 import { useNavigate } from 'react-router-dom';
 import ProfileStats from './components/ProfileStats';
 import ImageCropModal from './components/ImageCropModal';

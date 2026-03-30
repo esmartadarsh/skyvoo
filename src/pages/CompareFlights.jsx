@@ -5,7 +5,7 @@ import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp';
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 import FlightPriceDetailsModal from '@/components/modals/FlightPriceDetailsModal';
 import SignInModal from '@/components/modals/SignInModal';
-import { useCompareFlights } from "../features/flights/contexts/CompareContext";
+import { useCompareFlights } from "@/contexts/CompareContext.jsx";
 
 export default function CompareFlights() {
     const { state } = useCompareFlights();

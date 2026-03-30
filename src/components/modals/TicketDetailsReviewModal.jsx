@@ -1,5 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "@/components/common/Button";
+import { ChevronRight } from 'lucide-react';
 
 export default function TicketDetailsReviewModal({ onClose }) {
     const navigate = useNavigate();
@@ -99,13 +101,11 @@ export default function TicketDetailsReviewModal({ onClose }) {
 
                 {/* CTA */}
                 <div className="flex mt-4">
-                    <button
-                        className=" w-full sm:w-auto bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-medium px-6 py-2.5 rounded-full flex items-center justify-center gap-2"
-                        onClick={() => navigate("/flight-seat-map")}
-                    >
+                    <Button onClick={() => navigate("/flight-seat-map")}>
                         CONTINUE
-                        <span>→</span>
-                    </button>
+                        <ChevronRight />
+                    </Button>
+
                 </div>
             </div>
         </div>
