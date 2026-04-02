@@ -64,7 +64,7 @@ function FlightSearchHeader() {
     const { data: fromAirportOptions = [], isLoading: fromLoading, isError: fromError } = useQuery({
         queryKey: ["airportlistcodes-from", debouncedFrom],
         queryFn: () => fetchAirportsByCode(debouncedFrom),
-        enabled: debouncedFrom?.length >= 3
+        enabled: debouncedFrom?.length >= 1
     });
 
     const { data: toAirportOptions = [], isLoading: toLoading, isError: toError } = useQuery({
@@ -242,7 +242,7 @@ function FlightSearchHeader() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedFrom(fromSearch);
-        }, 400);
+        }, 100);
 
         return () => clearTimeout(timer);
     }, [fromSearch]);
@@ -250,7 +250,7 @@ function FlightSearchHeader() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedTo(toSearch);
-        }, 400);
+        }, 100);
 
         return () => clearTimeout(timer);
     }, [toSearch]);
