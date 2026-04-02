@@ -2,7 +2,6 @@ import React from 'react';
 import { lazy, Suspense } from "react";
 import { X } from "lucide-react";
 import RipSide from "@/assets/imgs/ripSide.webp";
-import AirlineLogo from "../../../assets/imgs/airlinelogo.webp";
 
 import Lock from "@/assets/vectors/lock.svg";
 import BookingFlightFormBg from "@/assets/imgs/flightresultsbg.webp";

@@ -18,6 +18,7 @@ import MobileSearchSummary from "./components/MobileSearchSummary.jsx";
 import { useFlightSearch } from '@/hooks/useFlightSearch.js';
 import { useInfiniteFlights } from '@/hooks/useInfiniteFlights.js';
 import { useScrollTop } from '@/hooks/useScrollTop.js';
+import FlightCardSkeleton from '@/components/layout/FlightCardSkeleton';
 
 export default function FlightSearch() {
 
@@ -247,8 +248,10 @@ export default function FlightSearch() {
                             {/* Flight Results */}
                             <div className="space-y-4">
                                 {isLoading ? (
-                                    <div className="text-center py-10 text-lg font-medium">
-                                        Searching flights...
+                                    <div className="space-y-4">
+                                        {Array.from({ length: 3 }).map((_, i) => (
+                                            <FlightCardSkeleton key={i} />
+                                        ))}
                                     </div>
                                 ) : isError ? (
                                     <div className="text-center py-10 text-red-600">
