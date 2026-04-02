@@ -15,9 +15,9 @@ import { useCompareFlights } from '@/contexts/CompareContext.jsx';
 import FlightCard from './components/FlightCard.jsx';
 import SortingOptions from './components/SortingOptions.jsx';
 import MobileSearchSummary from "./components/MobileSearchSummary.jsx";
-import { useFlightSearch } from '@/hooks/useFlightSearch.js';
-import { useInfiniteFlights } from '@/hooks/useInfiniteFlights.js';
-import { useScrollTop } from '@/hooks/useScrollTop.js';
+import { useFlightSearch } from '@/hooks/FlightSearch/useFlightSearch.js';
+import { useInfiniteFlights } from '@/hooks/FlightSearch/useInfiniteFlights.js';
+import { useScrollTop } from '@/hooks/FlightSearch/useScrollTop.js';
 import FlightCardSkeleton from '@/components/layout/FlightCardSkeleton';
 
 export default function FlightSearch() {
