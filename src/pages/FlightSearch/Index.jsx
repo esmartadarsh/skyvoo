@@ -9,16 +9,17 @@ import CompareFlightsWidget from "./components/CompareFlightsWidget.jsx";
 import LoadingBar from "@/components/layout/LoadingBar.jsx";
 import SignInModal from '@/components/modals/SignInModal';
 import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp'
-import { useFlightFilters } from '../../contexts/FlightFilterContext.jsx';
-import { useFilteredFlights } from "@/hooks/useFilteredFlights";
+import { useFlightFilters } from '@/contexts/FlightFilterContext.jsx';
 import { useCompareFlights } from '@/contexts/CompareContext.jsx';
 import FlightCard from './components/FlightCard.jsx';
 import SortingOptions from './components/SortingOptions.jsx';
 import MobileSearchSummary from "./components/MobileSearchSummary.jsx";
+import FlightCardSkeleton from '@/components/layout/FlightCardSkeleton';
+
 import { useFlightSearch } from '@/hooks/FlightSearch/useFlightSearch.js';
+import { useFilteredFlights } from "@/hooks/FlightSearch/useFilteredFlights";
 import { useInfiniteFlights } from '@/hooks/FlightSearch/useInfiniteFlights.js';
 import { useScrollTop } from '@/hooks/FlightSearch/useScrollTop.js';
-import FlightCardSkeleton from '@/components/layout/FlightCardSkeleton';
 
 export default function FlightSearch() {
 
@@ -55,7 +56,6 @@ export default function FlightSearch() {
 
     const { visibleFlights, loadMoreRef } = useInfiniteFlights(FlightDetails);
     const { showScrollTop, scrollToTop } = useScrollTop();
-
 
     const filterParams = useMemo(() => {
 

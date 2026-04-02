@@ -8,15 +8,13 @@ import BookingFlightFormBg from "@/assets/imgs/flightresultsbg.webp";
 
 const ViewFlightDetails = lazy(() => import("./ViewFlightDetails"));
 
-const logos = import.meta.glob('../../../assets/imgs/AirlinesLogo/*.png', {
+const logos = import.meta.glob('../../../assets/imgs/AirlinesLogos/*.png', {
     eager: true,
     import: 'default'
 });
 
 const getAirlineLogo = (code) => {
-    const cleanCode = code?.split("-")[0];
-
-    const path = `../../../assets/imgs/AirlinesLogo/${cleanCode}.png`;
+    const path = `../../../assets/imgs/AirlinesLogos/${code}.png`;
     const logo = logos[path];
 
     return logo;
@@ -74,7 +72,7 @@ function FlightCard({ flight, isSelected, isCompared, onToggleDetails, onToggleC
                     <div className="flex items-center space-x-4 justify-start">
                         <div className="w-9 h-9 xs:w-12 xs:h-12 rounded-full flex items-center justify-center">
                             <img
-                                src={getAirlineLogo(flight.AirlineName)}
+                                src={getAirlineLogo(flight.AirlineLogo)}
                                 alt={flight.AirlineName}
                             />
                         </div>

@@ -52,10 +52,17 @@ export const useFlightSearch = () => {
         };
     }, [searchParams]);
 
+    const origin = payload.TripInfo?.[0]?.Origin;
+    const destination = payload.TripInfo?.[0]?.Destination;
+    const departDate = payload.TripInfo?.[0]?.TravelDate;
+
+    const isValidSearch = origin && destination && departDate;
+
     const query = useQuery({
         queryKey: ["flight-search", payload],
         queryFn: () => searchFlights(payload),
         staleTime: 1000 * 60 * 5,
+        enabled: !!isValidSearch
     });
 
     const apiFlights = query.data?.Data?.oneWayResponses || [];
