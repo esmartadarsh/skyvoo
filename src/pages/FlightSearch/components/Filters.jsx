@@ -32,10 +32,10 @@ const Airlines = [
     { code: "UK", name: "Vistara" },
 ];
 
-const AircraftSize = [
-    { label: 'Small / Mid - Size Aircraft', price: 5010 },
-    { label: 'Large Aircraft', price: 9478 },
-];
+// const AircraftSize = [
+//     { label: 'Small / Mid - Size Aircraft', price: 5010 },
+//     { label: 'Large Aircraft', price: 9478 },
+// ];
 
 function Filters({ filters, origin, destination }) {
 
@@ -72,10 +72,8 @@ function Filters({ filters, origin, destination }) {
         const percentage = Math.max(0, Math.min(1, clickX / rect.width));
         let newValue = minValue + (maxValue - minValue) * percentage;
 
-        // ✅ Snap to nearest ₹100 increment
         newValue = Math.round(newValue / 100) * 100;
 
-        // ✅ Clamp within bounds
         newValue = Math.max(minValue, Math.min(newValue, maxValue));
 
         setPrevValue(value);
@@ -132,6 +130,7 @@ function Filters({ filters, origin, destination }) {
     };
 
     const toggleAirlineFilter = (code) => {
+        console.log(code, 'slected code')
         const airline = Airlines.find(a => a.code === code);
 
         const exists = state.selectedAirlines.some(a => a.code === code);
@@ -146,16 +145,16 @@ function Filters({ filters, origin, destination }) {
         });
     };
 
-    const toggleAircraftFilter = (label) => {
-        const newAircraftSizes = state.selectedAircraftSizes.includes(label)
-            ? state.selectedAircraftSizes.filter(size => size !== label)
-            : [...state.selectedAircraftSizes, label];
+    // const toggleAircraftFilter = (label) => {
+    //     const newAircraftSizes = state.selectedAircraftSizes.includes(label)
+    //         ? state.selectedAircraftSizes.filter(size => size !== label)
+    //         : [...state.selectedAircraftSizes, label];
 
-        dispatch({
-            type: "SET_AIRCRAFT_SIZES",
-            payload: newAircraftSizes,
-        });
-    };
+    //     dispatch({
+    //         type: "SET_AIRCRAFT_SIZES",
+    //         payload: newAircraftSizes,
+    //     });
+    // };
 
     const clearAllFilters = () => {
         dispatch({ type: "RESET_FILTERS" });

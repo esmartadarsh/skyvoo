@@ -1,17 +1,18 @@
 import { useState } from 'react';
-import { Menu, X, Headphones } from 'lucide-react';
+import { Menu, X, Headphones, User } from 'lucide-react';
 import Home from '@/assets/vectors/SidebarHome.svg';
 import Flights from '@/assets/vectors/SidebarFlight.svg';
 import Cabs from '@/assets/vectors/SidebarCab.svg';
 import Hotels from '@/assets/vectors/SidebarHotels.svg';
 import Bus from '@/assets/vectors/SidebarBus.svg';
 import { useNavigate } from 'react-router-dom';
-import { User } from 'lucide-react';
 import Logo from '@/assets/imgs/logo.webp';
 import comingSoon from '@/assets/imgs/comingSoon.png';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Header = ({ onOpen }) => {
     const navigate = useNavigate();
+    const { isLoggedIn, user, logout } = useAuth();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
 
@@ -23,10 +24,11 @@ const Header = ({ onOpen }) => {
         { label: 'Cab', url: '/cab', icon: Cabs },
     ];
 
-
-    // Temporary: assume user is logged in
-    const isLoggedIn = false;
-    5
+    const handleLogout = () => {
+        logout();
+        setProfileOpen(false);
+        navigate('/');
+    };
     return (
         <header className="relative z-9998">
             <div className="max-w-7xl mx-auto flex items-center justify-between sm:px-6 py-10">
@@ -73,33 +75,39 @@ const Header = ({ onOpen }) => {
                         <button
                             onClick={() => setProfileOpen(!profileOpen)}
                             className="flex items-center justify-center w-10 h-10 rounded-full bg-black text-white hover:bg-gray-800 transition"
+                            aria-label="Profile menu"
                         >
                             <User size={20} />
                         </button>
 
                         {profileOpen && (
-                            <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md p-2 space-y-2 z-999">
+                            <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md p-2 space-y-2 z-999">
+                                {user?.OutletName && (
+                                    <p className="px-3 py-1 text-xs text-gray-400 font-medium truncate border-b pb-2">
+                                        {user.OutletName}
+                                    </p>
+                                )}
                                 <button
                                     className="w-full text-left px-3 py-2 rounded hover:bg-gray-100"
-                                    onClick={() => navigate('/my-profile')}
-
+                                    onClick={() => { navigate('/my-profile'); setProfileOpen(false); }}
                                 >
                                     Profile
                                 </button>
                                 <button
                                     className="w-full text-left px-3 py-2 rounded hover:bg-gray-100"
-                                    onClick={() => navigate('/my-profile')}
+                                    onClick={() => { navigate('/my-profile'); setProfileOpen(false); }}
                                 >
                                     Settings
                                 </button>
                                 <button
                                     className="w-full text-left px-3 py-2 rounded hover:bg-gray-100"
-                                    onClick={() => navigate('/mark-up')}
+                                    onClick={() => { navigate('/mark-up'); setProfileOpen(false); }}
                                 >
                                     Mark Ups
                                 </button>
                                 <button
                                     className="w-full text-left px-3 py-2 rounded text-red-600 hover:bg-gray-100"
+                                    onClick={handleLogout}
                                 >
                                     Log Out
                                 </button>
@@ -107,7 +115,7 @@ const Header = ({ onOpen }) => {
                         )}
                     </div>
                 ) : (
-                    <button onClick={onOpen} className="cursor-pointer hidden md:inline-block  px-4 sm:px-6 py-2 font-medium bg-black text-white rounded-full hover:bg-gray-800 transition" > Log In </button>
+                    <button onClick={onOpen} className="cursor-pointer hidden md:inline-block px-4 sm:px-6 py-2 font-medium bg-black text-white rounded-full hover:bg-gray-800 transition">Log In</button>
                 )}
 
                 {/* Mobile Menu Toggle */}
@@ -171,16 +179,28 @@ const Header = ({ onOpen }) => {
                             </button>
                         ))}
 
-                        {/* Login Button */}
-                        <button
-                            onClick={() => {
-                                setMobileOpen(false);
-                                onOpen?.();
-                            }}
-                            className="filterglasseffect w-full mt-4 px-6 py-2 border-2 border-white/30 rounded-full text-white font-medium text-sm hover:bg-red-800/50 transition"
-                        >
-                            Login
-                        </button>
+                        {/* Login / Logout Button for mobile */}
+                        {isLoggedIn ? (
+                            <button
+                                onClick={() => {
+                                    setMobileOpen(false);
+                                    handleLogout();
+                                }}
+                                className="filterglasseffect w-full mt-4 px-6 py-2 border-2 border-white/30 rounded-full text-white font-medium text-sm hover:bg-red-800/50 transition"
+                            >
+                                Log Out
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => {
+                                    setMobileOpen(false);
+                                    onOpen?.();
+                                }}
+                                className="filterglasseffect w-full mt-4 px-6 py-2 border-2 border-white/30 rounded-full text-white font-medium text-sm hover:bg-red-800/50 transition"
+                            >
+                                Login
+                            </button>
+                        )}
                     </nav>
 
                     {/* Customer Support */}

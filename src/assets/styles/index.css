@@ -36,7 +36,7 @@ button {
 
 @font-face {
   font-family: "ltwave";
-  src: url("./assets/fonts/lt_wave/LTWave-Medium.otf") format("truetype");
+  src: url("../fonts/lt_wave/LTWave-Medium.otf") format("opentype");
 }
 
 .primary-font {

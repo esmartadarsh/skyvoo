@@ -12,10 +12,10 @@ import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp'
 import { useFlightFilters } from '@/contexts/FlightFilterContext.jsx';
 import { useCompareFlights } from '@/contexts/CompareContext.jsx';
 import FlightCard from './components/FlightCard.jsx';
+import RoundTripFlightRow from './components/RoundTripFlightRow.jsx';
 import SortingOptions from './components/SortingOptions.jsx';
 import MobileSearchSummary from "./components/MobileSearchSummary.jsx";
 import FlightCardSkeleton from '@/components/layout/FlightCardSkeleton';
-
 import { useFlightSearch } from '@/hooks/FlightSearch/useFlightSearch.js';
 import { useFilteredFlights } from "@/hooks/FlightSearch/useFilteredFlights";
 import { useInfiniteFlights } from '@/hooks/FlightSearch/useInfiniteFlights.js';
@@ -46,10 +46,25 @@ export default function FlightSearch() {
 
     const [showMobileSearch, setShowMobileSearch] = useState(false);
 
-    const { apiFlights, apiFlightAirlines, isLoading, isError, payload } = useFlightSearch();
+    const { apiFlights, apiFlightAirlines, apiReturnFlights, isLoading, isError, payload } = useFlightSearch();
+
+    const isRoundTrip = payload.TripInfo.length > 1;
+
+    // For round trip: zip outbound + return by index and attach _returnFlight.
+    // The spread of outbound fields means the existing filter/sort pipeline works unchanged.
+    const flightsForFilter = useMemo(() => {
+        if (!isRoundTrip || apiReturnFlights.length === 0) return apiFlights;
+        const len = Math.min(apiFlights.length, apiReturnFlights.length);
+        return Array.from({ length: len }, (_, i) => ({
+            ...apiFlights[i],
+            AirlineCodeAndId: `${apiFlights[i].AirlineCodeAndId}||${apiReturnFlights[i].AirlineCodeAndId}`,
+            _returnFlight: apiReturnFlights[i],
+            _isRoundTrip: true,
+        }));
+    }, [isRoundTrip, apiFlights, apiReturnFlights]);
 
     const FlightDetails = useFilteredFlights({
-        flights: apiFlights,
+        flights: flightsForFilter,
         filters,
         sorting: selectedSorting,
     });
@@ -259,17 +274,30 @@ export default function FlightSearch() {
                                     </div>
                                 ) : FlightDetails.length > 0 ? (
                                     visibleFlights.map((flight) => (
-                                        <FlightCard
-                                            key={flight.AirlineCodeAndId}
-                                            flight={flight}
-                                            isSelected={selectedFlightId === flight.AirlineCodeAndId}
-                                            isCompared={selectedFlights.some(
-                                                f => f.AirlineCodeAndId === flight.AirlineCodeAndId
-                                            )}
-                                            onToggleDetails={toggleFlightDetails}
-                                            onToggleCompare={toggleCompare}
-                                            onViewPrices={handleViewPrices}
-                                        />
+                                        flight._isRoundTrip ? (
+                                            <RoundTripFlightRow
+                                                key={flight.AirlineCodeAndId}
+                                                outboundFlight={flight}
+                                                returnFlight={flight._returnFlight}
+                                                isCompared={selectedFlights.some(
+                                                    f => f.AirlineCodeAndId === flight.AirlineCodeAndId
+                                                )}
+                                                onToggleCompare={toggleCompare}
+                                                onViewPrices={handleViewPrices}
+                                            />
+                                        ) : (
+                                            <FlightCard
+                                                key={flight.AirlineCodeAndId}
+                                                flight={flight}
+                                                isSelected={selectedFlightId === flight.AirlineCodeAndId}
+                                                isCompared={selectedFlights.some(
+                                                    f => f.AirlineCodeAndId === flight.AirlineCodeAndId
+                                                )}
+                                                onToggleDetails={toggleFlightDetails}
+                                                onToggleCompare={toggleCompare}
+                                                onViewPrices={handleViewPrices}
+                                            />
+                                        )
                                     ))
                                 ) : (
                                     <div className="text-center text-gray-600 mt-10">

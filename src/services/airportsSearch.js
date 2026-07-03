@@ -1,8 +1,12 @@
 import api from '@/services/api.js';
 
-export const fetchAirportsByCode = async (airportCode) => {
+export const fetchAirportsByCode = async (airportCode, signal) => {
+    console.log('hitting')
+
     const res = await api.post(
-        `/Flight/ListAirportsByCode?airportCode=${airportCode}`
+        `/Flight/ListAirportsByCode?airportCode=${airportCode}`,
+        {},
+        { signal }
     );
 
     if (!res.data?.IsSuccess) {

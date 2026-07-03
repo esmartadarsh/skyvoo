@@ -148,11 +148,16 @@ function FlightSearchHeaderMobile({ open, onClose }) {
 
 
     const [flightSearchInfo, setFlightSearchInfo] = useState({
-        from: '',
-        to: '',
-        depart: null,
+        from: null,
+        to: null,
+        depart: new Date(),
         return: null,
-        traveller: 1,
+        coach: 0,
+        traveller: {
+            adults: 1,
+            children: 0,
+            infants: 0,
+        },
     });
 
     const [isSwapping, setIsSwapping] = useState(false);

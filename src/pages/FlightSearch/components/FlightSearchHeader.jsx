@@ -24,7 +24,11 @@ function FlightSearchHeader() {
         depart: new Date(),
         return: null,
         coach: 0,
-        traveller: 1
+        traveller: {
+            adults: 1,
+            children: 0,
+            infants: 0,
+        },
     });
 
     const [isEditable, setIsEditable] = useState(false);
@@ -63,14 +67,14 @@ function FlightSearchHeader() {
 
     const { data: fromAirportOptions = [], isLoading: fromLoading, isError: fromError } = useQuery({
         queryKey: ["airportlistcodes-from", debouncedFrom],
-        queryFn: () => fetchAirportsByCode(debouncedFrom),
-        enabled: debouncedFrom?.length >= 1
+        queryFn: () => fetchAirportsByCode(debouncedFrom, signal),
+        enabled: debouncedFrom?.trim().length >= 1,
     });
 
     const { data: toAirportOptions = [], isLoading: toLoading, isError: toError } = useQuery({
         queryKey: ["airportlistcodes-to", debouncedTo],
-        queryFn: () => fetchAirportsByCode(debouncedTo),
-        enabled: debouncedTo?.length >= 1
+        queryFn: () => fetchAirportsByCode(debouncedFrom, signal),
+        enabled: debouncedFrom?.trim().length >= 1,
     });
 
     const validateTravellers = () => {
@@ -155,7 +159,7 @@ function FlightSearchHeader() {
             const month = String(d.getMonth() + 1).padStart(2, "0");
             const day = String(d.getDate()).padStart(2, "0");
             const year = d.getFullYear();
-            return `${year}-${month}-${day}`;
+            return `${month}/${day}/${year}`;
         };
 
         const tripInfo = [

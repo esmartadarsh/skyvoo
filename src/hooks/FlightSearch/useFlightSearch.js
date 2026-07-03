@@ -1,9 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { searchFlights } from "@/services/flightsSearch";
 
 export const useFlightSearch = () => {
+
     const [searchParams] = useSearchParams();
 
     const payload = useMemo(() => {
@@ -67,11 +68,22 @@ export const useFlightSearch = () => {
 
     const apiFlights = query.data?.Data?.oneWayResponses || [];
     const apiFlightAirlines = query.data?.Data?.flightcounts || [];
+    const apiReturnFlights = query.data?.Data?.ReturnResponses || [];
+    const apiReturnAirlines = query.data?.Data?.Returnflightcounts || [];
+    const FlightSearchKey = query.data?.Data?.SessionId?.FF || "";
+
+    useEffect(() => {
+        if (FlightSearchKey) {
+            localStorage.setItem("flightSearchKey", FlightSearchKey);
+        }
+    }, [FlightSearchKey]);
 
     return {
         ...query,
         apiFlights,
         apiFlightAirlines,
+        apiReturnFlights,
+        apiReturnAirlines,
         payload,
     };
 };

@@ -35,7 +35,11 @@ function BookingForm() {
         depart: new Date(),
         return: null,
         coach: 0,
-        traveller: {}
+        traveller: {
+            adults: 1,
+            children: 0,
+            infants: 0,
+        },
     });
 
     const [travellers, setTravellers] = useState({
@@ -67,20 +71,20 @@ function BookingForm() {
 
     const { data: fromAirportOptions = [], isLoading: fromLoading, isError: fromError } = useQuery({
         queryKey: ["airportlistcodes-from", debouncedFrom],
-        queryFn: () => fetchAirportsByCode(debouncedFrom),
-        enabled: debouncedFrom?.length >= 1
+        queryFn: ({ signal }) => fetchAirportsByCode(debouncedFrom, signal),
+        enabled: debouncedFrom?.trim().length >= 1,
     });
 
     const { data: toAirportOptions = [], isLoading: toLoading, isError: toError } = useQuery({
         queryKey: ["airportlistcodes-to", debouncedTo],
-        queryFn: () => fetchAirportsByCode(debouncedTo),
-        enabled: debouncedTo?.length >= 1
+        queryFn: ({ signal }) => fetchAirportsByCode(debouncedTo, signal),
+        enabled: debouncedTo?.trim().length >= 1,
     });
 
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedFrom(fromSearch);
-        }, 100);
+        }, 400);
 
         return () => clearTimeout(timer);
     }, [fromSearch]);
@@ -88,7 +92,7 @@ function BookingForm() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedTo(toSearch);
-        }, 100);
+        }, 400);
 
         return () => clearTimeout(timer);
     }, [toSearch]);
@@ -130,7 +134,7 @@ function BookingForm() {
 
             if (window.scrollY >= triggerPoint && !startAnimation) {
                 setStartAnimation(true);
-                window.removeEventListener('scroll', handleScroll); // stop listening
+                window.removeEventListener('scroll', handleScroll);
             }
         };
 
@@ -218,7 +222,6 @@ function BookingForm() {
             return;
         }
 
-        handleFlightInputChange('traveller', totalTravellers);
         setTravellers({ adults: adultCount, children: childrenCount, infants: infantsCount });
         setFlightSearchInfo(prev => ({
             ...prev,
@@ -237,7 +240,7 @@ function BookingForm() {
             const month = String(d.getMonth() + 1).padStart(2, "0");
             const day = String(d.getDate()).padStart(2, "0");
             const year = d.getFullYear();
-            return `${year}-${month}-${day}`;
+            return `${month}/${day}/${year}`;
         };
 
         const tripInfo = [
