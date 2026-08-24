@@ -4,13 +4,13 @@ import { Routes, Route } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import PageLoader from "@/components/layout/PageLoader";
 
-import Home from '@/pages/Home/index';
-const FlightSearch = lazy(() => import('@/pages/FlightSearch'));
+import Home from '@/pages/Home/Index';
+const FlightSearch = lazy(() => import('@/pages/FlightSearch/Index'));
 const CompareFlights = lazy(() => import('@/pages/CompareFlights'));
 const ReviewDetails = lazy(() => import('@/pages/ReviewDetails'));
-const FlightSeatMap = lazy(() => import('@/pages/FlightSeatMap'));
+const FlightSeatMap = lazy(() => import('@/pages/FlightSeatMap/Index'));
 const Payment = lazy(() => import('@/pages/Payment'));
-const Profile = lazy(() => import('@/pages/Profile'));
+const Profile = lazy(() => import('@/pages/Profile/Index'));
 const BookingLists = lazy(() => import('@/pages/BookingLists'));
 const MarkUp = lazy(() => import('@/pages/MarkUp'));
 const CouponsAndOffers = lazy(() => import('@/pages/CouponsAndOffers'));
