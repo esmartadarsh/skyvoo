@@ -13,7 +13,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { countryOptions, stateOptions } from "@/data/ExtraData.js";
 import { bookingStore } from "@/store/bookingStore";
 const Modal = lazy(() => import("@/components/modals/Modal"));
-const FlightSeatMap = lazy(() => import("./FlightSeatMap/Index"));
+const FlightSeatMap = lazy(() => import("./FlightSeatMap"));
 import { getAirlineLogo } from "@/utils/airlineCode";
 
 export default function ReviewDetails() {
