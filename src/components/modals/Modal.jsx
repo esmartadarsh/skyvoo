@@ -11,7 +11,7 @@ const Modal = ({ open, onClose, title, children }) => {
             style={{ animation: 'fadeIn 0.3s ease-out forwards' }}
         >
             <div
-                className="bg-white w-full sm:max-w-lg max-h-[90vh] rounded-2xl sm:rounded-xl overflow-y-auto"
+                className="text-justify bg-white w-full sm:max-w-xl max-h-[90vh] rounded-2xl sm:rounded-xl overflow-y-auto"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}

@@ -7,20 +7,9 @@ import BookingFlightFormBg from "@/assets/imgs/flightresultsbg.webp";
 
 const ViewFlightDetails = lazy(() => import("./ViewFlightDetails"));
 
-const logos = import.meta.glob('../../../assets/imgs/AirlinesLogos/*.png', {
-    eager: true,
-    import: 'default'
-});
-
-const getAirlineLogo = (code) => {
-    const path = `../../../assets/imgs/AirlinesLogos/${code}.png`;
-    const logo = logos[path];
-
-    return logo;
-};
+import { getAirlineLogo } from "@/utils/airlineCode";
 
 function FlightCard({ flight, isSelected, isCompared, onToggleDetails, onToggleCompare, onViewPrices }) {
-
     return (
         <div className="rounded-2xl">
             <div
@@ -33,7 +22,7 @@ function FlightCard({ flight, isSelected, isCompared, onToggleDetails, onToggleC
                     if (e.target.closest('button')) return;
 
                     if (window.matchMedia('(max-width: 767px)').matches) {
-                        onViewPrices(flight.totalPriceList);
+                        onViewPrices(flight);
                     }
                 }}
             >
@@ -59,7 +48,7 @@ function FlightCard({ flight, isSelected, isCompared, onToggleDetails, onToggleC
                             }}
                         />
                         <div style={{ position: "relative", zIndex: 1 }}>
-                            <p className="text-[8px] xs:text-xs">Free Seat With VISA Card*</p>
+                            <p className="text-[8px] xs:text-xs">Free Seat With VISA Card* {flight.Vendor}</p>
                         </div>
                     </div>
 
@@ -69,14 +58,15 @@ function FlightCard({ flight, isSelected, isCompared, onToggleDetails, onToggleC
                 <div className="py-2 px-3 sm:py-5 flex flex-row md:items-center md:justify-between gap-1 xs:gap-4 md:gap-6">
                     {/* Airline info */}
                     <div className="flex items-center space-x-4 justify-start">
-                        <div className="w-9 h-9 xs:w-12 xs:h-12 rounded-full flex items-center justify-center">
+                        <div className="rounded-full flex items-center justify-center">
                             <img
-                                src={getAirlineLogo(flight.AirlineLogo)}
-                                alt={flight.AirlineName}
+                                className="rounded-full w-9 h-9 xs:w-11 xs:h-11"
+                                src={getAirlineLogo(flight.AirlineLogo[0])}
+                                alt={flight.AirlineName?.split(",")[0]}
                             />
                         </div>
                         <div>
-                            <div className="w-max font-semibold text-[10px] xs:text-xl">{flight.AirlineName} </div>
+                            <div className="w-max font-semibold text-[10px] xs:text-xl"> {flight.AirlineName?.split(",")[0]} </div>
                             <div className="font-medium text-[8px] xs:text-base">{flight.AirlineCodeAndId}</div>
                         </div>
                     </div>
@@ -102,7 +92,7 @@ function FlightCard({ flight, isSelected, isCompared, onToggleDetails, onToggleC
                             <div className="relative w-10 xs:w-14 sm:w-16 md:w-24 h-0.5 rounded-xl bg-[#920000]" />
 
                             <div className="text-[8px] xs:text-[10px] sm:text-xs md:text-sm font-medium mt-[1px] xs:mt-1 text-gray-700">
-                                {flight.Airlinestops === 0 ? "Non Stop" : `${flight.Airlinestops} Stop`}
+                                {flight.AirlineStops === 0 ? "Non Stop" : `${flight.AirlineStops} Stop`}
                             </div>
                         </div>
 
@@ -132,7 +122,7 @@ function FlightCard({ flight, isSelected, isCompared, onToggleDetails, onToggleC
                         className="w-full hidden md:flex md:w-auto cursor-pointer bg-[#811919] hover:bg-[#741111] text-white px-4 py-2 md:py-1 rounded-full font-medium text-sm"
                         onClick={(e) => {
                             e.stopPropagation()
-                            onViewPrices(flight.totalPriceList)
+                            onViewPrices(flight)
                         }}
                     >
                         VIEW PRICES

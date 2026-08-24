@@ -18,28 +18,11 @@ const PopularFilters = [
     { label: 'Free Meal Included' },
 ];
 
-const DepartureAirports = [
-    { label: 'Indira Gandhi (Delhi)', price: 5500 },
-    { label: 'Indira Gandhi International Airport', price: 7500 },
-];
+function Filters({ filters, origin, destination, filterState: externalState, filterDispatch: externalDispatch, label, showShadow = true }) {
 
-const Airlines = [
-    { code: "6E", name: "IndiGo" },
-    { code: "AI", name: "Air India" },
-    { code: "SG", name: "SpiceJet" },
-    { code: "G8", name: "Go First" },
-    { code: "I5", name: "AirAsia India" },
-    { code: "UK", name: "Vistara" },
-];
-
-// const AircraftSize = [
-//     { label: 'Small / Mid - Size Aircraft', price: 5010 },
-//     { label: 'Large Aircraft', price: 9478 },
-// ];
-
-function Filters({ filters, origin, destination }) {
-
-    const { state, dispatch } = useFlightFilters();
+    const ctx = useFlightFilters();
+    const state = externalState ?? ctx.state;
+    const dispatch = externalDispatch ?? ctx.dispatch;
 
     const [showAll, setShowAll] = useState(false);
     const [departureAirport, setDepartureAirport] = useState(null);
@@ -129,14 +112,11 @@ function Filters({ filters, origin, destination }) {
         });
     };
 
-    const toggleAirlineFilter = (code) => {
-        console.log(code, 'slected code')
-        const airline = Airlines.find(a => a.code === code);
-
-        const exists = state.selectedAirlines.some(a => a.code === code);
+    const toggleAirlineFilter = (airline) => {
+        const exists = state.selectedAirlines.some(a => a.code === airline.code);
 
         const newAirlines = exists
-            ? state.selectedAirlines.filter(a => a.code !== code)
+            ? state.selectedAirlines.filter(a => a.code !== airline.code)
             : [...state.selectedAirlines, airline];
 
         dispatch({
@@ -172,8 +152,6 @@ function Filters({ filters, origin, destination }) {
     ].filter(Boolean);
 
     const removeFilter = (filter) => {
-        console.log(filter)
-        console.log(state.selectedAirlines)
         if (state.selectedStops.includes(filter)) {
             dispatch({
                 type: "SET_STOPS",
@@ -198,12 +176,18 @@ function Filters({ filters, origin, destination }) {
 
     return (
         <>
-            <div className="w-80 bg-[#D5D5D5] rounded-lg shadow-sm px-6 pb-6 pt-3 h-fit filters sticky -top-120"
-                style={{ boxShadow: '0px 3px 22.3px 10px rgba(0,0,0,0.2),0px 4px 6.1px 4px rgba(0,0,0,0.25)' }}>
+            <div
+                className="w-70 bg-[#D5D5D5] rounded-lg shadow-sm px-6 pb-6 pt-3 h-fit filters"
+                style={{
+                    boxShadow: showShadow
+                        ? '0px 3px 22.3px 10px rgba(0,0,0,0.2), 0px 4px 6.1px 4px rgba(0,0,0,0.25)'
+                        : 'none'
+                }}
+            >
 
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold ">Applied Filters</h3>
-                    <button className="cursor-pointer text-[#78080B] text-sm font-medium hover:underline" onClick={clearAllFilters}>CLEAR ALL</button>
+                    <h3 className="text-base font-semibold ">{label || 'Applied Filters'}</h3>
+                    <button className="cursor-pointer text-[#78080B] text-xs font-medium hover:underline" onClick={clearAllFilters}>CLEAR ALL</button>
                 </div>
 
                 {/* Applied Filter Tags */}
@@ -267,7 +251,7 @@ function Filters({ filters, origin, destination }) {
                 </div> */}
 
                 {/* Departure Airports */}
-                <div className="mb-8">
+                {/* <div className="mb-8">
                     <h4 className="font-semibold mb-4">Departure Airports</h4>
                     <div className="space-y-3 text-sm">
                         {DepartureAirports.map(({ label, price }) => (
@@ -287,11 +271,11 @@ function Filters({ filters, origin, destination }) {
                             </div>
                         ))}
                     </div>
-                </div>
+                </div> */}
 
                 {/* Price Slider */}
                 <div className="mb-8">
-                    <h4 className="font-semibold mb-4">One Way Price</h4>
+                    <h4 className="text-sm font-semibold mb-4">One Way Price</h4>
                     <div
                         className="relative h-1 bg-[#B9B9B9] rounded-sm cursor-pointer select-none"
                         ref={sliderRef}
@@ -303,7 +287,7 @@ function Filters({ filters, origin, destination }) {
                             style={{ width: `${percentage}%` }}
                         />
                         <div
-                            className="absolute -bottom-[150%] bg-[#920000] rounded-full h-4 w-4 transform -translate-x-1/2"
+                            className="absolute -top-[100%] bg-[#920000] rounded-full h-3 w-3 transform -translate-x-1/2"
                             style={{ left: `${percentage}%`, boxShadow: '0 0 6px 0 rgba(0,0,0,.2)' }}>
                         </div>
 
@@ -327,7 +311,7 @@ function Filters({ filters, origin, destination }) {
 
                 {/* Stops */}
                 <div className="mb-8">
-                    <h4 className="font-semibold mb-4">Stops From Delhi</h4>
+                    <h4 className="text-sm font-semibold mb-4">Stops From Delhi</h4>
                     <div className="space-y-3 text-sm">
                         {stopsList.map((stop) => {
                             const label =
@@ -355,7 +339,7 @@ function Filters({ filters, origin, destination }) {
 
                 {/* Departure Times */}
                 <div className="mb-8">
-                    <h4 className="font-semibold mb-4">Departure From {origin}</h4>
+                    <h4 className="text-sm font-semibold mb-4">Departure From {origin}</h4>
                     <div className="flex flex-row justify-around gap-1 flex-wrap">
                         {[
                             { label: "Early Morning", icon: Sunrise, lines: ["Before", "6 AM"] },
@@ -380,7 +364,7 @@ function Filters({ filters, origin, destination }) {
                                 </div>
                                 <div className="text-xs font-medium text-center">
                                     {lines.map((line, idx) => (
-                                        <div key={idx}>{line}</div>
+                                        <p key={idx}>{line}</p>
                                     ))}
                                 </div>
                             </div>
@@ -392,7 +376,7 @@ function Filters({ filters, origin, destination }) {
 
                 {/* Arrival Times*/}
                 <div className="mb-8">
-                    <h4 className="font-semibold mb-4">Arrival at {destination}</h4>
+                    <h4 className="text-sm font-semibold mb-4">Arrival at {destination}</h4>
                     <div className="flex flex-row justify-around gap-1 flex-wrap">
                         {[
                             { label: "Early Morning", icon: Sunrise, lines: ["Before", "6 AM"] },
@@ -425,28 +409,26 @@ function Filters({ filters, origin, destination }) {
 
                 </div>
 
-
                 {/* Airlines */}
                 <div className="mb-8">
-                    <h4 className="font-semibold mb-4">Airlines</h4>
+                    <h4 className="text-sm font-semibold mb-4">Airlines</h4>
                     <div className="space-y-3 text-sm">
-                        {airlinesList.map((code) => {
-                            const airline = Airlines.find(a => a.code === code);
-
-                            return (
-                                <label key={code} className="flex items-center justify-between">
-                                    <span className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={state.selectedAirlines.some(a => a.code === code)}
-                                            onChange={() => toggleAirlineFilter(code)}
-                                            className="mr-3 cursor-pointer accent-red-600"
-                                        />
-                                        {airline ? airline.name : code}
-                                    </span>
-                                </label>
-                            );
-                        })}
+                        {airlinesList.map((airline) => (
+                            <label key={airline.code} className="flex items-center justify-between">
+                                <span className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={state.selectedAirlines.some(a => a.code === airline.code)}
+                                        onChange={() => toggleAirlineFilter(airline)}
+                                        className="mr-3 cursor-pointer accent-red-600"
+                                    />
+                                    {airline.name || airline.code}
+                                </span>
+                                {airline.count != null && (
+                                    <span className="text-xs text-gray-500 ml-2">({airline.count})</span>
+                                )}
+                            </label>
+                        ))}
                     </div>
                 </div>
 

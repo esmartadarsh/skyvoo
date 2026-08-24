@@ -1,26 +1,22 @@
 import React, { useState } from "react";
-import { Briefcase, Plane, Check } from "lucide-react";
+import { Utensils, Plane, Check } from "lucide-react";
 
-const DEFAULT_BAGGAGE_OPTIONS = [
-  { SSRKey: "BAG_5KG", Code: "BAG5", Description: "5 KGs Extra Check-in Baggage", Amount: 1500, Weight: 5 },
-  { SSRKey: "BAG_10KG", Code: "BAG10", Description: "10 KGs Extra Check-in Baggage", Amount: 2800, Weight: 10 },
-  { SSRKey: "BAG_15KG", Code: "BAG15", Description: "15 KGs Extra Check-in Baggage", Amount: 4000, Weight: 15 },
-  { SSRKey: "BAG_20KG", Code: "BAG20", Description: "20 KGs Extra Check-in Baggage", Amount: 5200, Weight: 20 },
-];
-
-export default function BaggageModal({
+export default function MealModal({
   onClose,
-  baggageList = [],
+  mealList = [],
   routeLabel = "",
   travellerInfo = null,
-  initialSelectedBaggage = [],
+  initialSelectedMeals = [],
   onSave,
 }) {
-  // Flatten all BaggageList entries from all segments
-  const apiItems = baggageList.flatMap((seg) => seg.BaggageList ?? []);
-  const allItems = apiItems.length > 0 ? apiItems : DEFAULT_BAGGAGE_OPTIONS;
 
-  const [selectedItems, setSelectedItems] = useState(initialSelectedBaggage || []);
+  // Flatten all MealList / MealDynamic entries from all segments
+  const apiItems = mealList.flatMap(
+    (seg) => seg.MealList ?? seg.MealDynamic ?? seg.MealDetails ?? []
+  );
+  const allItems = apiItems;
+
+  const [selectedItems, setSelectedItems] = useState(initialSelectedMeals || []);
 
   const getItemId = (item) => item.SSRKey || item.Code || item.Description;
 
@@ -74,10 +70,13 @@ export default function BaggageModal({
         <div className="flex items-center justify-between pb-4 border-b">
           <div>
             <h2 className="text-base sm:text-lg font-bold text-slate-900">
-              Add Extra Baggage
+              Add Extra Meal
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 font-medium">
-              Selection for: <span className="text-[#78080B] font-semibold">{travellerDisplayName}</span>
+              Selection for:{" "}
+              <span className="text-[#78080B] font-semibold">
+                {travellerDisplayName}
+              </span>
             </p>
           </div>
           <button
@@ -96,8 +95,8 @@ export default function BaggageModal({
               <div className="font-semibold text-xs sm:text-sm">
                 {routeLabel}
               </div>
-              <div className="text-[11px] text-blue-100">
-                Select one extra baggage option only
+              <div className="text-[11px] text-orange-100">
+                Select one meal option only
               </div>
             </div>
           </div>
@@ -108,7 +107,7 @@ export default function BaggageModal({
           {allItems.map((item) => {
             const selected = isSelected(item);
             return (
-              <BaggageOption
+              <MealOption
                 key={getItemId(item)}
                 item={item}
                 isSelected={selected}
@@ -122,7 +121,8 @@ export default function BaggageModal({
         <div className="border-t pt-4 mt-3 flex items-center justify-between gap-4">
           <div>
             <div className="text-xs text-slate-500 font-medium">
-              {selectedItems.length} {selectedItems.length === 1 ? "option" : "options"} selected
+              {selectedItems.length}{" "}
+              {selectedItems.length === 1 ? "option" : "options"} selected
             </div>
             <div className="text-base sm:text-lg font-bold text-slate-900">
               Total: ₹ {totalTravellerCost.toLocaleString("en-IN")}
@@ -133,7 +133,7 @@ export default function BaggageModal({
             onClick={handleSave}
             className="bg-[#78080B] hover:bg-[#5c0608] text-white font-semibold text-sm px-6 py-2.5 rounded-lg shadow-sm transition"
           >
-            Apply Baggage
+            Apply Meals
           </button>
         </div>
       </div>
@@ -141,7 +141,7 @@ export default function BaggageModal({
   );
 }
 
-function BaggageOption({ item, isSelected, onToggle }) {
+function MealOption({ item, isSelected, onToggle }) {
   const { Description, Amount } = item;
   return (
     <div
@@ -152,9 +152,11 @@ function BaggageOption({ item, isSelected, onToggle }) {
         }`}
     >
       <div className="flex items-center gap-3 min-w-0">
-        <Briefcase
+        <Utensils
           size={20}
-          className={isSelected ? "text-[#78080B] shrink-0" : "text-slate-400 shrink-0"}
+          className={
+            isSelected ? "text-[#78080B] shrink-0" : "text-slate-400 shrink-0"
+          }
         />
         <span className="text-xs sm:text-sm font-medium text-slate-800 capitalize truncate">
           {Description.toLowerCase()}
@@ -189,4 +191,3 @@ function BaggageOption({ item, isSelected, onToggle }) {
     </div>
   );
 }
-

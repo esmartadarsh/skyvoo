@@ -3,31 +3,29 @@ import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 import Tick from '@/assets/vectors/Tick.svg'
 import Dash from '@/assets/vectors/Dash.svg'
 import Insurance from '@/assets/vectors/Insurance.svg'
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { bookingStore } from '@/store/bookingStore';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import "@splidejs/react-splide/css";
+import { getAirlineLogo } from "../../utils/airlineCode";
 
-export default function FlightPriceDetailsModal({ data, onClose }) {
+export default function FlightPriceDetailsModal({ flight, data, onClose }) {
     const navigate = useNavigate();
-
+    const [searchParams] = useSearchParams();
     const fareCards = data?.map((item) => ({
         title: item.FareType || "SKYVOO",
-
-        price: `₹ ${item.PriceList?.TotalFare}`,
-        oldPrice: `₹ ${item.PriceList?.BaseFare}`,
+        oldPrice: `₹ ${item.PriceList?.TotalFare}`,
+        price: `₹ ${item.PriceList?.BaseFare}`,
 
         type: "Per adult",
 
         baggage: [
-            `${item.Baggages?.[0]?.HandBag || 0} kgs Cabin Baggage`,
-            `${item.Baggages?.[0]?.CabinBag || 0} kgs Check-in Baggage`,
+            `${item.Baggages?.[0]?.HandBag || "N/A"} Cabin Baggage`,
+            `${item.Baggages?.[0]?.CheckIn || item.Baggages?.[0]?.CabinBag || "N/A"} Check-in Baggage`,
         ],
 
         flexibility: [
-            item.RefundFlag === 0
-                ? "Non-Refundable ticket"
-                : "Refundable ticket",
+            item.RefundFlag === 0 ? "Non-Refundable ticket" : "Refundable ticket",
             "Date change allowed as per airline rules",
         ],
 
@@ -37,6 +35,8 @@ export default function FlightPriceDetailsModal({ data, onClose }) {
         ],
 
         buttons: ["BOOK NOW"],
+        // Keep raw fare item so BOOK NOW handler can persist it
+        _rawFare: item,
     }));
 
     return (
@@ -47,7 +47,7 @@ export default function FlightPriceDetailsModal({ data, onClose }) {
 
             <div
                 onClick={(e) => e.stopPropagation()}
-                className="rounded-4xl w-full max-w-6xl max-h-[90vh] overflow-y-auto relative mx-4 p-4 sm:p-6 bg-white/30"
+                className="rounded-4xl w-full max-w-6xl max-h-[90vh] relative mx-4 p-4 sm:p-6 bg-white/30"
                 style={{
                     animation: "scaleIn 0.3s ease-out forwards",
                     backdropFilter: "blur(11px)",
@@ -72,8 +72,12 @@ export default function FlightPriceDetailsModal({ data, onClose }) {
                     <div className=" flex flex-wrap items-center gap-x-2 gap-y-1 font-medium text-sm sm:text-base mt-2 ">
                         <span>New Delhi - Mumbai</span>
                         <span>|</span>
-                        <img src={AirlineLogo} alt="airline logo" className="h-6 sm:h-8" />
-                        <span>Vistara</span>
+                        <img
+                            src={getAirlineLogo(flight.AirlineLogo[0])}
+                            alt={flight.AirlineName?.split(",")[0]}
+                            className="rounded-full w-9 h-9 xs:w-8 xs:h-8"
+                        />
+                        <span>{flight.AirlineName?.split(",")[0]}</span>
                         <span>|</span>
                         <span>Wed, 24 Sep 2025</span>
                         <span className="hidden sm:inline">|</span>
@@ -194,7 +198,26 @@ export default function FlightPriceDetailsModal({ data, onClose }) {
                                                     ? "bg-[#78080B] text-white border-transparent hover:bg-white hover:text-[#78080B] hover:border-[#78080B]"
                                                     : "border-[#78080B] text-[#78080B] hover:bg-[#78080B] hover:text-white"
                                                     }`}
-                                                onClick={() => { navigate('/review-details') }}
+                                                onClick={() => {
+                                                    if (btn === "BOOK NOW") {
+                                                        const adults = Number(searchParams.get("adults") || 1);
+                                                        const children = Number(searchParams.get("children") || 0);
+                                                        const infants = Number(searchParams.get("infants") || 0);
+
+                                                        // Persist the selected flight + fare to bookingStore
+                                                        // before navigating so downstream booking steps
+                                                        // have access to FlightKey, Vendor, FareId, PriceList, etc.
+                                                        bookingStore.set({
+                                                            flight,
+                                                            selectedFare: card._rawFare,
+                                                            isRoundTrip: false,
+                                                            // FareReviewKey from the chosen fare in TotalPriceList
+                                                            fareReviewKey: card._rawFare?.FareReviewKey ?? null,
+                                                            travellers: { adults, children, infants },
+                                                        });
+                                                    }
+                                                    navigate('/review-details');
+                                                }}
                                             >
                                                 {btn}
                                             </button>

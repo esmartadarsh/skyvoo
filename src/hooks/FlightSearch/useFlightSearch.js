@@ -16,7 +16,16 @@ export const useFlightSearch = () => {
         const adults = Number(searchParams.get("adults") || 1);
         const children = Number(searchParams.get("children") || 0);
         const infants = Number(searchParams.get("infants") || 0);
-        const travelClass = Number(searchParams.get("travelClass") || 0);
+
+        const cabinClass = Number(searchParams.get("cabinClass") || 0);
+        const travelType = Number(searchParams.get("travelType") || 0);
+        const bookingType = Number(searchParams.get("bookingType") || 0);
+
+        const srCitizenSearch =
+            searchParams.get("srCitizenSearch") === "true";
+
+        const studentFareSearch =
+            searchParams.get("studentFareSearch") === "true";
 
         const tripInfo = [
             {
@@ -37,18 +46,15 @@ export const useFlightSearch = () => {
         }
 
         return {
-            Travel_Type: 0,
-            Booking_Type: 0,
             TripInfo: tripInfo,
-            Adult_Count: adults,
-            Child_Count: children,
-            Infant_Count: infants,
-            Class_Of_Travel: travelClass,
-            InventoryType: 0,
-            Source_Type: 0,
-            SrCitizen_Search: false,
-            StudentFare_Search: false,
-            DefenceFare_Search: false,
+            TravelType: travelType,
+            BookingType: bookingType,
+            CabinClass: cabinClass,
+            AdultCount: adults,
+            ChildCount: children,
+            InfantCount: infants,
+            SrCitizenSearch: srCitizenSearch,
+            StudentFareSearch: studentFareSearch,
             Filtered_Airline: [{ Airline_Code: "" }],
         };
     }, [searchParams]);
@@ -66,17 +72,10 @@ export const useFlightSearch = () => {
         enabled: !!isValidSearch
     });
 
-    const apiFlights = query.data?.Data?.oneWayResponses || [];
-    const apiFlightAirlines = query.data?.Data?.flightcounts || [];
+    const apiFlights = query.data?.Data?.OneWayResponses || [];
+    const apiFlightAirlines = query.data?.Data?.FlightCounts || [];
     const apiReturnFlights = query.data?.Data?.ReturnResponses || [];
-    const apiReturnAirlines = query.data?.Data?.Returnflightcounts || [];
-    const FlightSearchKey = query.data?.Data?.SessionId?.FF || "";
-
-    useEffect(() => {
-        if (FlightSearchKey) {
-            localStorage.setItem("flightSearchKey", FlightSearchKey);
-        }
-    }, [FlightSearchKey]);
+    const apiReturnAirlines = query.data?.Data?.ReturnFlightCounts || [];
 
     return {
         ...query,

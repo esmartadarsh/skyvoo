@@ -1,12 +1,10 @@
 import api from '@/services/api.js';
 
 export const fetchAirportsByCode = async (airportCode, signal) => {
-    console.log('hitting')
-
     const res = await api.post(
         `/Flight/ListAirportsByCode?airportCode=${airportCode}`,
-        {},
-        { signal }
+        {},          // empty body
+        { signal }   // config — abort signal for react-query cancellation
     );
 
     if (!res.data?.IsSuccess) {

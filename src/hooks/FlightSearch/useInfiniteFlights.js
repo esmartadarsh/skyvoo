@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 const PAGE_SIZE = 10;
 
 export const useInfiniteFlights = (flights) => {
+
     const [page, setPage] = useState(1);
     const loadMoreRef = useRef(null);
     const observerRef = useRef(null);

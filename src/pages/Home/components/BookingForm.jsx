@@ -16,13 +16,8 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAirportsByCode } from "@/services/airportsSearch.js";
+import { CoachOptions } from "@/data/ExtraData.js";
 
-const CoachOptions = [
-    { value: 0, label: "Economy" },
-    { value: 1, label: "First Class" },
-    { value: 2, label: "Business" },
-    // { value: 3, label: "Premium Economy" },
-];
 
 function BookingForm() {
     const navigate = useNavigate();
@@ -84,7 +79,7 @@ function BookingForm() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedFrom(fromSearch);
-        }, 400);
+        }, 200);
 
         return () => clearTimeout(timer);
     }, [fromSearch]);
@@ -92,7 +87,7 @@ function BookingForm() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedTo(toSearch);
-        }, 400);
+        }, 200);
 
         return () => clearTimeout(timer);
     }, [toSearch]);
@@ -196,7 +191,17 @@ function BookingForm() {
 
     const handleReturnSelect = (date) => {
         handleFlightInputChange("return", date);
+
+        if (date) {
+            setTripType("ROUND_TRIP");
+        }
+
         setReturnOpen(false);
+    };
+
+    const handleRemoveReturnDate = () => {
+        handleFlightInputChange("return", null);
+        setTripType("ONE_WAY");
     };
 
     const validateTravellers = () => {
@@ -262,19 +267,16 @@ function BookingForm() {
         }
 
         return {
-            Travel_Type: 0,
-            Booking_Type: 0,
             TripInfo: tripInfo,
-            Adult_Count: travellers.adults,
-            Child_Count: travellers.children,
-            Infant_Count: travellers.infants,
-            Class_Of_Travel: flightSearchInfo.coach,
-            InventoryType: 0,
-            Source_Type: 0,
-            SrCitizen_Search: false,
-            StudentFare_Search: false,
-            DefenceFare_Search: false,
-            Filtered_Airline: [{ Airline_Code: "" }]
+            TravelType: isInternational ? 1 : 0,
+            BookingType: tripType === "ROUND_TRIP" ? 1 : 0,
+            CabinClass: flightSearchInfo.coach,
+            AdultCount: travellers.adults,
+            ChildCount: travellers.children,
+            InfantCount: travellers.infants,
+            SrCitizenSearch: false,
+            StudentFareSearch: fareType === "student",
+            Filtered_Airline: [{ Airline_Code: "" }],
         };
     };
 
@@ -289,6 +291,11 @@ function BookingForm() {
         }
 
         if (!depart) return alert('Please select a departure date');
+
+        if (tripType === 'ROUND_TRIP' && !flightSearchInfo.return) {
+            return alert('Please select a return date for the round trip.');
+        }
+
         if (!traveller) return alert('Please select travelers');
         if (coach === null || coach === undefined) return alert('Please select a travel class');
 
@@ -300,16 +307,24 @@ function BookingForm() {
 
         const payload = buildFlightDataFormat();
 
+        if (!payload) return;
+
         const params = new URLSearchParams({
             origin: payload.TripInfo[0].Origin,
             destination: payload.TripInfo[0].Destination,
             departDate: payload.TripInfo[0].TravelDate,
             returnDate: payload.TripInfo[1]?.TravelDate || "",
-            adults: payload.Adult_Count,
-            children: payload.Child_Count,
-            infants: payload.Infant_Count,
-            travelClass: payload.Class_Of_Travel,
-            tripType: tripType
+
+            adults: String(payload.AdultCount),
+            children: String(payload.ChildCount),
+            infants: String(payload.InfantCount),
+
+            cabinClass: String(payload.CabinClass),
+            travelType: String(payload.TravelType),
+            bookingType: String(payload.BookingType),
+
+            srCitizenSearch: String(payload.SrCitizenSearch),
+            studentFareSearch: String(payload.StudentFareSearch),
         });
 
         navigate(`/flight-results?${params.toString()}`);
@@ -356,7 +371,7 @@ function BookingForm() {
                     {[
                         { key: 0, value: 'ONE_WAY', label: 'One Way' },
                         { key: 1, value: 'ROUND_TRIP', label: 'Round Trip' },
-                        { key: 3, value: 'MULTI_CITY', label: 'Multi-City' },
+                        // { key: 3, value: 'MULTI_CITY', label: 'Multi-City' },
                     ].map(({ key, value, label }) => (
                         <label key={key} className="flex items-center cursor-pointer">
                             <div className={clsx(' px-4 py-2 flex items-center rounded-md', tripType === value ? 'bg-black text-white' : 'text-black')}>
@@ -381,6 +396,7 @@ function BookingForm() {
                             onChange={(option) => handleFlightInputChange("coach", option?.value ?? null)}
                             placeholder="Coach"
                             classNamePrefix="coach-select"
+                            menuPlacement="top"
                             components={{ IndicatorSeparator: () => null }}
                             getOptionLabel={(option) => option.label}
                             styles={{
@@ -614,7 +630,7 @@ function BookingForm() {
                             />
 
                             {departOpen && (
-                                <div className="absolute bottom-full mb-2 bg-white p-4 rounded-2xl shadow-lg z-50">
+                                <div className="absolute scale-[0.90] bottom-15 -left-10 mb-2 bg-white p-4 rounded-2xl shadow-lg z-50">
                                     <DayPicker
                                         mode="single"
                                         selected={departSelected}
@@ -636,7 +652,7 @@ function BookingForm() {
                                 {flightSearchInfo.return && (
                                     <div
                                         className="bg-[#0a223d] rounded-full w-4 h-4 flex justify-center items-center cursor-pointer hover:bg-[#12345a]"
-                                        onClick={() => handleFlightInputChange("return", null)}
+                                        onClick={handleRemoveReturnDate}
                                     >
                                         <X className="h-3 w-3 text-white" />
                                     </div>
@@ -653,7 +669,7 @@ function BookingForm() {
                             />
 
                             {returnOpen && (
-                                <div className="absolute bottom-full mb-2 bg-white p-4 rounded-2xl shadow-lg z-50">
+                                <div className="absolute scale-[0.90] bottom-15 -left-10  mb-2 bg-white p-4 rounded-2xl shadow-lg z-50">
                                     <DayPicker
                                         mode="single"
                                         selected={flightSearchInfo.return}

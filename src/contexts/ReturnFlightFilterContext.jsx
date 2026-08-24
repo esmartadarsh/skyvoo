@@ -1,0 +1,44 @@
+import { createContext, useContext, useReducer } from "react";
+
+const ReturnFlightFilterContext = createContext();
+
+const initialState = {
+    selectedStops: [],
+    selectedAirlines: [],
+    selectedAircraftSizes: [],
+    selectedPriceRange: [0, Infinity],
+    selectedDepartureTime: null,
+    selectedArrivalTime: null,
+};
+
+function reducer(state, action) {
+    switch (action.type) {
+        case "SET_STOPS":
+            return { ...state, selectedStops: action.payload };
+        case "SET_AIRLINES":
+            return { ...state, selectedAirlines: action.payload };
+        case "SET_PRICE_RANGE":
+            return { ...state, selectedPriceRange: action.payload };
+        case "SET_DEPARTURE_TIME":
+            return { ...state, selectedDepartureTime: action.payload };
+        case "SET_ARRIVAL_TIME":
+            return { ...state, selectedArrivalTime: action.payload };
+        case "SET_AIRCRAFT_SIZES":
+            return { ...state, selectedAircraftSizes: action.payload };
+        case "RESET_FILTERS":
+            return initialState;
+        default:
+            return state;
+    }
+}
+
+export function ReturnFlightFilterProvider({ children }) {
+    const [state, dispatch] = useReducer(reducer, initialState);
+    return (
+        <ReturnFlightFilterContext.Provider value={{ state, dispatch }}>
+            {children}
+        </ReturnFlightFilterContext.Provider>
+    );
+}
+
+export const useReturnFlightFilters = () => useContext(ReturnFlightFilterContext);

@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
 import api from '@/services/api.js';
-import Modal from '@/components/modals/Modal';
+const Modal = lazy(() => import("@/components/modals/Modal"));
 
 
 const ViewFlightDetails = ({ flight }) => {
@@ -9,39 +9,26 @@ const ViewFlightDetails = ({ flight }) => {
     const [fareRuleModal, setFareRuleModal] = useState(false);
     const [fareRuleData, setFareRuleData] = useState(null);
     const [loadingFareRule, setLoadingFareRule] = useState(false);
-
-    console.log(flight.flightkey, 'flightkey')
+    const [activeTab, setActiveTab] = useState("details");
 
     const handleFareRule = async () => {
+        if (!flight.FareRuleKey) {
+            console.warn("No FareRuleKey available for this flight.");
+            return;
+        }
+
         try {
             setLoadingFareRule(true);
 
-            const payload = {
-                UserId: 0,
-                UserCode: "string",
-                UserType: "string",
-                UserMobile: "string",
-                UserEmail: "string",
-                DeviceType: "string",
-                SearchKey: localStorage.getItem("flightSearchKey"),
-                FlightKey: flight.flightkey,
-                Vendor: "FF",
-                RequestId: "string",
-                TravelType: 0,
-                IsStudentFare: true,
-                PriceIds: [flight.totalPriceList[0].FareId],
-            };
-
-            const res = await api.post(
-                "/Flight/SearchFareRule",
-                payload
-            );
+            const res = await api.post("/Flight/SearchFareRule", {
+                FareRuleKey: flight.FareRuleKey,
+            });
 
             if (res.data?.IsSuccess) {
-                setFareRuleData(res.data.Data?.fareRule);
+                setFareRuleData(res.data.Data?.fareRule ?? []);
                 setFareRuleModal(true);
             } else {
-                console.error(res.data?.ErrorMessage);
+                console.error("FareRule API error:", res.data?.ErrorMessage);
             }
         } catch (err) {
             console.error("Fare Rule API error:", err);
@@ -50,7 +37,25 @@ const ViewFlightDetails = ({ flight }) => {
         }
     };
 
-    const [activeTab, setActiveTab] = useState("details");
+    const formatFareRule = (text = "") => {
+        if (!text) return "";
+
+        // If API returned HTML
+        if (/<[a-z][\s\S]*>/i.test(text)) {
+            return { isHtml: true, content: text };
+        }
+
+        // Plain text formatting
+        const content = text
+            .replace(/^\s*-+\s*$/gm, "")
+            .replace(/\.\s+/g, ".\n")
+            .replace(/;\s+/g, ";\n")
+            .replace(/:\s+/g, ":\n")
+            .replace(/\n{2,}/g, "\n")
+            .trim();
+
+        return { isHtml: false, content };
+    };
 
     return (
         <>
@@ -96,9 +101,15 @@ const ViewFlightDetails = ({ flight }) => {
                             <div>
                                 <button
                                     onClick={handleFareRule}
-                                    className="text-xs sm:text-sm font-medium text-[#920000] hover:text-[#781000] transition"
+                                    disabled={loadingFareRule}
+                                    className="text-xs sm:text-sm font-medium text-[#920000] hover:text-[#781000] transition disabled:opacity-50 flex items-center gap-1"
                                 >
-                                    View Fare Rules
+                                    {loadingFareRule ? (
+                                        <>
+                                            <span className="inline-block w-3 h-3 border-2 border-[#920000] border-t-transparent rounded-full animate-spin" />
+                                            Loading...
+                                        </>
+                                    ) : "View Fare Rules"}
                                 </button>
                             </div>
                         </div>
@@ -126,7 +137,7 @@ const ViewFlightDetails = ({ flight }) => {
                                     <div className="text-[10px] sm:text-sm text-gray-500 mb-1">{flight.AirlineDuration}</div>
                                     <div className="relative w-8 xs:w-12 sm:w-24 h-0.5 bg-[#920000] rounded">
                                     </div>
-                                    <div className="text-xs sm:text-sm text-gray-500 mt-1"> {flight.Airlinestops === 0 ? "Non Stop" : `${flight.Airlinestops} Stop`}</div>
+                                    <div className="text-xs sm:text-sm text-gray-500 mt-1"> {flight.AirlineStops === 0 ? "Non Stop" : `${flight.AirlineStops} Stop`}</div>
                                 </div>
 
                                 {/* Arrival */}
@@ -151,7 +162,9 @@ const ViewFlightDetails = ({ flight }) => {
                                         <div className="font-semibold">
                                             Check-in:
                                             <br />
-                                            <p className="text-[#78080B] font-medium ">15 kg</p>
+                                            <p className="text-[#78080B] font-medium ">
+                                                {flight.TotalPriceList?.[0]?.Baggages?.[0]?.CheckIn || "N/A"}
+                                            </p>
                                         </div>
                                     </div>
 
@@ -159,7 +172,9 @@ const ViewFlightDetails = ({ flight }) => {
                                         <div className="font-semibold">
                                             Cabin:
                                             <br />
-                                            <p className="text-[#78080B] font-medium ">7 kg</p>
+                                            <p className="text-[#78080B] font-medium ">
+                                                {flight.TotalPriceList?.[0]?.Baggages?.[0]?.HandBag || "N/A"}
+                                            </p>
                                         </div>
                                     </div>
 
@@ -229,6 +244,7 @@ const ViewFlightDetails = ({ flight }) => {
 
                 {activeTab === "cancel" && (
                     <div className="mx-3 xs:mx-4 sm:mx-6">
+
                         <div className="flex justify-between items-center mb-2 sm:mb-3">
                             <h3 className="font-semibold text-[11px] xs:text-xs sm:text-base">
                                 Cancellation Policy
@@ -293,7 +309,7 @@ const ViewFlightDetails = ({ flight }) => {
 
                             {/* Route */}
                             <p className="font-medium text-[11px] xs:text-sm sm:text-base text-gray-700 mb-1 sm:mb-2">
-                                {`${flight.Origin} - ${flight.Destination}`}
+                                {`${flight.AirlineDeparture?.city} - ${flight.AirlineArrival?.city}`}
                             </p>
 
                             {/* Info Text */}
@@ -335,22 +351,47 @@ const ViewFlightDetails = ({ flight }) => {
 
 
             </div>
+            <Suspense fallback={null}>
+                <Modal
+                    open={fareRuleModal}
+                    onClose={() => setFareRuleModal(false)}
+                    title="Fare Rules"
+                >
+                    {Array.isArray(fareRuleData) && fareRuleData.length > 0 ? (
+                        <div className="space-y-4 text-sm text-justify">
+                            {fareRuleData.map((rule, idx) => {
+                                const { isHtml, content } = formatFareRule(rule.FareRuleDescription);
 
-            <Modal
-                open={fareRuleModal}
-                onClose={() => setFareRuleModal(false)}
-                title="Fare Rules"
-            >
-                {fareRuleData?.FareRuleDescription?.fareRuleInfo ? (
-                    <div
-                        dangerouslySetInnerHTML={{
-                            __html: fareRuleData.FareRuleDescription.fareRuleInfo,
-                        }}
-                    />
-                ) : (
-                    <p className="text-sm text-gray-500">No Fare Rules Found</p>
-                )}
-            </Modal>
+                                return (
+                                    <div
+                                        key={idx}
+                                        className="border-b border-gray-100 pb-4 last:border-0 last:pb-0"
+                                    >
+                                        <p className="font-semibold text-[#920000] mb-2">
+                                            {rule.FareRuleName}
+                                        </p>
+
+                                        {isHtml ? (
+                                            <div
+                                                className="prose prose-sm max-w-none text-xs leading-6"
+                                                dangerouslySetInnerHTML={{ __html: content }}
+                                            />
+                                        ) : (
+                                            <div className="text-xs text-gray-700 leading-6 space-y-2">
+                                                {content.split("\n").map((line, i) => (
+                                                    <p key={i}>{line}</p>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <p className="text-sm text-gray-500">No Fare Rules Found</p>
+                    )}
+                </Modal>
+            </Suspense >
 
         </>
     );

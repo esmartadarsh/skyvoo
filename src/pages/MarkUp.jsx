@@ -1,86 +1,9 @@
-import React, { useState } from 'react';
-import { Plus, X, Plane, Globe, Trash2, Edit2 } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Plus, X, Plane, Globe, Trash2 } from 'lucide-react';
 import Select, { components } from 'react-select';
-import Header from '@/components/layout/Header';
-import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp'
+import { useQuery } from '@tanstack/react-query';
+import api from '@/services/api.js';
 
-const airlineOptions = [
-    { value: 'Aer Lingus', label: 'Aer Lingus' },
-    { value: 'Aeromexico', label: 'Aeromexico' },
-    { value: 'Air Arabia', label: 'Air Arabia' },
-    { value: 'Air Canada', label: 'Air Canada' },
-    { value: 'Air China', label: 'Air China' },
-    { value: 'Air France', label: 'Air France' },
-    { value: 'Air India', label: 'Air India' },
-    { value: 'Air New Zealand', label: 'Air New Zealand' },
-    { value: 'AirAsia', label: 'AirAsia' },
-    { value: 'AirAsia India', label: 'AirAsia India' },
-    { value: 'Alaska Airlines', label: 'Alaska Airlines' },
-    { value: 'Alitalia', label: 'Alitalia' },
-    { value: 'All Nippon Airways', label: 'All Nippon Airways (ANA)' },
-    { value: 'American Airlines', label: 'American Airlines' },
-    { value: 'Asiana Airlines', label: 'Asiana Airlines' },
-    { value: 'Austrian Airlines', label: 'Austrian Airlines' },
-    { value: 'Avianca', label: 'Avianca' },
-    { value: 'Azul Brazilian Airlines', label: 'Azul Brazilian Airlines' },
-    { value: 'Biman Bangladesh Airlines', label: 'Biman Bangladesh Airlines' },
-    { value: 'British Airways', label: 'British Airways' },
-    { value: 'Cathay Pacific', label: 'Cathay Pacific' },
-    { value: 'China Eastern Airlines', label: 'China Eastern Airlines' },
-    { value: 'China Southern Airlines', label: 'China Southern Airlines' },
-    { value: 'Copa Airlines', label: 'Copa Airlines' },
-    { value: 'Delta Airlines', label: 'Delta Airlines' },
-    { value: 'EasyJet', label: 'EasyJet' },
-    { value: 'EgyptAir', label: 'EgyptAir' },
-    { value: 'Emirates', label: 'Emirates' },
-    { value: 'Ethiopian Airlines', label: 'Ethiopian Airlines' },
-    { value: 'Etihad Airways', label: 'Etihad Airways' },
-    { value: 'Fiji Airways', label: 'Fiji Airways' },
-    { value: 'Finnair', label: 'Finnair' },
-    { value: 'flydubai', label: 'flydubai' },
-    { value: 'Frontier Airlines', label: 'Frontier Airlines' },
-    { value: 'Garuda Indonesia', label: 'Garuda Indonesia' },
-    { value: 'Go First', label: 'Go First' },
-    { value: 'Gol Linhas Aereas', label: 'Gol Linhas Aereas' },
-    { value: 'Gulf Air', label: 'Gulf Air' },
-    { value: 'Iberia', label: 'Iberia' },
-    { value: 'IndiGo', label: 'IndiGo' },
-    { value: 'Japan Airlines', label: 'Japan Airlines' },
-    { value: 'JetBlue Airways', label: 'JetBlue Airways' },
-    { value: 'Jetstar Airways', label: 'Jetstar Airways' },
-    { value: 'Kenya Airways', label: 'Kenya Airways' },
-    { value: 'KLM Royal Dutch Airlines', label: 'KLM Royal Dutch Airlines' },
-    { value: 'Korean Air', label: 'Korean Air' },
-    { value: 'LATAM Airlines', label: 'LATAM Airlines' },
-    { value: 'Lufthansa', label: 'Lufthansa' },
-    { value: 'Malaysia Airlines', label: 'Malaysia Airlines' },
-    { value: 'Nepal Airlines', label: 'Nepal Airlines' },
-    { value: 'Oman Air', label: 'Oman Air' },
-    { value: 'Pakistan International Airlines', label: 'Pakistan International Airlines' },
-    { value: 'Philippine Airlines', label: 'Philippine Airlines' },
-    { value: 'Qantas', label: 'Qantas' },
-    { value: 'Qatar Airways', label: 'Qatar Airways' },
-    { value: 'Royal Air Maroc', label: 'Royal Air Maroc' },
-    { value: 'Ryanair', label: 'Ryanair' },
-    { value: 'SAS Scandinavian Airlines', label: 'SAS Scandinavian Airlines' },
-    { value: 'Saudia', label: 'Saudia' },
-    { value: 'Singapore Airlines', label: 'Singapore Airlines' },
-    { value: 'South African Airways', label: 'South African Airways' },
-    { value: 'Southwest Airlines', label: 'Southwest Airlines' },
-    { value: 'SpiceJet', label: 'SpiceJet' },
-    { value: 'Spirit Airlines', label: 'Spirit Airlines' },
-    { value: 'Sri Lankan Airlines', label: 'Sri Lankan Airlines' },
-    { value: 'Swiss International Air Lines', label: 'Swiss International Air Lines' },
-    { value: 'TAP Air Portugal', label: 'TAP Air Portugal' },
-    { value: 'Thai Airways', label: 'Thai Airways' },
-    { value: 'Turkish Airlines', label: 'Turkish Airlines' },
-    { value: 'United Airlines', label: 'United Airlines' },
-    { value: 'Vietnam Airlines', label: 'Vietnam Airlines' },
-    { value: 'Virgin Australia', label: 'Virgin Australia' },
-    { value: 'Vistara', label: 'Vistara' },
-    { value: 'WestJet', label: 'WestJet' },
-    { value: 'Wizz Air', label: 'Wizz Air' }
-];
 
 function MarkUp() {
 
@@ -99,6 +22,37 @@ function MarkUp() {
     const [valueType, setValueType] = useState('percentage');
     const [amount, setAmount] = useState('');
 
+    const {
+        data: markupMasterData,
+        isLoading: isMarkupMasterLoading,
+        error: markupMasterError,
+    } = useQuery({
+        queryKey: ['markupMaster'],
+        queryFn: async () => {
+            const response = await api.post('/flight/GetMarkupMaster', {});
+
+            if (!response.data?.IsSuccess) {
+                throw new Error(
+                    response.data?.ErrorMessage || 'Failed to fetch markup master'
+                );
+            }
+
+            return response.data;
+        }
+    });
+
+    const airlineOptions = useMemo(() => {
+        const list = markupMasterData?.Data?.AirlineDetailList;
+        if (Array.isArray(list) && list.length > 0) {
+            return list.map((item) => ({
+                value: item.CodeListId,
+                label: item.CodeListDescription,
+                codeListId: item.CodeListId,
+            }));
+        }
+        return [];
+    }, [markupMasterData]);
+
     const handleAddMarkup = () => {
         if (!amount) return;
 
@@ -108,7 +62,8 @@ function MarkUp() {
                 ? (locationType === 'domestic' ? 'Domestic' : 'International')
                 : selectedAirline?.label,
             type: valueType === 'percentage' ? 'Percentage' : 'Fixed',
-            amount: valueType === 'percentage' ? `${amount}%` : `${amount}`
+            amount: valueType === 'percentage' ? `${amount}%` : `₹${amount}`,
+            airlineId: markupType === 'airline' ? selectedAirline?.value : null,
         };
 
         setMarkups([...markups, newMarkup]);
@@ -190,15 +145,13 @@ function MarkUp() {
                     <div className="flex sm:items-end">
                         <button
                             onClick={() => setIsModalOpen(true)}
-                            className="bg-[#78080B] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 w-full sm:w-auto"
+                            className="bg-[#78080B] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 w-full sm:w-auto cursor-pointer"
                         >
                             <Plus size={20} />
                             Add Markup
                         </button>
                     </div>
                 </div>
-
-
 
                 {/* Table */}
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -227,7 +180,7 @@ function MarkUp() {
                                     markups.map((markup, index) => (
                                         <tr
                                             key={markup.id}
-                                            className={`border-b border-gray-100 hover:bg-red   -50 transition-colors ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                                            className={`border-b border-gray-100 hover:bg-red-50 transition-colors ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
                                                 }`}
                                         >
                                             <td className="px-6 py-4">
@@ -258,7 +211,7 @@ function MarkUp() {
                                                             const confirmed = window.confirm("Are you sure you want to delete this?");
                                                             if (confirmed) handleDelete(markup.id);
                                                         }}
-                                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                                                         title="Delete"
                                                     >
                                                         <Trash2 size={18} />
@@ -282,7 +235,7 @@ function MarkUp() {
                             <h2 className="text-2xl font-bold">Add New Markup</h2>
                             <button
                                 onClick={handleCloseModal}
-                                className="hover:bg-white hover:text-black hover:bg-opacity-20 p-1 rounded-lg transition-colors"
+                                className="hover:bg-white hover:text-black hover:bg-opacity-20 p-1 rounded-lg transition-colors cursor-pointer"
                             >
                                 <X size={24} />
                             </button>
@@ -297,7 +250,7 @@ function MarkUp() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <button
                                         onClick={() => setMarkupType('location')}
-                                        className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all ${markupType === 'location'
+                                        className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all cursor-pointer ${markupType === 'location'
                                             ? 'border-blue-600 bg-blue-50 shadow-md'
                                             : 'border-gray-200 hover:border-blue-300'
                                             }`}
@@ -309,7 +262,7 @@ function MarkUp() {
                                     </button>
                                     <button
                                         onClick={() => setMarkupType('airline')}
-                                        className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all ${markupType === 'airline'
+                                        className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all cursor-pointer ${markupType === 'airline'
                                             ? 'border-indigo-600 bg-indigo-50 shadow-md'
                                             : 'border-gray-200 hover:border-indigo-300'
                                             }`}
@@ -361,13 +314,20 @@ function MarkUp() {
                                     <label className="block text-sm font-semibold text-gray-700 mb-3">
                                         Select Airline
                                     </label>
+                                    {markupMasterError && (
+                                        <p className="text-xs text-red-500 mb-2">
+                                            Failed to load airline list. Please try again.
+                                        </p>
+                                    )}
                                     <Select
                                         value={selectedAirline}
                                         onChange={setSelectedAirline}
                                         options={airlineOptions}
+                                        isLoading={isMarkupMasterLoading}
                                         styles={customSelectStyles}
                                         components={{ Option: CustomOption }}
-                                        placeholder="Search and select an airline..."
+                                        placeholder={isMarkupMasterLoading ? "Loading airlines..." : "Search and select an airline..."}
+                                        noOptionsMessage={() => isMarkupMasterLoading ? "Loading airlines..." : "No airlines found"}
                                         isSearchable
                                         className="text-base"
                                     />
@@ -400,7 +360,7 @@ function MarkUp() {
                                             onChange={(e) => setValueType(e.target.value)}
                                             className="w-5 h-5 text-green-600"
                                         />
-                                        <span className="font-medium text-gray-700">Fixed Amount ($)</span>
+                                        <span className="font-medium text-gray-700">Fixed Amount (₹)</span>
                                     </label>
                                 </div>
                             </div>
@@ -412,7 +372,7 @@ function MarkUp() {
                                 </label>
                                 <div className="relative">
                                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">
-                                        {valueType === 'percentage' ? '%' : '$'}
+                                        {valueType === 'percentage' ? '%' : '₹'}
                                     </span>
                                     <input
                                         type="number"
@@ -428,7 +388,7 @@ function MarkUp() {
                             <div className="flex gap-3 pt-4">
                                 <button
                                     onClick={handleCloseModal}
-                                    className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                                    className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors cursor-pointer"
                                 >
                                     Cancel
                                 </button>
@@ -438,7 +398,7 @@ function MarkUp() {
                                         !amount ||
                                         (markupType === 'airline' && !selectedAirline)
                                     }
-                                    className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                    className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
                                 >
                                     Add Markup
                                 </button>

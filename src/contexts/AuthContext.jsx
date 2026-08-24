@@ -42,6 +42,17 @@ export function AuthProvider({ children }) {
         setUser(userInfo);
     }, []);
 
+    /**
+     * Call this after the api.js interceptor silently refreshes the token.
+     * Updates the stored tokens without touching user profile info.
+     */
+    const refreshSession = useCallback((newToken, newRefreshToken) => {
+        if (newToken) localStorage.setItem(TOKEN_KEY, newToken);
+        if (newRefreshToken) localStorage.setItem(REFRESH_TOKEN_KEY, newRefreshToken);
+        // Re-hydrate user from localStorage to stay in sync
+        setUser(loadStoredUser());
+    }, []);
+
     const logout = useCallback(() => {
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(REFRESH_TOKEN_KEY);
@@ -52,7 +63,7 @@ export function AuthProvider({ children }) {
     const isLoggedIn = !!user;
 
     return (
-        <AuthContext.Provider value={{ user, isLoggedIn, login, logout }}>
+        <AuthContext.Provider value={{ user, isLoggedIn, login, logout, refreshSession }}>
             {children}
         </AuthContext.Provider>
     );

@@ -26,46 +26,44 @@ import { CompareProvider } from '@/contexts/CompareContext';
 
 export default function AppRoutes() {
     return (
-        <Suspense fallback={< PageLoader />}>
-            <Routes>
-                <Route element={<Layout />}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/review-details" element={<ReviewDetails />} />
-                    <Route path="/payment" element={<Payment />} />
-                    <Route path="/my-profile" element={<Profile />} />
-                    <Route path="/booking-lists" element={<BookingLists />} />
-                    <Route path="/mark-up" element={<MarkUp />} />
-                    <Route path="/coupons-and-offers" element={<CouponsAndOffers />} />
-                    <Route path="/complaint-register" element={<ComplaintRegister />} />
-                    <Route path="/statement" element={<Statement />} />
-                    <Route path="/flight-reschedule" element={<FlightReschedule />} />
-                    <Route path="/flight-cancellation" element={<FlightCancellation />} />
-                </Route>
+        <CompareProvider>
+            <Suspense fallback={< PageLoader />}>
+                <Routes>
+                    <Route element={<Layout />}>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/review-details" element={<ReviewDetails />} />
+                        <Route path="/flight-seat-map" element={<FlightSeatMap />} />
+                        <Route path="/payment" element={<Payment />} />
+                        <Route path="/my-profile" element={<Profile />} />
+                        <Route path="/booking-lists" element={<BookingLists />} />
+                        <Route path="/mark-up" element={<MarkUp />} />
+                        <Route path="/coupons-and-offers" element={<CouponsAndOffers />} />
+                        <Route path="/complaint-register" element={<ComplaintRegister />} />
+                        <Route path="/statement" element={<Statement />} />
+                        <Route path="/flight-reschedule" element={<FlightReschedule />} />
+                        <Route path="/flight-cancellation" element={<FlightCancellation />} />
+                    </Route>
 
-                {/* Without layout */}
-                <Route
-                    path="/flight-results"
-                    element={
-                        <FlightFilterProvider>
-                            <CompareProvider>
+                    {/* Without layout */}
+                    <Route
+                        path="/flight-results"
+                        element={
+                            <FlightFilterProvider>
                                 <FlightSearch />
-                            </CompareProvider>
-                        </FlightFilterProvider>
-                    }
-                />
+                            </FlightFilterProvider>
+                        }
+                    />
 
-                <Route
-                    path="/compare-flights"
-                    element={
-                        <CompareProvider>
+                    <Route
+                        path="/compare-flights"
+                        element={
                             <CompareFlights />
-                        </CompareProvider>
-                    }
-                />
+                        }
+                    />
 
-                <Route path="/flight-seat-map" element={<FlightSeatMap />} />
-            </Routes>
+                </Routes>
 
-        </Suspense>
+            </Suspense>
+        </CompareProvider>
     );
 }

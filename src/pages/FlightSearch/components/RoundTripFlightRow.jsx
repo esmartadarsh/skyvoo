@@ -7,10 +7,19 @@ const ViewFlightDetails = lazy(() => import('./ViewFlightDetails'));
 function RoundTripFlightRow({
     outboundFlight,
     returnFlight,
-    isCompared,
     onToggleCompare,
     onViewPrices,
+    selectedOutbound,
+    selectedReturn,
+    onSelectOutbound,
+    onSelectReturn,
 }) {
+    const isOutboundSelected =
+        !!outboundFlight &&
+        selectedOutbound?.AirlineCodeAndId === outboundFlight?.AirlineCodeAndId;
+    const isReturnSelected =
+        !!returnFlight &&
+        selectedReturn?.AirlineCodeAndId === returnFlight?.AirlineCodeAndId;
     // null | 'outbound' | 'return'
     const [openDetails, setOpenDetails] = useState(null);
 
@@ -28,13 +37,9 @@ function RoundTripFlightRow({
     }, [onToggleCompare, outboundFlight]);
 
     const handleViewPrices = useCallback(() => {
-        // Combine both price lists so the modal shows all options
-        const combined = [
-            ...(outboundFlight?.totalPriceList || []),
-            ...(returnFlight?.totalPriceList || []),
-        ];
-        onViewPrices(combined);
-    }, [onViewPrices, outboundFlight, returnFlight]);
+        // Pass the outbound flight; Index.jsx handleViewPrices will use flight.totalPriceList
+        onViewPrices(outboundFlight);
+    }, [onViewPrices, outboundFlight]);
 
     return (
         <div className="rounded-2xl">
@@ -46,56 +51,17 @@ function RoundTripFlightRow({
                     label="DEPARTURE"
                     isDetailsOpen={openDetails === 'outbound'}
                     onToggleDetails={() => handleToggle('outbound')}
+                    isSelected={isOutboundSelected}
+                    onSelect={onSelectOutbound}
                 />
                 <CompactFlightCard
                     flight={returnFlight}
                     label="RETURN"
                     isDetailsOpen={openDetails === 'return'}
                     onToggleDetails={() => handleToggle('return')}
+                    isSelected={isReturnSelected}
+                    onSelect={onSelectReturn}
                 />
-            </div>
-
-            {/* ---- Action bar ---- */}
-            <div
-                className="mt-1 px-3 sm:px-4 py-2 bg-white rounded-b-xl flex items-center justify-between gap-2"
-                style={{ boxShadow: "-2px 4px 16px 0px rgba(0,0,0,0.15)" }}
-            >
-                {/* Compare toggle */}
-                {isCompared ? (
-                    <div
-                        className="cursor-pointer flex items-center gap-1 px-2 py-1 rounded hover:bg-red-100 transition-colors duration-200"
-                        onClick={handleCompare}
-                    >
-                        <span className="text-[9px] sm:text-xs font-medium text-gray-700">Added</span>
-                        <X size={11} strokeWidth={3} className="text-[#910E0E]" />
-                    </div>
-                ) : (
-                    <div
-                        className="cursor-pointer flex items-center px-2 py-1 rounded hover:bg-red-100 transition-colors duration-200"
-                        onClick={handleCompare}
-                    >
-                        <span className="text-[#811919] text-[9px] sm:text-xs font-semibold">
-                            + Compare
-                        </span>
-                    </div>
-                )}
-
-                {/* Total price */}
-                <div className="text-center">
-                    <div className="text-[7px] sm:text-[9px] text-gray-500 leading-none">Total</div>
-                    <div className="text-[11px] sm:text-sm font-bold text-[#811919] leading-tight">
-                        ₹ {totalPrice.toLocaleString('en-IN')}
-                    </div>
-                    <div className="text-[6px] sm:text-[8px] text-gray-500 leading-none">Per Adult</div>
-                </div>
-
-                {/* View prices */}
-                <button
-                    className="cursor-pointer bg-[#811919] hover:bg-[#741111] text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-full font-medium text-[9px] sm:text-xs transition-colors whitespace-nowrap"
-                    onClick={handleViewPrices}
-                >
-                    VIEW PRICES
-                </button>
             </div>
 
             {/* ---- Expandable flight details ---- */}

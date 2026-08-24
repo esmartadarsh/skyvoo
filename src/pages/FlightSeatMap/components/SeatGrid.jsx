@@ -69,7 +69,7 @@ function SeatGrid({ processedRows, seatLetters, selectedSeats, onSeatClick, onSe
 
                                         </div>
                                     ) : (
-                                        <div key={letter} className="w-16 h-16 bg-gray-50"></div>
+                                        <div key={letter} className="rounded-lg w-15 h-15 bg-gray-50"></div>
                                     );
                                 })}
 
@@ -106,7 +106,7 @@ function SeatGrid({ processedRows, seatLetters, selectedSeats, onSeatClick, onSe
                                             )}
                                         </div>
                                     ) : (
-                                        <div key={letter} className="w-16 h-16 bg-gray-50"></div>
+                                        <div key={letter} className="rounded-lg w-15 h-15 bg-gray-50"></div>
                                     );
                                 })}
 

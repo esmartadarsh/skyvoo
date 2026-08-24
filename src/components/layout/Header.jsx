@@ -37,7 +37,7 @@ const Header = ({ onOpen }) => {
                     <img
                         onClick={() => navigate('/')}
                         src={Logo}
-                        className="cursor-pointer h-10 sm:h-12 md:h-16 w-auto"
+                        className="cursor-pointer h-10 sm:h-12 md:h-14 w-auto"
                         alt="SkyVoo Logo"
                     />
                 </div>

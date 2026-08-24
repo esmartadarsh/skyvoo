@@ -1,16 +1,20 @@
 import React from 'react'
 import { Plus, LogOut, Check, UtensilsCrossed, Briefcase, Clock, Accessibility, ChevronDown, X } from 'lucide-react';
 
-function SummaryPanel({ selectedSeats, seatMap, SSRTypes, selectedServices, onRemoveService, totalAmount, onContinue }) {
+function SummaryPanel({ selectedSeats, seatMap, SSRTypes, selectedServices, onRemoveService, totalAmount, onContinue, hasSeatsAvailable = true }) {
     return (
         <div className="lg:col-span-3 bg-[#f1f0f29e] shadow-sm rounded-xl p-4 border border-gray-200 h-auto mb-5">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">Your Selection</h3>
+            {/* <h3 className="text-lg font-bold text-gray-800 mb-4">Your Selection</h3> */}
 
             {/* Empty State */}
             {selectedSeats.size === 0 ? (
                 <div className="py-10 text-center text-gray-500">
-                    <p className="text-base mb-1">No seat selected</p>
-                    <p className="text-sm">Click on an available seat to select</p>
+                    <p className="text-base mb-1 font-medium">
+                        {hasSeatsAvailable ? "No seat selected" : "No seat map available"}
+                    </p>
+                    <p className="text-sm">
+                        {hasSeatsAvailable ? "Click on an available seat to select" : "Seats will be allocated at check-in"}
+                    </p>
                 </div>
             ) : (
                 <div className="space-y-4">
@@ -28,18 +32,10 @@ function SummaryPanel({ selectedSeats, seatMap, SSRTypes, selectedServices, onRe
                             <div
                                 key={seatNumber}
                                 className="flex justify-between p-3 rounded-lg border border-gray-100 shadow-lg"
-                            // className="flex justify-between p-3 rounded-lg bg-white/30"
-                            // style={{
-                            //     animation: "scaleIn 0.3s ease-out forwards",
-                            //     backdropFilter: "blur(11px)",
-                            //     border: "2px solid rgb(120, 8, 11)",
-                            //     boxShadow: "0px 0px 33.8px 10px #00000082",
-                            // }}
                             >
                                 {/* Seat Info */}
                                 <div>
                                     <h4 className="font-semibold text-gray-800">Seat {seatNumber}</h4>
-                                    <p className="text-sm text-gray-500">{seat.classType}</p>
 
                                     {seatSSRTypes.length > 0 && (
                                         <div className="flex flex-wrap gap-1 mt-3">
@@ -56,7 +52,7 @@ function SummaryPanel({ selectedSeats, seatMap, SSRTypes, selectedServices, onRe
                                 </div>
 
                                 {/* Seat Price */}
-                                <div className="mt-4 flex justify-end">
+                                <div className="flex justify-end">
                                     <span className="text-gray-700 font-semibold text-base">
                                         ₹{seat.price || 0}
                                     </span>
@@ -122,11 +118,11 @@ function SummaryPanel({ selectedSeats, seatMap, SSRTypes, selectedServices, onRe
             <button
                 type="button"
                 onClick={onContinue}
-                disabled={selectedSeats.size === 0}
-                className={`flex justify-center items-center gap-2 w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold transition-all duration-200 shadow-md text-md ${selectedSeats.size === 0 ? 'opacity-50 !cursor-not-allowed' : 'cursor-pointer'}`}
+                disabled={hasSeatsAvailable && selectedSeats.size === 0}
+                className={`flex justify-center items-center gap-2 w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold transition-all duration-200 shadow-md text-md ${hasSeatsAvailable && selectedSeats.size === 0 ? 'opacity-50 !cursor-not-allowed' : 'cursor-pointer'}`}
             >
                 <Check className="w-5 h-5" />
-                Continue to Payment
+                {hasSeatsAvailable && selectedSeats.size === 0 ? 'Select Seats to Continue' : 'Continue'}
             </button>
         </div>
     )

@@ -331,7 +331,7 @@ function FlightSearchHeaderMobile({ open, onClose }) {
                                     className={` flex-1 py-2 rounded-full text-sm font-semibold ${tripType === type ? 'bg-white text-[#78080B]' : 'bg-white/20 text-white'}`}>
                                     {type === 'oneWay' && 'One Way'}
                                     {type === 'roundTrip' && 'Round Trip'}
-                                    {type === 'multiCity' && 'Multi City'}
+                                    {/* {type === 'multiCity' && 'Multi City'} */}
                                 </button>
                             ))}
                         </div>

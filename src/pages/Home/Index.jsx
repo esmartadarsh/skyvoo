@@ -26,7 +26,7 @@ export default function Home() {
       <div>
         <div>
           <main className="relative z-10 px-4 sm:px-6 lg:px-8 pt-3">
-            <div className="max-w-7xl mx-auto">
+            <div className="max-w-6xl mx-auto">
               <div className="text-center mb-8 sm:mb-12">
                 <h1
                   className="primary-font text-2xl sm:text-4xl lg:text-5xl font-medium text-black mb-3 sm:mb-4 leading-tight"
@@ -54,7 +54,7 @@ export default function Home() {
 
         {/* Booking Section */}
         <div className="pb-5 sm:pb-2 bg-cover bg-center" style={{ backgroundImage: `url(${BookingFlightSectionBg})` }} >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="my-8 text-start">
               <h4 className=" text-2xl sm:text-3xl lg:text-4xl font-bold">
                 Start Booking Your Flight Now

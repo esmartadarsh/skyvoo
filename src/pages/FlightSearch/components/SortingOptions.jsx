@@ -64,7 +64,7 @@ function SortingOptions({ selectedSorting, handleClick, showOtherMenu, handleOth
                                 />
                             </div>
                             <div className="text-start leading-tight">
-                                <div className="text-[6px] xs:text-[10px] sm:text-base font-medium">
+                                <div className="text-[6px] xs:text-[10px] sm:text-sm font-medium">
                                     {option.label}
                                 </div>
                                 <div className="text-[4px] xs:text-[7px] sm:text-xs text-gray-700">

@@ -59,20 +59,20 @@ function Sticker({ frontIndex, underIndex, onPeeled }) {
 
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            if (!peeled) {
-                setPeeled(true);
-            }
-        }, 3000); // every 3 seconds
+        // const interval = setInterval(() => {
+        //     if (!peeled) {
+        //         setPeeled(true);
+        //     }
+        // }, 3000); // every 3 seconds
 
-        return () => clearInterval(interval);
+        // return () => clearInterval(interval);
     }, [peeled]);
 
 
     return (
         <>
             <div className="sticker-underneath">
-                <div className="relative -top-[25px] -right-[10px] h-[95%] w-[95%]  bg-[#D9D9D9] rounded-2xl shadow-lg p-5"></div>
+                <div className="relative -top-[25px] -right-[25px] h-[86%] w-[86%]  bg-[#D9D9D9] rounded-2xl shadow-lg p-5"></div>
                 <div className="sticker__holder">
 
                     <div className="sticker__content rounded-xl" style={{ background: `url(${images[underIndex]}) center/cover` }} >

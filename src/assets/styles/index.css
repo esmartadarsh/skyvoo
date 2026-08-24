@@ -157,6 +157,27 @@ button {
   scrollbar-width: thin;
 }
 
+
+
+/* scrollbar css */
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 1px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
 /* Media Queries */
 
 @media (max-width: 768px) {
@@ -173,4 +194,19 @@ button {
     right: 0 !important;
     top: 0 !important;
   }
+}
+
+/* Shimmer sweep for Book Now button */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.6s ease-in-out infinite;
 }

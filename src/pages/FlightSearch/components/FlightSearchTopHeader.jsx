@@ -62,13 +62,13 @@ const FlightSearchTopHeader = ({ onOpen }) => {
 
     return (
         <header className="relative z-9997">
-            <div className="max-w-7xl mx-auto flex items-center justify-between sm:px-6 py-5 ">
+            <div className="max-w-6xl mx-auto flex items-center justify-between sm:px-6 py-5 ">
                 {/* Logo */}
                 <div className="flex items-center">
                     <img
                         onClick={() => navigate('/')}
                         src={Logo}
-                        className="cursor-pointer h-10 sm:h-12 md:h-16 w-auto"
+                        className="cursor-pointer h-12 w-auto"
                         alt="SkyVoo Logo"
                     />
                 </div>
@@ -76,8 +76,7 @@ const FlightSearchTopHeader = ({ onOpen }) => {
                 {/* Desktop Navigation */}
                 <nav className="hidden md:flex items-center space-x-1 lg:space-x-1 text-black text-base font-semibold" ref={dropdownRef}>
                     {/* My Account */}
-                    <button
-                        className="cursor-pointer px-4 py-2 sm:px-3 rounded-full hover:bg-gray-100 transition-colors"
+                    <button className="text-sm cursor-pointer px-4 py-1 sm:px-3 rounded-full hover:bg-gray-100 transition-colors"
                         onClick={() => navigate('/my-profile')}
                     >
                         My Account
@@ -89,7 +88,7 @@ const FlightSearchTopHeader = ({ onOpen }) => {
                         onMouseEnter={() => handleMouseEnter('support')}
                         onMouseLeave={handleMouseLeave}
                     >
-                        <button className="cursor-pointer px-4 py-2 sm:px-3 rounded-full hover:bg-gray-100 transition-colors flex items-center">
+                        <button className="text-sm cursor-pointer px-4 py-1 sm:px-3 rounded-full hover:bg-gray-100 transition-colors flex items-center">
                             Support
                             <ChevronDown className={`ml-1 w-4 h-4 transition-transform ${activeDropdown === 'support' ? 'rotate-180' : ''}`} />
                         </button>
@@ -99,7 +98,7 @@ const FlightSearchTopHeader = ({ onOpen }) => {
                                 {supportItems.map((item) => (
                                     <button
                                         key={item}
-                                        className="block w-full text-left px-4 py-3 hover:bg-gray-50 text-gray-700 text-sm transition-colors"
+                                        className="text-xs block w-full text-left px-4 my-1 py-2 hover:bg-gray-50 text-gray-700 transition-colors"
                                     >
                                         {item}
                                     </button>
@@ -114,7 +113,7 @@ const FlightSearchTopHeader = ({ onOpen }) => {
                         onMouseEnter={() => handleMouseEnter('offers')}
                         onMouseLeave={handleMouseLeave}
                     >
-                        <button className="cursor-pointer px-4 py-2 sm:px-3 rounded-full hover:bg-gray-100 transition-colors flex items-center">
+                        <button className="text-sm cursor-pointer px-4 py-1 sm:px-3 rounded-full hover:bg-gray-100 transition-colors flex items-center">
                             Offers
                             <ChevronDown className={`ml-1 w-4 h-4 transition-transform ${activeDropdown === 'offers' ? 'rotate-180' : ''}`} />
                         </button>
@@ -124,7 +123,7 @@ const FlightSearchTopHeader = ({ onOpen }) => {
                                 {offersItems.map((item) => (
                                     <button
                                         key={item}
-                                        className="block w-full text-left px-4 py-3 hover:bg-gray-50 text-gray-700 text-sm transition-colors"
+                                        className="block w-full text-left px-4 py-2 my-1 hover:bg-gray-50 text-gray-700 text-xs transition-colors"
                                     >
                                         {item}
                                     </button>
@@ -135,7 +134,7 @@ const FlightSearchTopHeader = ({ onOpen }) => {
 
                     {/* Login */}
                     <button
-                        className="cursor-pointer px-4 py-2 sm:px-3 rounded-full hover:bg-gray-100 transition-colors"
+                        className="text-sm cursor-pointer px-4 py-1 sm:px-3 rounded-full hover:bg-gray-100 transition-colors"
                         onClick={onOpen}
                     >
                         Login

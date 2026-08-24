@@ -1,9 +1,25 @@
 // src/features/flights/context/CompareContext.jsx
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useReducer, useEffect } from "react";
 
 const CompareContext = createContext(null);
 
 const MAX_COMPARE = 3;
+const STORAGE_KEY = "skyvoo_compare_flights";
+
+function loadInitialState() {
+    try {
+        const raw = sessionStorage.getItem(STORAGE_KEY);
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed?.selectedFlights)) {
+                return parsed;
+            }
+        }
+    } catch (e) {
+        console.error("Failed to load compare flights from sessionStorage", e);
+    }
+    return { selectedFlights: [] };
+}
 
 const initialState = {
     selectedFlights: [],
@@ -44,7 +60,15 @@ function reducer(state, action) {
 }
 
 export function CompareProvider({ children }) {
-    const [state, dispatch] = useReducer(reducer, initialState);
+    const [state, dispatch] = useReducer(reducer, null, loadInitialState);
+
+    useEffect(() => {
+        try {
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+            console.error("Failed to save compare flights to sessionStorage", e);
+        }
+    }, [state]);
 
     return (
         <CompareContext.Provider value={{ state, dispatch }}>
@@ -60,3 +84,4 @@ export function useCompareFlights() {
     }
     return context;
 }
+

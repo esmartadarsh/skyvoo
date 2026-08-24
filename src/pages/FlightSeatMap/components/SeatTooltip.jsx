@@ -2,6 +2,7 @@ import React from 'react'
 import { SSRTypes } from '../../../Data/ExtraData';
 
 const SeatTooltip = ({ seat, position }) => {
+
     const seatSSRTypes = Array.isArray(seat.SSRType)
         ? seat.SSRType.map(t => SSRTypes[t] || 'Unknown')
         : [SSRTypes[seat.SSRType] || 'Unknown'];
@@ -25,10 +26,10 @@ const SeatTooltip = ({ seat, position }) => {
                 </div>
 
                 {/* Class Type */}
-                <div className="mb-2">
+                {/* <div className="mb-2">
                     <span className="font-semibold text-gray-700">Class:</span>
                     <span className="ml-1 font-medium text-gray-900">{seat.classType}</span>
-                </div>
+                </div> */}
 
                 {/* Price */}
                 <div className="mb-2">
@@ -37,12 +38,12 @@ const SeatTooltip = ({ seat, position }) => {
                 </div>
 
                 {/* SSR Types */}
-                <div className="mb-2">
+                {/* <div className="mb-2">
                     <span className="font-semibold text-gray-700">SSR Types:</span>
                     <div className="ml-1 mt-1 max-h-16 overflow-y-auto text-gray-800">
                         {seatSSRTypes.join(', ')}
                     </div>
-                </div>
+                </div> */}
 
                 {/* Status */}
                 <div>

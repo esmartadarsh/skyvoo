@@ -27,7 +27,7 @@ export function useFilteredFlights({ flights, filters, sorting }) {
 
             const lowestFare = flight.AirlineMinNetPrice || 0;
 
-            const stopsCount = flight.Airlinestops || 0;
+            const stopsCount = flight.AirlineStops || 0;
 
             const depHour = Number(flight.DepartureTime?.split(":")[0]) || 0;
 
@@ -82,7 +82,7 @@ export function useFilteredFlights({ flights, filters, sorting }) {
                 break;
 
             case "NONSTOP":
-                sorted.sort((a, b) => a.Airlinestops - b.Airlinestops);
+                sorted.sort((a, b) => a.AirlineStops - b.AirlineStops);
                 break;
 
             case "EARLY_DEPARTURE":

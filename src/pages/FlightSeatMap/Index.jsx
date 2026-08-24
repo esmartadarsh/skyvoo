@@ -1,38 +1,142 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { Plus, LogOut, ChevronRight } from 'lucide-react';
-import AirlineLogo from '@/assets/imgs/airlinelogo.webp'
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useMemo, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Plus, LogOut, ChevronRight, PlaneTakeoff, PlaneLanding, ArrowRight, X } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import SeatGrid from './components/SeatGrid.jsx';
 import SummaryPanel from './components/SummaryPanel.jsx';
-import ServicePanel from './components/ServicePanel.jsx';
 import { SSRTypes, seatLetters } from '../../Data/ExtraData.js';
-import SeatMapData from '../../Data/SeatMapData.js';
 import { useSeatSelection } from "../../hooks/useSeatSelection.js";
 import SeatTooltip from './components/SeatTooltip.jsx';
 import Modal from '@/components/modals/Modal.jsx';
+import { bookingStore } from '@/store/bookingStore.js';
+import api from '@/services/api.js';
+import { getAirlineLogo } from "@/utils/airlineCode";
 
-const FlightSeatMap = ({ onClose }) => {
 
-    useEffect(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    }, []);
+const legendItems = [
+    { label: "Available", color: "border-2 border-[#16a249] " },
+    { label: "Selected", color: "border-2 border-[#07A3CE] shadow-md" },
+    { label: "Booked", color: " border-2 border-[#B11515] text-gray-500" },
+    { label: "Blocked", color: "border-2 border-[#B11515] text-gray-500" },
+    {
+        label: "Extra Legroom",
+        color: "border-2 border-[#16a249] relative",
+        icon: <Plus className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
+    },
+    {
+        label: "Exit Row",
+        color: "border-2 border-[#16a249] relative",
+        icon: <LogOut className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
+    },
+]
 
-    const legendItems = useMemo(() => [
-        { label: "Available", color: "border-2 border-[#16a249] " },
-        { label: "Selected", color: "border-2 border-[#07A3CE] shadow-md" },
-        { label: "Booked", color: " border-2 border-[#B11515] text-gray-500" },
-        { label: "Blocked", color: "border-2 border-[#B11515] text-gray-500" },
-        {
-            label: "Extra Legroom",
-            color: "border-2 border-[#16a249] relative",
-            icon: <Plus className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
+/** Parse SeatInfo array into { processedRows, seatMap } */
+const parseSeatInfo = (rawSeatInfo) => {
+    if (!Array.isArray(rawSeatInfo) || rawSeatInfo.length === 0) {
+        return { processedRows: [], seatMap: {} };
+    }
+
+    const rowMap = {};
+    rawSeatInfo.forEach((s) => {
+        if (s.IsNoSeat) return;
+
+        const match = s.SeatNo?.match(/^(\d+)([A-Z]+)$/i);
+        const rowNum = match
+            ? parseInt(match[1], 10)
+            : (s.SeatPosition?.Row || parseInt(s.RowNumber, 10) || 1);
+        const letter = match
+            ? match[2].toUpperCase()
+            : (typeof s.SeatPosition?.Column === 'string'
+                ? s.SeatPosition.Column.toUpperCase()
+                : (s.SeatCode?.replace(/\d/g, '') || 'A'));
+
+        if (!rowMap[rowNum]) {
+            rowMap[rowNum] = { rowNumber: rowNum, seats: [] };
+        }
+
+        const isBooked = Boolean(s.IsBooked);
+        const isBlocked = Boolean(s.IsBlocked);
+        const isAvailable = s.IsAvailable !== undefined
+            ? Boolean(s.IsAvailable)
+            : (!isBooked && !isBlocked);
+        const isExtraLegroom = Boolean(s.IsLegroom || s.IsExtraLegroom);
+        const isExitRow = Boolean(s.IsExit || s.IsEmergencyExit || s.IsExitRow);
+        const price = Number(s.Amount || s.Price || s.Total_Amount || s.SeatAmount || 0);
+        const currency = s.Currency || s.CurrencyCode || 'INR';
+
+        rowMap[rowNum].seats.push({
+            number: s.SeatNo || s.SeatCode,
+            letter,
+            price,
+            currency,
+            isAvailable,
+            isBooked,
+            isBlocked,
+            isIsle: Boolean(s.IsAisle),
+            isWindow: Boolean(s.IsWindow),
+            rowNumber: rowNum,
+            classType: s.SeatClass || s.CabinClass || (rowNum < 3 ? 'Business' : rowNum < 10 ? 'Premium Economy' : 'Economy'),
+            isExtraLegroom,
+            isExitRow,
+            raw: s,
+        });
+    });
+
+    const rows = Object.values(rowMap).sort((a, b) => a.rowNumber - b.rowNumber);
+    const seatLookup = Object.fromEntries(
+        rows.flatMap((row) => row.seats.map((seat) => [seat.number, seat]))
+    );
+    return { processedRows: rows, seatMap: seatLookup };
+};
+
+const FlightSeatMap = ({ onClose, flightLegs, onSeatsContinue }) => {
+
+    const navigate = useNavigate();
+    const bookingData = bookingStore.get();
+
+    const flightKeys = bookingData.flightKeyList;
+    const flightId = bookingData.flightId;
+
+    // Index of the currently shown flight leg (for connecting flights)
+    const [activeFlightIndex, setActiveFlightIndex] = useState(0);
+
+    const {
+        data: apiSeatMapData,
+        isLoading: loadingSeatMap,
+        error: seatMapError,
+    } = useQuery({
+        queryKey: ["seatMap", flightId, flightKeys],
+        queryFn: async () => {
+            const payload = {
+                FlightKeys: Array.isArray(flightKeys) ? flightKeys : [flightKeys],
+                FlightId: flightId,
+            };
+            const res = await api.post("/flight/GetSeatMap", payload);
+            if (!res.data?.IsSuccess) {
+                throw new Error(res.data?.ErrorMessage || "Failed to fetch seat map.");
+            }
+
+            const rawData = res.data?.Data;
+
+            // Handle empty string, null or undefined response Data
+            if (!rawData || (typeof rawData === "string" && !rawData.trim())) {
+                return null;
+            }
+
+            if (typeof rawData === "object") {
+                return rawData;
+            }
+
+            try {
+                return JSON.parse(rawData);
+            } catch (err) {
+                console.error("Failed to parse seat map data:", err);
+                return null;
+            }
         },
-        {
-            label: "Exit Row",
-            color: "border-2 border-[#16a249] relative",
-            icon: <LogOut className="absolute -top-1 -right-1 w-3 h-3 text-white bg-indigo-800 rounded-full p-[1px]" />
-        },
-    ], []);
+        enabled: Boolean(flightId || (Array.isArray(flightKeys) && flightKeys.length > 0)),
+    });
+
 
     const [tooltipData, setTooltipData] = useState(null);
     const [selectedServices, setSelectedServices] = useState([]);
@@ -40,58 +144,111 @@ const FlightSeatMap = ({ onClose }) => {
     const [openSummaryModal, setOpenSummaryModal] = useState(false);
     const [openServiceModal, setOpenServiceModal] = useState(false);
 
-    const seatData = useMemo(
-        () => SeatMapData.AirSeatMaps[0].Seat_Segments[0].Seat_Row,
-        []
+    // ── Detect connecting flights ─────────────────────────────────────────────
+    const tripSeats = useMemo(() => {
+        return apiSeatMapData?.TripSeatMap?.TripSeat || null;
+    }, [apiSeatMapData]);
+
+    const isConnecting = useMemo(
+        () => Boolean(tripSeats && Object.keys(tripSeats).length > 1),
+        [tripSeats]
     );
 
-    const navigate = useNavigate();
+    // ── Old seatData path (non-TripSeat format) ───────────────────────────────
+    const seatData = useMemo(() => {
+        if (apiSeatMapData) {
+            const rows =
+                apiSeatMapData?.AirSeatMaps?.[0]?.Seat_Segments?.[0]?.Seat_Row ||
+                apiSeatMapData?.Seat_Segments?.[0]?.Seat_Row ||
+                apiSeatMapData?.Seat_Row ||
+                apiSeatMapData?.TripInfo?.[0]?.Seat_Row;
+            if (Array.isArray(rows) && rows.length > 0) return rows;
+        }
+        return [];
+    }, [apiSeatMapData]);
 
-    const AllTravellers = useMemo(() => ({
-        Adults: 1,
-        Childs: 1,
-        Infants: 0,
-    }), []);
+    const totalTravellers = useMemo(() => {
+        const { totalSeatCount, passengers, travellers } = bookingData || {};
 
-    const { Adults, Childs } = AllTravellers;
+        // Prefer the explicit count stored by ReviewDetails (Adults + Childs from API, no Infants)
+        if (totalSeatCount && totalSeatCount > 0) return totalSeatCount;
 
-    const totalTravellers = Adults + Childs;
+        // Fallback: count from filled-in passenger form entries (Childs only, no Infants)
+        if (passengers) {
+            const adultCount = passengers.Adults?.length || 0;
+            const childCount = passengers.Childs?.length || 0;
+            const count = adultCount + childCount;
+            if (count > 0) return count;
+        }
+
+        // Fallback: search params / older store shape
+        if (travellers) {
+            const count = (Number(travellers.adults) || 0) + (Number(travellers.children) || 0);
+            if (count > 0) return count;
+        }
+        return 1;
+    }, [bookingData]);
+
     const { selectedSeats, handleSeatClick } = useSeatSelection(totalTravellers);
+
+    // ── Build processedRows / seatMap for the ACTIVE flight leg ──────────────
     const { processedRows, seatMap } = useMemo(() => {
-        const rows = seatData.map((row, idx) => {
-            const seats = row.Seat_Details.map(seat => {
-                const isAvailable = seat.SSR_Status === 1;
-                const isBlocked = seat.SSR_Status === 2;
-                const isBooked = seat.SSR_Status === 3;
-                const isIsle = seat.SSR_Status === 0;
-                const isExtraLegroom = seat.SSR_TypeDesc.includes("XL");
-                const isExitRow = seat.SSR_TypeDesc.includes("EXIT");
-                const seatLetter = seat.SSR_TypeName.match(/[A-Z]+/i)?.[0] || seat.SSR_TypeName;
-                return {
-                    number: seat.SSR_TypeName,
-                    letter: seatLetter,
-                    price: seat.Total_Amount,
-                    currency: seat.Currency_Code,
-                    isAvailable,
-                    isBooked,
-                    isBlocked,
-                    isIsle,
-                    rowNumber: idx + 1,
-                    classType: idx < 3 ? 'Premium' : idx < 13 ? 'Standard' : 'Economy',
-                    isExtraLegroom,
-                    isExitRow,
-                    SSRType: seat.SSR_Type
-                };
+        // --- TripSeatMap format (single OR connecting) ---
+        if (tripSeats && Object.keys(tripSeats).length > 0) {
+            const tripSeatKeys = Object.keys(tripSeats);
+
+            const idx = Math.min(activeFlightIndex, tripSeatKeys.length - 1);
+            const seat = tripSeats[tripSeatKeys[idx]];
+
+            const rawSeatInfo =
+                seat?.SeatInfo ||
+                seat?.SeatData?.SeatInfo ||
+                seat?.Seat_Row;
+
+            if (Array.isArray(rawSeatInfo) && rawSeatInfo.length > 0) {
+                return parseSeatInfo(rawSeatInfo);
+            }
+        }
+
+        // --- Alternative Seat_Row / Seat_Details format ---
+        const altRows = seatData || [];
+        if (altRows.length > 0) {
+            const rows = altRows.map((row, idx) => {
+                const rowNum = row.RowNo ? parseInt(row.RowNo, 10) : idx + 1;
+                const seats = (row.Seat_Details || []).map((seat) => {
+                    const isAvailable = seat.SSR_Status === 1;
+                    const isBlocked = seat.SSR_Status === 2;
+                    const isBooked = seat.SSR_Status === 3;
+                    const isIsle = seat.SSR_Status === 0;
+                    const isExtraLegroom = seat.SSR_TypeDesc?.includes('XL') || false;
+                    const isExitRow = seat.SSR_TypeDesc?.includes('EXIT') || false;
+                    const seatLetter = seat.SSR_TypeName?.match(/[A-Z]+/i)?.[0] || seat.SSR_TypeName;
+                    return {
+                        number: seat.SSR_TypeName,
+                        letter: seatLetter,
+                        price: Number(seat.Total_Amount || seat.Amount || 0),
+                        currency: seat.Currency_Code || 'INR',
+                        isAvailable,
+                        isBooked,
+                        isBlocked,
+                        isIsle,
+                        rowNumber: rowNum,
+                        classType: seat.SSR_TypeDesc || (idx < 3 ? 'Business' : idx < 10 ? 'Premium Economy' : 'Economy'),
+                        isExtraLegroom,
+                        isExitRow,
+                        SSRType: seat.SSR_Type,
+                    };
+                });
+                return { rowNumber: rowNum, seats };
             });
-            return { rowNumber: idx + 1, seats };
-        });
+            const seatLookup = Object.fromEntries(
+                rows.flatMap((row) => row.seats.map((seat) => [seat.number, seat]))
+            );
+            return { processedRows: rows, seatMap: seatLookup };
+        }
 
-        const seatLookup = Object.fromEntries(
-            rows.flatMap(row => row.seats.map(seat => [seat.number, seat]))
-        );
-
-        return { processedRows: rows, seatMap: seatLookup };
-    }, [seatData]);
+        return { processedRows: [], seatMap: {} };
+    }, [apiSeatMapData, seatData, tripSeats, activeFlightIndex]);
 
     const totalAmount =
         Array.from(selectedSeats).reduce(
@@ -169,9 +326,76 @@ const FlightSeatMap = ({ onClose }) => {
         setSelectedServices((prev) => prev.filter((s) => s.code !== code));
     };
 
+    // ── Connecting-flight tab label helper ────────────────────────────────────
+    const getFlightTabLabel = (idx) => {
+        // Prefer real data from flightLegs prop
+        if (Array.isArray(flightLegs) && flightLegs[idx]) {
+            const leg = flightLegs[idx];
+            const dep = leg.AirlineDeparture?.code || leg.AirlineDeparture?.cityCode || '';
+            const arr = leg.AirlineArrival?.code || leg.AirlineArrival?.cityCode || '';
+            if (dep && arr) return `${dep} → ${arr}`;
+            if (dep) return dep;
+        }
+        // Fallback to TripSeat object keys
+        const leg = tripSeats?.[idx];
+        const dep = leg?.Origin || leg?.DepartureCode || leg?.From || `Flight ${idx + 1}`;
+        const arr = leg?.Destination || leg?.ArrivalCode || leg?.To || '';
+        if (arr) return `${dep} → ${arr}`;
+        return `Leg ${idx + 1}: ${dep}`;
+    };
+
+    const flightSummary = useMemo(() => {
+        // If real flight leg data was passed in, use it directly
+        if (Array.isArray(flightLegs) && flightLegs.length > 0) {
+            const leg = flightLegs[activeFlightIndex] || flightLegs[0];
+            return {
+                airlineName: leg.AirlineName || '',
+                airlineCode: leg.AirlineCode || '',
+                airlineLogoCode: leg.AirlineLogo || leg.AirlineCode || '',
+                flightNo: leg.FlightNo || '',
+                craft: leg.Equipment || leg.Craft || '',
+                depCode: leg.AirlineDeparture?.code || leg.AirlineDeparture?.cityCode || '',
+                depCity: leg.AirlineDeparture?.city || '',
+                depTime: leg.DepartureTime || '',
+                depDate: leg.DepartureDate || '',
+                arrCode: leg.AirlineArrival?.code || leg.AirlineArrival?.cityCode || '',
+                arrCity: leg.AirlineArrival?.city || '',
+                arrTime: leg.ArrivalTime || '',
+                arrDate: leg.ArrivalDate || '',
+                duration: leg.AirlineDuration || '',
+                stops: leg.Stops ?? null,
+            };
+        }
+
+        const storeSummary = bookingData?.flightSummary || location.state?.flightSummary;
+        if (storeSummary) return storeSummary;
+
+        const flight = bookingData?.flight || bookingData?.outboundFlight;
+        if (flight) {
+            const logoArray = Array.isArray(flight.AirlineLogo) ? flight.AirlineLogo : [flight.AirlineLogo].filter(Boolean);
+            const dep = flight.AirlineDeparture || {};
+            const arr = flight.AirlineArrival || {};
+            return {
+                airlineName: flight.AirlineName || '',
+                airlineCode: flight.AirlineCodeAndId || flight.AirlineCode || '',
+                airlineLogoCode: logoArray[0] || flight.AirlineCode || '',
+                flightNo: flight.FlightNumber || flight.FlightNo || '',
+                craft: flight.Equipment || flight.Craft || flight.AirlineCraft || '',
+                depCode: dep.code || flight.DepartureAirportCode || flight.Origin || '',
+                depCity: dep.city || '',
+                depTime: flight.DepartureTime || dep.time || '',
+                arrCode: arr.code || flight.ArrivalAirportCode || flight.Destination || '',
+                arrCity: arr.city || '',
+                arrTime: flight.ArrivalTime || arr.time || '',
+                duration: flight.AirlineDuration || flight.Duration || '',
+            };
+        }
+
+        return {};
+    }, [bookingData, location.state, flightLegs, activeFlightIndex]);
+
     return (
         <>
-
             <Modal
                 open={openSummaryModal}
                 onClose={() => setOpenSummaryModal(false)}
@@ -184,31 +408,32 @@ const FlightSeatMap = ({ onClose }) => {
                     selectedServices={selectedServices}
                     onRemoveService={handleRemoveService}
                     totalAmount={totalAmount}
-                    onContinue={() =>
-                        navigate("/payment", {
-                            state: { selectedSeats, selectedServices },
-                        })
-                    }
+                    hasSeatsAvailable={processedRows.length > 0}
+                    onContinue={() => {
+                        if (onSeatsContinue) {
+                            onSeatsContinue({ selectedSeats, selectedServices, totalAmount });
+                        } else {
+                            navigate("/payment", { state: { selectedSeats, selectedServices } });
+                        }
+                    }}
                 />
             </Modal>
 
-            <Modal
-                open={openServiceModal}
-                onClose={() => setOpenServiceModal(false)}
-                title="Special Services"
-            >
-                <ServicePanel setSelectedServices={setSelectedServices} />
-            </Modal>
+
 
 
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9998]"
                 onClick={() => {
                     if (!openSummaryModal && !openServiceModal) {
-                        onClose();
+                        if (onClose) onClose();
+                        else navigate(-1);
                     }
                 }}
                 style={{ animation: "fadeIn 0.3s ease-out forwards" }}>
-                <div className="bg-white w-full max-w-7xl h-full xs:max-h-[90vh] overflow-y-auto rounded-none sm:rounded-sm shadow-xl relative" onClick={(e) => e.stopPropagation()}>
+                <div
+                    className="bg-white w-full max-w-7xl h-full xs:max-h-[90vh] overflow-y-auto rounded-none sm:rounded-sm shadow-xl relative custom-scrollbar"
+                    onClick={(e) => e.stopPropagation()}
+                >
 
                     <div className="min-h-screen pb-20 lg:pb-0">
 
@@ -257,7 +482,13 @@ const FlightSeatMap = ({ onClose }) => {
                                 <button
                                     type="button"
                                     className="bg-[#D9D9D9] text-[#78080B] font-semibold px-6 py-3 rounded-full flex items-center gap-2"
-                                    onClick={() => setOpenSummaryModal(true)}
+                                    onClick={() => {
+                                        if (onSeatsContinue) {
+                                            onSeatsContinue({ selectedSeats, selectedServices, totalAmount });
+                                        } else {
+                                            setOpenSummaryModal(true);
+                                        }
+                                    }}
                                 >
                                     CONTINUE
                                     <ChevronRight className="w-5 h-5" />
@@ -267,15 +498,39 @@ const FlightSeatMap = ({ onClose }) => {
                         </div>
 
                         {/* Header */}
-                        <div className='bg-[#f1f0f29e] shadow-sm  rounded-b-4xl border border-2 border-[#920000]'>
+                        <div className='bg-[#f1f0f29e] shadow-sm rounded-b-4xl border border-2 border-[#920000] relative'>
+                            {/* Close Button */}
+                            {/* <button
+                                type="button"
+                                onClick={() => {
+                                    if (onClose) onClose();
+                                    else navigate(-1);
+                                }}
+                                aria-label="Close"
+                                className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-200/60 transition z-10"
+                            >
+                                <X className="w-5 h-5" />
+                            </button> */}
+
                             <div className="p-4 flex flex-col gap-4 xs:flex-row xs:justify-between sm:items-center max-w-7xl mx-auto">
 
                                 {/* Flight Info */}
                                 <div className="flex items-center justify-center gap-3">
-                                    <img src={AirlineLogo} className="w-10 h-10 sm:w-12 sm:h-12" />
+                                    {flightSummary.airlineLogoCode && (
+                                        <img
+                                            src={getAirlineLogo(flightSummary.airlineLogoCode)}
+                                            alt={flightSummary.airlineName}
+                                            className="rounded-full w-9 h-9 xs:w-10 xs:h-10"
+                                        />
+                                    )}
                                     <div>
-                                        <h2 className="text-lg sm:text-xl font-bold text-gray-800">AI 304</h2>
-                                        <p className="text-xs sm:text-sm text-gray-500">Airbus A320</p>
+                                        <h2 className="text-lg sm:text-xl font-bold text-gray-800">
+                                            {flightSummary.airlineName || flightSummary.airlineCode}
+                                        </h2>
+                                        <p className="text-xs sm:text-sm text-gray-500">
+                                            {[flightSummary.airlineCode, flightSummary.flightNo].filter(Boolean).join(' ')}
+                                            {flightSummary.craft ? ` · ${flightSummary.craft}` : ''}
+                                        </p>
                                     </div>
                                 </div>
 
@@ -284,8 +539,9 @@ const FlightSeatMap = ({ onClose }) => {
                                     {/* From */}
                                     <div className="flex flex-col items-center">
                                         <p className="text-sm text-gray-500">From</p>
-                                        <p className="text-lg font-semibold text-gray-800">DEL</p>
-                                        <p className="text-xs text-gray-400">14:30</p>
+                                        <p className="text-lg font-semibold text-gray-800">{flightSummary.depCode}</p>
+                                        {flightSummary.depCity && <p className="text-xs text-gray-400">{flightSummary.depCity}</p>}
+                                        <p className="text-xs text-gray-400">{flightSummary.depTime}</p>
                                     </div>
 
                                     {/* Divider */}
@@ -293,7 +549,8 @@ const FlightSeatMap = ({ onClose }) => {
 
                                     {/* Duration */}
                                     <div className="text-center text-gray-600">
-                                        <p className="text-sm">2h 15m</p>
+                                        <p className="text-sm font-medium">{flightSummary.duration}</p>
+                                        {flightSummary.stops === 0 && <p className="text-xs text-green-600">Non-stop</p>}
                                     </div>
 
                                     {/* Divider */}
@@ -302,22 +559,81 @@ const FlightSeatMap = ({ onClose }) => {
                                     {/* To */}
                                     <div className="flex flex-col items-center">
                                         <p className="text-sm text-gray-500">To</p>
-                                        <p className="text-lg font-semibold text-gray-800">BOM</p>
-                                        <p className="text-xs text-gray-400">16:45</p>
+                                        <p className="text-lg font-semibold text-gray-800">{flightSummary.arrCode}</p>
+                                        {flightSummary.arrCity && <p className="text-xs text-gray-400">{flightSummary.arrCity}</p>}
+                                        <p className="text-xs text-gray-400">{flightSummary.arrTime}</p>
                                     </div>
                                 </div>
 
                             </div>
+
+                            {/* ── Connecting-flight segment switcher tabs ────────────────── */}
+                            {isConnecting && (
+                                <div className="border-t border-[#92000040] px-4 pb-3 pt-2 max-w-7xl mx-auto">
+                                    <p className="text-xs text-[#920000] font-semibold mb-2 flex items-center gap-1">
+                                        <PlaneTakeoff className="w-3.5 h-3.5" />
+                                        Connecting Flight — select seats for each leg
+                                    </p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {Object.keys(tripSeats).map((key, idx) => {
+                                            const leg = flightLegs?.[idx] || tripSeats[key];
+                                            const isActive = activeFlightIndex === idx;
+                                            const depCode = leg?.AirlineDeparture?.code || leg?.AirlineDeparture?.cityCode || leg?.Origin || leg?.From || `Leg ${idx + 1}`;
+                                            const arrCode = leg?.AirlineArrival?.code || leg?.AirlineArrival?.cityCode || leg?.Destination || leg?.To || '';
+                                            const airline = leg?.AirlineName || leg?.AirlineCode || '';
+                                            const flightNo = leg?.FlightNo || '';
+                                            const depTime = leg?.DepartureTime || '';
+                                            const arrTime = leg?.ArrivalTime || '';
+                                            return (
+                                                <button
+                                                    key={key}
+                                                    type="button"
+                                                    id={`flight-leg-tab-${idx}`}
+                                                    onClick={() => setActiveFlightIndex(idx)}
+                                                    className={`relative flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border-2 transition-all duration-200
+                                                        ${isActive
+                                                            ? 'bg-[#920000] text-white border-[#920000] shadow-md scale-105'
+                                                            : 'bg-white text-gray-700 border-gray-300 hover:border-[#920000] hover:text-[#920000]'
+                                                        }
+                                                    `}
+                                                >
+                                                    <span className={`flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold
+                                                        ${isActive ? 'bg-white text-[#920000]' : 'bg-gray-100 text-gray-600'}`}
+                                                    >
+                                                        {idx + 1}
+                                                    </span>
+                                                    <span className="flex flex-col items-start leading-tight">
+                                                        <span className="flex items-center gap-1 font-semibold">
+                                                            {depCode}
+                                                            {arrCode && <><ArrowRight className="w-3 h-3 opacity-60" />{arrCode}</>}
+                                                        </span>
+                                                        {(airline || flightNo || depTime) && (
+                                                            <span className={`text-[10px] ${isActive ? 'text-white/80' : 'text-gray-400'}`}>
+                                                                {[airline, flightNo].filter(Boolean).join(' ')}
+                                                                {depTime && arrTime ? ` · ${depTime}–${arrTime}` : depTime ? ` · ${depTime}` : ''}
+                                                            </span>
+                                                        )}
+                                                    </span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <div className="max-w-7xl mx-2 sm:mx-4 my-2">
                             {/* Header */}
                             <div className="text-start my-6">
                                 <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
-                                    Select Your Seat
+                                    {isConnecting
+                                        ? `Select Seat — ${getFlightTabLabel(activeFlightIndex)}`
+                                        : 'Select Your Seat'}
                                 </h1>
                                 <p className="text-sm sm:text-md text-gray-600">
-                                    Choose your preferred seats
+                                    {isConnecting
+                                        ? `Leg ${activeFlightIndex + 1} of ${Object.keys(tripSeats).length} — select ${totalTravellers} seat${totalTravellers > 1 ? 's' : ''}`
+                                        : `Select ${totalTravellers} seat${totalTravellers > 1 ? 's' : ''} (${selectedSeats.size}/${totalTravellers} selected)`}
                                 </p>
 
                             </div>
@@ -326,33 +642,85 @@ const FlightSeatMap = ({ onClose }) => {
 
                                 <div className='lg:col-span-7 flex flex-col '>
 
-                                    <div className="bg-[#f1f0f29e] shadow-sm rounded-3xl xs:rounded-2xl border border-2 border-[#920000] p-4 mb-5">
-                                        <h3 className="text-lg font-bold text-gray-800 mb-4">Legend</h3>
-                                        <div className="flex flex-wrap gap-4">
-                                            {legendItems.map((item) => (
-                                                <div key={item.label} className="flex items-center">
-                                                    <div className={`w-6 h-6 sm:w-7 sm:h-7 mr-2 rounded-md flex items-center justify-center relative ${item.color}`}>
-                                                        {item.icon}
+                                    {processedRows.length > 0 && (
+                                        <div className="bg-[#f1f0f29e] shadow-sm rounded-3xl xs:rounded-2xl border border-2 border-[#920000] p-4 mb-5">
+                                            <h3 className="text-lg font-bold text-gray-800 mb-4">Legend</h3>
+                                            <div className="flex flex-wrap gap-4">
+                                                {legendItems.map((item) => (
+                                                    <div key={item.label} className="flex items-center">
+                                                        <div className={`w-6 h-6 sm:w-7 sm:h-7 mr-2 rounded-md flex items-center justify-center relative ${item.color}`}>
+                                                            {item.icon}
+                                                        </div>
+                                                        <span className="text-sm text-gray-700">{item.label}</span>
                                                     </div>
-                                                    <span className="text-sm text-gray-700">{item.label}</span>
-                                                </div>
-                                            ))}
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
 
                                     {/* Seat Map */}
                                     <div className="pb-4">
-                                        <SeatGrid
-                                            processedRows={processedRows}
-                                            seatLetters={seatLetters}
-                                            selectedSeats={selectedSeats}
-                                            seatMap={seatMap}
-                                            getSeatVisual={getSeatVisual}
-                                            onSeatClick={handleSeatClick}
-                                            onSeatHover={handleSeatMouseEnter}
-                                            onSeatLeave={handleSeatMouseLeave}
-                                        />
+                                        {loadingSeatMap ? (
+                                            <div className="flex justify-center items-center py-20">
+                                                <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#920000] border-t-transparent"></div>
+                                                <span className="ml-3 text-gray-600 text-sm">Loading seat map...</span>
+                                            </div>
+                                        ) : seatMapError ? (
+                                            <div className="text-center py-16 text-red-600">
+                                                <p className="font-semibold text-lg">Failed to load seat map.</p>
+                                                <p className="text-sm text-gray-500 mt-1">{seatMapError.message}</p>
+                                            </div>
+                                        ) : processedRows.length === 0 ? (
+                                            <div className="text-center py-16 px-4 text-gray-500 flex flex-col items-center justify-center bg-gray-50/70 rounded-2xl border border-gray-200">
+                                                <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-4 text-[#920000]">
+                                                    <PlaneTakeoff className="w-8 h-8" />
+                                                </div>
+                                                <p className="font-bold text-lg text-gray-800">No seat map available for this flight.</p>
+                                                <p className="text-sm text-gray-500 mt-1.5 max-w-md">
+                                                    Seat selection is not available for this flight. You can proceed directly or your seats will be assigned at airport check-in.
+                                                </p>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        if (onSeatsContinue) {
+                                                            onSeatsContinue({ selectedSeats, selectedServices, totalAmount });
+                                                        } else if (onClose) {
+                                                            onClose();
+                                                        } else {
+                                                            navigate(-1);
+                                                        }
+                                                    }}
+                                                    className="mt-6 px-6 py-2.5 bg-[#920000] text-white rounded-lg font-medium hover:bg-[#780000] transition-colors shadow-sm cursor-pointer"
+                                                >
+                                                    Continue Without Seat Selection
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <SeatGrid
+                                                processedRows={processedRows}
+                                                seatLetters={seatLetters}
+                                                selectedSeats={selectedSeats}
+                                                seatMap={seatMap}
+                                                getSeatVisual={getSeatVisual}
+                                                onSeatClick={handleSeatClick}
+                                                onSeatHover={handleSeatMouseEnter}
+                                                onSeatLeave={handleSeatMouseLeave}
+                                            />
+                                        )}
                                     </div>
+
+                                    {/* Connecting flight — next leg nudge */}
+                                    {isConnecting && activeFlightIndex < Object.keys(tripSeats).length - 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveFlightIndex(activeFlightIndex + 1)}
+                                            className="mt-2 mb-6 mx-auto flex items-center gap-2 px-6 py-3 rounded-full bg-[#920000] text-white font-semibold text-sm shadow hover:bg-[#780000] transition-all"
+                                        >
+                                            <PlaneLanding className="w-4 h-4" />
+                                            Next: Select seat for Leg {activeFlightIndex + 2}
+                                            <ChevronRight className="w-4 h-4" />
+                                        </button>
+                                    )}
 
                                 </div>
 
@@ -368,22 +736,23 @@ const FlightSeatMap = ({ onClose }) => {
                                             selectedServices={selectedServices}
                                             onRemoveService={handleRemoveService}
                                             totalAmount={totalAmount}
+                                            hasSeatsAvailable={processedRows.length > 0}
                                             onContinue={() => {
                                                 setOpenSummaryModal(false);
-                                                navigate("/payment", { state: { selectedSeats, selectedServices } });
+                                                if (onSeatsContinue) {
+                                                    onSeatsContinue({ selectedSeats, selectedServices, totalAmount });
+                                                } else {
+                                                    navigate("/payment", { state: { selectedSeats, selectedServices } });
+                                                }
                                             }}
                                         />
                                     </div>
-
-                                    {/* Service Panel */}
-                                    <ServicePanel
-                                        setSelectedServices={setSelectedServices}
-                                    />
 
                                 </div>
 
                             </div>
                         </div>
+
                         {tooltipData && window.innerWidth > 768 && (
                             <SeatTooltip seat={tooltipData.seat} position={tooltipData.pos} />
                         )}
@@ -396,6 +765,7 @@ const FlightSeatMap = ({ onClose }) => {
                         >
                             <Plus className="w-6 h-6" />
                         </button>
+
                     </div >
 
                 </div>

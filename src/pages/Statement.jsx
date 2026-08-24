@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { Download, Search, Calendar, Filter, ChevronDown, X } from 'lucide-react';
-import Header from '@/components/layout/Header';
-import GrayFadedBg from '@/assets/imgs/grayfadedbg.webp'
 
 const mockData = [
     {
@@ -87,8 +85,6 @@ const mockData = [
 ];
 
 function Statement() {
-    const [activeTab, setActiveTab] = useState('wallet');
-    const [statementType, setStatementType] = useState('statement');
     const [selectedYear, setSelectedYear] = useState('2025');
     const [fromDate, setFromDate] = useState('2025-01-11');
     const [toDate, setToDate] = useState('2025-11-11');
