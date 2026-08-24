@@ -4,7 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import PageLoader from "@/components/layout/PageLoader";
 
-import Home from '@/pages/Home';
+import Home from '@/pages/Home/index';
 const FlightSearch = lazy(() => import('@/pages/FlightSearch'));
 const CompareFlights = lazy(() => import('@/pages/CompareFlights'));
 const ReviewDetails = lazy(() => import('@/pages/ReviewDetails'));
