@@ -18,6 +18,8 @@ const ComplaintRegister = lazy(() => import('@/pages/ComplaintRegister'));
 const Statement = lazy(() => import('@/pages/Statement'));
 const FlightReschedule = lazy(() => import('@/pages/FlightReschedule'));
 const FlightCancellation = lazy(() => import('@/pages/FlightCancellation'));
+const MyBookings = lazy(() => import('@/pages/MyBookings'));
+const BookingDetails = lazy(() => import('@/pages/BookingDetails'));
 
 import Layout from '@/components/layout/Layout';
 
@@ -42,6 +44,8 @@ export default function AppRoutes() {
                         <Route path="/statement" element={<Statement />} />
                         <Route path="/flight-reschedule" element={<FlightReschedule />} />
                         <Route path="/flight-cancellation" element={<FlightCancellation />} />
+                        <Route path="/my-bookings" element={<MyBookings />} />
+                        <Route path="/booking-details" element={<BookingDetails />} />
                     </Route>
 
                     {/* Without layout */}

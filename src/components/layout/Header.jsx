@@ -6,7 +6,7 @@ import Cabs from '@/assets/vectors/SidebarCab.svg';
 import Hotels from '@/assets/vectors/SidebarHotels.svg';
 import Bus from '@/assets/vectors/SidebarBus.svg';
 import { useNavigate } from 'react-router-dom';
-import Logo from '@/assets/imgs/logo.webp';
+import Logo from '@/assets/imgs/logo.png';
 import comingSoon from '@/assets/imgs/comingSoon.png';
 import { useAuth } from '@/contexts/AuthContext';
 

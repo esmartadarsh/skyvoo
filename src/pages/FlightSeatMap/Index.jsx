@@ -89,7 +89,7 @@ const parseSeatInfo = (rawSeatInfo) => {
     return { processedRows: rows, seatMap: seatLookup };
 };
 
-const FlightSeatMap = ({ onClose, flightLegs, onSeatsContinue }) => {
+const FlightSeatMap = ({ onClose, flightLegs, onSeatsContinue, initialSelectedSeats }) => {
 
     const navigate = useNavigate();
     const bookingData = bookingStore.get();
@@ -189,7 +189,9 @@ const FlightSeatMap = ({ onClose, flightLegs, onSeatsContinue }) => {
         return 1;
     }, [bookingData]);
 
-    const { selectedSeats, handleSeatClick } = useSeatSelection(totalTravellers);
+    // Restore previously selected seats when re-opening
+    const previouslySelected = initialSelectedSeats ?? bookingData.selectedSeats ?? [];
+    const { selectedSeats, handleSeatClick } = useSeatSelection(totalTravellers, previouslySelected);
 
     // ── Build processedRows / seatMap for the ACTIVE flight leg ──────────────
     const { processedRows, seatMap } = useMemo(() => {
@@ -411,7 +413,8 @@ const FlightSeatMap = ({ onClose, flightLegs, onSeatsContinue }) => {
                     hasSeatsAvailable={processedRows.length > 0}
                     onContinue={() => {
                         if (onSeatsContinue) {
-                            onSeatsContinue({ selectedSeats, selectedServices, totalAmount });
+                            const selectedSeatDetails = Array.from(selectedSeats).map((seatNum) => seatMap[seatNum]).filter(Boolean);
+                            onSeatsContinue({ selectedSeats, selectedServices, totalAmount, selectedSeatDetails });
                         } else {
                             navigate("/payment", { state: { selectedSeats, selectedServices } });
                         }
@@ -484,7 +487,8 @@ const FlightSeatMap = ({ onClose, flightLegs, onSeatsContinue }) => {
                                     className="bg-[#D9D9D9] text-[#78080B] font-semibold px-6 py-3 rounded-full flex items-center gap-2"
                                     onClick={() => {
                                         if (onSeatsContinue) {
-                                            onSeatsContinue({ selectedSeats, selectedServices, totalAmount });
+                                            const selectedSeatDetails = Array.from(selectedSeats).map((seatNum) => seatMap[seatNum]).filter(Boolean);
+                                            onSeatsContinue({ selectedSeats, selectedServices, totalAmount, selectedSeatDetails });
                                         } else {
                                             setOpenSummaryModal(true);
                                         }
@@ -683,7 +687,8 @@ const FlightSeatMap = ({ onClose, flightLegs, onSeatsContinue }) => {
                                                     type="button"
                                                     onClick={() => {
                                                         if (onSeatsContinue) {
-                                                            onSeatsContinue({ selectedSeats, selectedServices, totalAmount });
+                                                            const selectedSeatDetails = Array.from(selectedSeats).map((seatNum) => seatMap[seatNum]).filter(Boolean);
+                                                            onSeatsContinue({ selectedSeats, selectedServices, totalAmount, selectedSeatDetails });
                                                         } else if (onClose) {
                                                             onClose();
                                                         } else {
@@ -740,7 +745,8 @@ const FlightSeatMap = ({ onClose, flightLegs, onSeatsContinue }) => {
                                             onContinue={() => {
                                                 setOpenSummaryModal(false);
                                                 if (onSeatsContinue) {
-                                                    onSeatsContinue({ selectedSeats, selectedServices, totalAmount });
+                                                    const selectedSeatDetails = Array.from(selectedSeats).map((seatNum) => seatMap[seatNum]).filter(Boolean);
+                                                    onSeatsContinue({ selectedSeats, selectedServices, totalAmount, selectedSeatDetails });
                                                 } else {
                                                     navigate("/payment", { state: { selectedSeats, selectedServices } });
                                                 }

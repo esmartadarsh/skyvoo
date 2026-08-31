@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import { Briefcase, Plane, Check } from "lucide-react";
 
-const DEFAULT_BAGGAGE_OPTIONS = [
-  { SSRKey: "BAG_5KG", Code: "BAG5", Description: "5 KGs Extra Check-in Baggage", Amount: 1500, Weight: 5 },
-  { SSRKey: "BAG_10KG", Code: "BAG10", Description: "10 KGs Extra Check-in Baggage", Amount: 2800, Weight: 10 },
-  { SSRKey: "BAG_15KG", Code: "BAG15", Description: "15 KGs Extra Check-in Baggage", Amount: 4000, Weight: 15 },
-  { SSRKey: "BAG_20KG", Code: "BAG20", Description: "20 KGs Extra Check-in Baggage", Amount: 5200, Weight: 20 },
-];
+
 
 export default function BaggageModal({
   onClose,
@@ -16,9 +11,18 @@ export default function BaggageModal({
   initialSelectedBaggage = [],
   onSave,
 }) {
-  // Flatten all BaggageList entries from all segments
+  // Flatten all BaggageList entries from all segments and deduplicate
   const apiItems = baggageList.flatMap((seg) => seg.BaggageList ?? []);
-  const allItems = apiItems.length > 0 ? apiItems : DEFAULT_BAGGAGE_OPTIONS;
+  const uniqueApiItems = [];
+  const seenIds = new Set();
+  apiItems.forEach(item => {
+    const id = item.SSRKey || item.Code || item.Description;
+    if (id && !seenIds.has(id)) {
+      seenIds.add(id);
+      uniqueApiItems.push(item);
+    }
+  });
+  const allItems = uniqueApiItems.length > 0 ? uniqueApiItems : [];
 
   const [selectedItems, setSelectedItems] = useState(initialSelectedBaggage || []);
 

@@ -26,7 +26,7 @@ export default function SignInModal({ onClose }) {
         setLoading(true);
         try {
             const data = await loginUser({ username, password });
-            const authResponse = data?.authResponse;
+            const authResponse = data;
 
             if (authResponse?.Status === "SUCCESS" && authResponse?.Token) {
                 login(authResponse);   // saves to localStorage + context

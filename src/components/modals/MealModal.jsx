@@ -10,11 +10,22 @@ export default function MealModal({
   onSave,
 }) {
 
-  // Flatten all MealList / MealDynamic entries from all segments
+  // Flatten all MealList / MealDynamic entries from all segments and deduplicate
   const apiItems = mealList.flatMap(
     (seg) => seg.MealList ?? seg.MealDynamic ?? seg.MealDetails ?? []
   );
-  const allItems = apiItems;
+  
+  const uniqueApiItems = [];
+  const seenIds = new Set();
+  apiItems.forEach(item => {
+    const id = item.SSRKey || item.Code || item.Description;
+    if (id && !seenIds.has(id)) {
+      seenIds.add(id);
+      uniqueApiItems.push(item);
+    }
+  });
+
+  const allItems = uniqueApiItems;
 
   const [selectedItems, setSelectedItems] = useState(initialSelectedMeals || []);
 

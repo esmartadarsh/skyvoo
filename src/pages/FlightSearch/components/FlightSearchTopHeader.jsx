@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Logo from '@/assets/imgs/logo.webp'
+import Logo from '@/assets/imgs/logo.png';
+import { useAuth } from '@/contexts/AuthContext';
 
 const FlightSearchTopHeader = ({ onOpen }) => {
-
     const navigate = useNavigate();
+    const { isLoggedIn } = useAuth();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [activeDropdown, setActiveDropdown] = useState(null);
     const dropdownRef = useRef(null);
@@ -75,13 +76,6 @@ const FlightSearchTopHeader = ({ onOpen }) => {
 
                 {/* Desktop Navigation */}
                 <nav className="hidden md:flex items-center space-x-1 lg:space-x-1 text-black text-base font-semibold" ref={dropdownRef}>
-                    {/* My Account */}
-                    <button className="text-sm cursor-pointer px-4 py-1 sm:px-3 rounded-full hover:bg-gray-100 transition-colors"
-                        onClick={() => navigate('/my-profile')}
-                    >
-                        My Account
-                    </button>
-
                     {/* Support Dropdown */}
                     <div
                         className="relative"
@@ -132,13 +126,22 @@ const FlightSearchTopHeader = ({ onOpen }) => {
                         )}
                     </div>
 
-                    {/* Login */}
-                    <button
-                        className="text-sm cursor-pointer px-4 py-1 sm:px-3 rounded-full hover:bg-gray-100 transition-colors"
-                        onClick={onOpen}
-                    >
-                        Login
-                    </button>
+                    {/* My Account if Logged In, otherwise Login */}
+                    {isLoggedIn ? (
+                        <button
+                            className="text-sm cursor-pointer px-4 py-1 sm:px-3 rounded-full hover:bg-gray-100 transition-colors"
+                            onClick={() => navigate('/my-profile')}
+                        >
+                            My Account
+                        </button>
+                    ) : (
+                        <button
+                            className="text-sm cursor-pointer px-4 py-1 sm:px-3 rounded-full hover:bg-gray-100 transition-colors"
+                            onClick={onOpen}
+                        >
+                            Login
+                        </button>
+                    )}
                 </nav>
 
                 {/* Mobile Menu Toggle */}
@@ -155,10 +158,27 @@ const FlightSearchTopHeader = ({ onOpen }) => {
             {mobileOpen && (
                 <div className="md:hidden bg-white shadow-lg">
                     <div className="px-4 pt-2 pb-4 space-y-2">
-                        {/* My Account Mobile */}
-                        <button className="block w-full text-left px-4 py-2 rounded-md bg-[#F5F5F5] hover:bg-black hover:text-white transition">
-                            My Account
-                        </button>
+                        {isLoggedIn ? (
+                            <button
+                                className="block w-full text-left px-4 py-2 rounded-md bg-[#F5F5F5] hover:bg-black hover:text-white transition font-medium"
+                                onClick={() => {
+                                    setMobileOpen(false);
+                                    navigate('/my-profile');
+                                }}
+                            >
+                                My Account
+                            </button>
+                        ) : (
+                            <button
+                                className="block w-full text-left px-4 py-2 rounded-md bg-[#F5F5F5] hover:bg-black hover:text-white transition font-medium"
+                                onClick={() => {
+                                    setMobileOpen(false);
+                                    onOpen();
+                                }}
+                            >
+                                Login
+                            </button>
+                        )}
 
                         {/* Support Mobile Dropdown */}
                         <div>
@@ -207,17 +227,6 @@ const FlightSearchTopHeader = ({ onOpen }) => {
                                 </div>
                             )}
                         </div>
-
-                        {/* Login Mobile */}
-                        <button
-                            className="block w-full text-left px-4 py-2 rounded-md bg-[#F5F5F5] hover:bg-black hover:text-white transition"
-                            onClick={() => {
-                                setMobileOpen(false);
-                                onOpen();
-                            }}
-                        >
-                            Login
-                        </button>
                     </div>
                 </div>
             )}

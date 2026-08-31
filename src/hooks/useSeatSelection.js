@@ -1,8 +1,10 @@
 import { useState } from "react";
 
-export function useSeatSelection(totalTravellers) {
+export function useSeatSelection(totalTravellers, initialSeats = []) {
 
-    const [selectedSeats, setSelectedSeats] = useState(new Set());
+    const [selectedSeats, setSelectedSeats] = useState(
+        () => new Set(Array.isArray(initialSeats) ? initialSeats : [])
+    );
 
     const handleSeatClick = (seat) => {
         setSelectedSeats((prev) => {

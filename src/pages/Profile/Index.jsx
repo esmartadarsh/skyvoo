@@ -267,15 +267,7 @@ function Profile() {
                         )}
 
                         {activeTab === 'bookings' && (
-                            <BookingHistory
-                                bookings={bookingHistory}
-                                selectedBooking={selectedBooking}
-                                toggleBooking={toggleBooking}
-                                formatDate={formatDate}
-                                formatTime={formatTime}
-                                formatPrice={formatPrice}
-                                getStatusColor={getStatusColor}
-                            />
+                            <BookingHistory />
                         )}
 
                         {activeTab === 'settings' && <SettingsPanel />}
